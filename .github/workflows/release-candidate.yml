@@ -1,0 +1,71 @@
+name: BandOS release candidate
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*-beta*"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run release:verify
+
+  macos-unsigned-acceptance:
+    needs: quality
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run desktop:dist:mac
+      - run: npm run test:desktop-package
+      - name: Verify disk image
+        run: hdiutil verify dist-desktop/BandOS-*-mac-*.dmg
+      - name: Write checksums
+        run: shasum -a 256 dist-desktop/BandOS-*-mac-*.dmg dist-desktop/BandOS-*-mac-*.zip > dist-desktop/SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unsigned-macos-test-artifacts
+          path: |
+            dist-desktop/BandOS-*-mac-*.dmg
+            dist-desktop/BandOS-*-mac-*.zip
+            dist-desktop/SHA256SUMS.txt
+
+  windows-unsigned-acceptance:
+    needs: quality
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run desktop:dist:win
+      - run: npm run test:desktop-package
+      - name: Write checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem dist-desktop/BandOS-*-win-*.exe, dist-desktop/BandOS-*-win-*.zip | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } | Set-Content dist-desktop/SHA256SUMS-windows.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unsigned-windows-test-artifacts
+          path: |
+            dist-desktop/BandOS-*-win-*.exe
+            dist-desktop/BandOS-*-win-*.zip
+            dist-desktop/SHA256SUMS-windows.txt

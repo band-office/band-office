@@ -1,0 +1,159 @@
+{
+  "name": "bandos",
+  "version": "0.1.0",
+  "description": "A local-first asset and assignment ledger for school music programs.",
+  "author": "Joshua Bloodworth",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.mjs",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "cross-env NEXT_TELEMETRY_DISABLED=1 next dev -H 127.0.0.1",
+    "build": "cross-env NEXT_TELEMETRY_DISABLED=1 prisma generate && cross-env NEXT_TELEMETRY_DISABLED=1 next build",
+    "start": "cross-env NEXT_TELEMETRY_DISABLED=1 next start",
+    "lint": "eslint .",
+    "test": "node --import tsx scripts/prepare-test-db.ts && cross-env DATABASE_URL=file:./data/test.db prisma db seed && cross-env DATABASE_URL=file:./data/test.db vitest run",
+    "test:e2e": "playwright test",
+    "test:desktop-runtime": "node scripts/test-desktop-runtime.mjs",
+    "test:desktop-package": "node scripts/test-packaged-desktop.mjs",
+    "audit:release": "node scripts/audit-release.mjs",
+    "audit:tree": "node scripts/audit-dependency-tree.mjs",
+    "audit:dependencies": "npm audit --omit=dev --audit-level=high",
+    "release:verify": "node scripts/verify-release.mjs",
+    "desktop:prepare": "node scripts/prepare-desktop-runtime.mjs",
+    "desktop:dev": "node scripts/run-desktop-dev.mjs",
+    "desktop:icon": "node scripts/generate-desktop-icon.mjs",
+    "desktop:pack": "node scripts/package-desktop.mjs --dir",
+    "desktop:dist:mac": "node scripts/package-desktop.mjs --mac dmg zip",
+    "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip",
+    "desktop:dist:win": "node scripts/package-desktop.mjs --win nsis zip",
+    "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip",
+    "db:generate": "prisma generate",
+    "db:init": "prisma migrate deploy && prisma db seed",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "backup:verify": "node scripts/verify-backup.mjs",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "7.8.0",
+    "@prisma/client": "7.8.0",
+    "argon2": "0.45.0",
+    "better-sqlite3": "12.11.1",
+    "bwip-js": "4.11.2",
+    "jszip": "3.10.1",
+    "lucide-react": "1.25.0",
+    "next": "16.2.11",
+    "nodemailer": "9.0.3",
+    "papaparse": "5.5.4",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "26.1.1",
+    "@types/nodemailer": "8.0.1",
+    "@types/papaparse": "5.5.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "cross-env": "10.1.0",
+    "dotenv": "17.4.2",
+    "electron": "43.1.1",
+    "electron-builder": "26.15.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.2.11",
+    "prisma": "7.8.0",
+    "sharp": "0.35.3",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  },
+  "overrides": {
+    "@hono/node-server": "2.0.10",
+    "sharp": "0.35.3",
+    "postcss": "8.5.20",
+    "valibot": "1.4.2"
+  },
+  "build": {
+    "appId": "org.bandos.desktop",
+    "productName": "BandOS",
+    "icon": "desktop/assets/icon.png",
+    "artifactName": "BandOS-${version}-${os}-${arch}.${ext}",
+    "afterPack": "scripts/after-pack-desktop.mjs",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/better-sqlite3/build/Release/*.node"
+    ],
+    "buildDependenciesFromSource": true,
+    "files": [
+      "desktop/**/*",
+      "package.json",
+      "!node_modules/@img{,/**/*}",
+      "!node_modules/@next{,/**/*}",
+      "!node_modules/@prisma{,/**/*}",
+      "!node_modules/@swc{,/**/*}",
+      "!node_modules/argon2{,/**/*}",
+      "!node_modules/lucide-react{,/**/*}",
+      "!node_modules/next{,/**/*}",
+      "!node_modules/react{,/**/*}",
+      "!node_modules/react-dom{,/**/*}",
+      "!node_modules/sharp{,/**/*}",
+      "!node_modules/styled-jsx{,/**/*}",
+      "!**/.env*",
+      "!data{,/**/*}"
+    ],
+    "extraResources": [
+      {
+        "from": "prisma/migrations",
+        "to": "prisma/migrations",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "app-runtime/server",
+        "to": "app-runtime/server",
+        "filter": [
+          "**/*",
+          "!**/.env*",
+          "!data{,/**/*}"
+        ]
+      }
+    ],
+    "directories": {
+      "output": "dist-desktop",
+      "buildResources": "desktop/assets"
+    },
+    "mac": {
+      "category": "public.app-category.education",
+      "entitlements": "desktop/entitlements.mac.plist",
+      "entitlementsInherit": "desktop/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "BandOS uses the camera only when a director chooses to scan an inventory barcode or QR code."
+      },
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

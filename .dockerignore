@@ -1,0 +1,13 @@
+node_modules
+.next
+.next.*
+data
+.git
+coverage
+playwright-report
+test-results
+dist-desktop
+app-runtime
+desktop
+*.log
+.DS_Store

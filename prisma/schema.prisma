@@ -1,0 +1,1281 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum PersonStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+  ARCHIVED
+}
+
+enum PersonClassificationType {
+  STUDENT
+  GUARDIAN
+  STAFF
+  BOOSTER
+  EXTERNAL
+}
+
+enum GroupKind {
+  ENSEMBLE
+  SECTION
+  CLASS
+  ADMINISTRATIVE
+  CUSTOM
+}
+
+enum StaffRole {
+  DIRECTOR
+  ASSISTANT_DIRECTOR
+  INVENTORY_HELPER
+  READ_ONLY
+}
+
+enum AssetCategory {
+  INSTRUMENT
+  UNIFORM
+  EQUIPMENT
+}
+
+enum AssetCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  UNUSABLE
+}
+
+enum AssetStatus {
+  AVAILABLE
+  ASSIGNED
+  IN_REPAIR
+  RETIRED
+  MISSING
+}
+
+enum ComponentStatus {
+  PRESENT
+  MISSING
+  DAMAGED
+  REPLACED
+}
+
+enum AssignmentResolution {
+  RETURNED
+  WRITTEN_OFF
+  TRANSFERRED
+}
+
+enum RepairStatus {
+  OPEN
+  AT_VENDOR
+  CLOSED
+}
+
+enum OperatingPeriodStatus {
+  OPEN
+  CLOSED
+}
+
+enum FinancialEntryType {
+  CHARGE
+  PAYMENT
+  CREDIT
+  REVERSAL
+}
+
+enum EmailProviderKind {
+  SMTP
+  GOOGLE
+  MICROSOFT
+}
+
+enum EmailConnectionStatus {
+  DISCONNECTED
+  CONFIGURED
+  VERIFIED
+  ERROR
+}
+
+enum EmailContactStatus {
+  ENABLED
+  DISABLED
+  INVALID
+  SUPPRESSED
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  READY
+  SCHEDULED
+  SENDING
+  SENT
+  PARTIAL
+  FAILED
+  CANCELED
+}
+
+enum EmailAudienceTargetType {
+  CLASSIFICATION
+  GROUP
+  GRADE
+  PERSON
+}
+
+enum EmailAudienceRecipientKind {
+  SELF
+  GUARDIANS
+}
+
+enum AnnouncementRecipientStatus {
+  ELIGIBLE
+  MISSING_EMAIL
+  DISABLED
+  INVALID
+  SUPPRESSED
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+enum DeliveryAttemptStatus {
+  SENT
+  FAILED
+}
+
+enum CommunicationJobStatus {
+  PENDING
+  LEASED
+  COMPLETED
+  FAILED
+  OVERDUE
+  CANCELED
+}
+
+enum LibraryItemStatus {
+  AVAILABLE
+  ON_LOAN
+  INCOMPLETE
+  MISSING
+  ARCHIVED
+}
+
+enum LibraryComponentStatus {
+  MISSING
+  DAMAGED
+  REPLACED
+}
+
+enum LibraryLoanStatus {
+  CHECKED_OUT
+  RETURNED
+  LOST
+}
+
+enum LibraryResourceKind {
+  LOCAL_FILE
+  EXTERNAL_LINK
+}
+
+enum LibraryResourceStatus {
+  ACTIVE
+  REMOVED
+}
+
+enum FormTemplateVersionStatus {
+  DRAFT
+  PUBLISHED
+  RETIRED
+}
+
+enum FormQuestionType {
+  SHORT_TEXT
+  LONG_TEXT
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  CHECKBOX
+  ACKNOWLEDGMENT
+  FILE_UPLOAD
+}
+
+enum FormAudienceType {
+  ACTIVE_STUDENTS
+  GROUP
+  GRADE
+  PERSON
+}
+
+enum FormRecipientMode {
+  STUDENTS
+  GUARDIANS
+  BOTH
+}
+
+enum FormRequestStatus {
+  OUTSTANDING
+  IN_PROGRESS
+  COMPLETE
+  WAIVED
+}
+
+enum FormResponseStatus {
+  DRAFT
+  SUBMITTED
+  PURGED
+}
+
+enum FormUploadStatus {
+  ACTIVE
+  REMOVED
+}
+
+enum EventVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELED
+  COMPLETED
+}
+
+enum EventParticipantStatus {
+  ACTIVE
+  REMOVED
+}
+
+enum EventRsvpStatus {
+  PENDING
+  YES
+  NO
+  MAYBE
+}
+
+enum AttendanceStatus {
+  NOT_RECORDED
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum EventResourceKind {
+  LOCAL_FILE
+  EXTERNAL_LINK
+}
+
+enum EventResourceStatus {
+  ACTIVE
+  REMOVED
+}
+
+enum VolunteerOpportunityStatus {
+  OPEN
+  CLOSED
+  CANCELED
+}
+
+enum VolunteerSignupStatus {
+  CONFIRMED
+  CANCELED
+}
+
+enum EventReminderAudience {
+  PARTICIPANTS
+  GUARDIANS
+  VOLUNTEERS
+}
+
+model Program {
+  id                    String                 @id
+  name                  String
+  graduationGrade       Int                    @default(8)
+  agreementTemplate     String?
+  people                Person[]
+  groups                Group[]
+  assets                Asset[]
+  operatingPeriods      OperatingPeriod[]
+  auditLogs             AuditLog[]
+  staffUsers            StaffUser[]
+  backupRecords         BackupRecord[]
+  financialBatches      FinancialBatch[]
+  financialEntries      FinancialEntry[]
+  emailConnection       EmailConnection?
+  emailTemplates        EmailTemplate[]
+  emailContactStates    EmailContactState[]
+  announcements         Announcement[]
+  libraryItems          LibraryItem[]
+  formTemplates         FormTemplate[]
+  formCampaigns         FormCampaign[]
+  eventSeries           EventSeries[]
+  events                Event[]
+  calendarSubscriptions CalendarSubscription[]
+}
+
+model StaffUser {
+  id           String    @id
+  programId    String
+  personId     String    @unique
+  username     String
+  passwordHash String
+  role         StaffRole @default(READ_ONLY)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  program      Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  person       Person    @relation(fields: [personId], references: [id], onDelete: Restrict)
+  sessions     Session[]
+
+  @@unique([programId, username])
+  @@index([programId])
+}
+
+model Session {
+  id         String    @id
+  userId     String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  expiresAt  DateTime
+  user       StaffUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model BackupRecord {
+  id        String   @id
+  programId String
+  createdAt DateTime @default(now())
+  filename  String
+  sha256    String
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId, createdAt])
+}
+
+model Person {
+  id                   String                       @id
+  programId            String
+  firstName            String
+  lastName             String
+  email                String?
+  phone                String?
+  status               PersonStatus                 @default(ACTIVE)
+  notes                String?
+  createdAt            DateTime                     @default(now())
+  updatedAt            DateTime                     @updatedAt
+  program              Program                      @relation(fields: [programId], references: [id], onDelete: Restrict)
+  studentProfile       StudentProfile?
+  classifications      PersonClassification[]
+  groupMemberships     GroupMembership[]
+  guardianLinks        GuardianStudent[]            @relation("GuardianLinks")
+  studentGuardianLinks GuardianStudent[]            @relation("StudentGuardianLinks")
+  assignments          Assignment[]
+  staffUsers           StaffUser[]
+  financialEntries     FinancialEntry[]
+  announcementTargets  AnnouncementAudienceTarget[]
+  libraryLoans         LibraryLoan[]
+  formRequestsReceived FormRequest[]                @relation("FormRequestRecipient")
+  formRequestsSubject  FormRequest[]                @relation("FormRequestSubject")
+  eventParticipants    EventParticipant[]
+  volunteerSignups     VolunteerSignup[]
+
+  @@index([programId, status])
+  @@index([programId, lastName, firstName])
+  @@index([programId, email])
+}
+
+model StudentProfile {
+  personId        String  @id
+  programId       String
+  grade           Int
+  schoolStudentId String?
+  person          Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, schoolStudentId])
+  @@index([programId, grade])
+}
+
+model PersonClassification {
+  personId       String
+  classification PersonClassificationType
+  person         Person                   @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@id([personId, classification])
+  @@index([classification])
+}
+
+model Group {
+  id                  String                       @id
+  programId           String
+  name                String
+  kind                GroupKind                    @default(CUSTOM)
+  description         String?
+  active              Boolean                      @default(true)
+  createdAt           DateTime                     @default(now())
+  updatedAt           DateTime                     @updatedAt
+  program             Program                      @relation(fields: [programId], references: [id], onDelete: Restrict)
+  memberships         GroupMembership[]
+  assignments         Assignment[]
+  financialBatches    FinancialBatch[]
+  financialEntries    FinancialEntry[]
+  announcementTargets AnnouncementAudienceTarget[]
+  performanceRecords  PerformanceRecord[]
+  formCampaigns       FormCampaign[]
+  eventGroups         EventGroup[]
+
+  @@unique([programId, name])
+  @@index([programId, kind, active])
+}
+
+model GroupMembership {
+  id        String    @id
+  groupId   String
+  personId  String
+  roleLabel String?
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  person    Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, personId])
+  @@index([personId, endedAt])
+  @@index([groupId, endedAt])
+}
+
+model GuardianStudent {
+  id                    String  @id
+  guardianId            String
+  studentId             String
+  relationshipLabel     String?
+  primaryContact        Boolean @default(false)
+  receivesCommunication Boolean @default(true)
+  guardian              Person  @relation("GuardianLinks", fields: [guardianId], references: [id], onDelete: Cascade)
+  student               Person  @relation("StudentGuardianLinks", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([guardianId, studentId])
+  @@index([studentId])
+}
+
+model Asset {
+  id             String               @id
+  programId      String
+  category       AssetCategory
+  make           String?
+  model          String?
+  serialNumber   String?
+  schoolAssetTag String?
+  size           String?
+  condition      AssetCondition
+  status         AssetStatus          @default(AVAILABLE)
+  purchaseYear   Int?
+  estimatedValue Decimal?
+  location       String?
+  notes          String?
+  program        Program              @relation(fields: [programId], references: [id], onDelete: Restrict)
+  components     AssetComponent[]
+  assignments    Assignment[]
+  repairs        Repair[]
+  eventEquipment EventEquipmentItem[]
+
+  @@unique([programId, schoolAssetTag])
+  @@index([programId, category])
+  @@index([programId, status])
+}
+
+model AssetComponent {
+  id      String          @id
+  assetId String
+  name    String
+  status  ComponentStatus @default(PRESENT)
+  notes   String?
+  asset   Asset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId, status])
+}
+
+model Assignment {
+  id                String                @id
+  assetId           String
+  personId          String
+  groupId           String?
+  operatingPeriodId String
+  checkedOutAt      DateTime
+  expectedReturnAt  DateTime?
+  conditionOut      AssetCondition
+  agreementOnFile   Boolean               @default(false)
+  checkedInAt       DateTime?
+  conditionIn       AssetCondition?
+  resolution        AssignmentResolution?
+  notes             String?
+  asset             Asset                 @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  person            Person                @relation(fields: [personId], references: [id], onDelete: Restrict)
+  group             Group?                @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod       @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+
+  @@index([assetId, checkedInAt])
+  @@index([personId, checkedInAt])
+  @@index([groupId, checkedInAt])
+  @@index([operatingPeriodId])
+  @@index([expectedReturnAt, checkedInAt])
+}
+
+model Repair {
+  id                String          @id
+  assetId           String
+  operatingPeriodId String
+  openedAt          DateTime
+  description       String
+  vendor            String?
+  cost              Decimal?
+  closedAt          DateTime?
+  status            RepairStatus    @default(OPEN)
+  asset             Asset           @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+
+  @@index([assetId, status])
+  @@index([operatingPeriodId])
+}
+
+model OperatingPeriod {
+  id                 String                @id
+  programId          String
+  label              String
+  startsAt           DateTime
+  endsAt             DateTime?
+  periodKind         String
+  status             OperatingPeriodStatus @default(OPEN)
+  archivePath        String?
+  program            Program               @relation(fields: [programId], references: [id], onDelete: Restrict)
+  assignments        Assignment[]
+  repairs            Repair[]
+  financialBatches   FinancialBatch[]
+  financialEntries   FinancialEntry[]
+  announcements      Announcement[]
+  libraryLoans       LibraryLoan[]
+  performanceRecords PerformanceRecord[]
+  formCampaigns      FormCampaign[]
+  events             Event[]
+
+  @@unique([programId, label])
+  @@index([programId, status])
+}
+
+model LibraryItem {
+  id                 String                 @id
+  programId          String
+  title              String
+  composer           String?
+  arranger           String?
+  publisher          String?
+  grade              String?
+  category           String?
+  catalogNumber      String?
+  storageLocation    String?
+  acquisitionDate    DateTime?
+  acquisitionSource  String?
+  acquisitionCost    Decimal?
+  status             LibraryItemStatus      @default(AVAILABLE)
+  comments           String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  program            Program                @relation(fields: [programId], references: [id], onDelete: Restrict)
+  componentNotes     LibraryComponentNote[]
+  loans              LibraryLoan[]
+  performanceRecords PerformanceRecord[]
+  resources          LibraryResource[]
+
+  @@unique([programId, catalogNumber])
+  @@index([programId, status])
+  @@index([programId, title])
+  @@index([programId, composer])
+}
+
+model LibraryComponentNote {
+  id            String                 @id
+  itemId        String
+  componentName String
+  status        LibraryComponentStatus
+  notedAt       DateTime
+  resolvedAt    DateTime?
+  notes         String?
+  createdBy     String
+  item          LibraryItem            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([itemId, resolvedAt])
+  @@index([status, resolvedAt])
+}
+
+model LibraryLoan {
+  id                String            @id
+  itemId            String
+  borrowerPersonId  String?
+  borrowerName      String
+  operatingPeriodId String
+  checkedOutAt      DateTime
+  expectedReturnAt  DateTime?
+  returnedAt        DateTime?
+  status            LibraryLoanStatus @default(CHECKED_OUT)
+  notes             String?
+  createdBy         String
+  item              LibraryItem       @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  borrowerPerson    Person?           @relation(fields: [borrowerPersonId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod   @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+
+  @@index([itemId, returnedAt])
+  @@index([borrowerPersonId, returnedAt])
+  @@index([operatingPeriodId])
+  @@index([expectedReturnAt, returnedAt])
+}
+
+model PerformanceRecord {
+  id                String          @id
+  itemId            String
+  operatingPeriodId String
+  eventName         String
+  performedAt       DateTime
+  groupId           String?
+  conductor         String?
+  notes             String?
+  createdBy         String
+  item              LibraryItem     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  group             Group?          @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@index([itemId, performedAt])
+  @@index([operatingPeriodId])
+  @@index([groupId, performedAt])
+}
+
+model LibraryResource {
+  id                      String                @id
+  itemId                  String
+  kind                    LibraryResourceKind
+  label                   String
+  fileName                String?
+  mimeType                String?
+  byteSize                Int?
+  storageKey              String?
+  contentHash             String?
+  externalUrl             String?
+  copyrightAcknowledgedAt DateTime
+  status                  LibraryResourceStatus @default(ACTIVE)
+  createdAt               DateTime              @default(now())
+  removedAt               DateTime?
+  createdBy               String
+  item                    LibraryItem           @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([itemId, status])
+  @@index([storageKey])
+}
+
+model FormTemplate {
+  id          String                @id
+  programId   String
+  name        String
+  description String?
+  archived    Boolean               @default(false)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  createdBy   String
+  program     Program               @relation(fields: [programId], references: [id], onDelete: Restrict)
+  versions    FormTemplateVersion[]
+
+  @@unique([programId, name])
+  @@index([programId, archived, updatedAt])
+}
+
+model FormTemplateVersion {
+  id            String                    @id
+  templateId    String
+  version       Int
+  status        FormTemplateVersionStatus @default(DRAFT)
+  title         String
+  instructions  String?
+  retentionDays Int?
+  createdAt     DateTime                  @default(now())
+  publishedAt   DateTime?
+  createdBy     String
+  template      FormTemplate              @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  questions     FormQuestion[]
+  campaigns     FormCampaign[]
+
+  @@unique([templateId, version])
+  @@index([templateId, status])
+}
+
+model FormQuestion {
+  id          String              @id
+  versionId   String
+  position    Int
+  prompt      String
+  helpText    String?
+  type        FormQuestionType
+  required    Boolean             @default(false)
+  optionsJson String?
+  version     FormTemplateVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  answers     FormAnswer[]
+  uploads     FormUpload[]
+
+  @@unique([versionId, position])
+  @@index([versionId, position])
+}
+
+model FormCampaign {
+  id                String              @id
+  programId         String
+  operatingPeriodId String
+  templateVersionId String
+  name              String
+  dueAt             DateTime?
+  audienceType      FormAudienceType
+  audienceValue     String?
+  audienceSummary   String
+  recipientMode     FormRecipientMode
+  createdAt         DateTime            @default(now())
+  createdBy         String
+  program           Program             @relation(fields: [programId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod     @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  templateVersion   FormTemplateVersion @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+  requests          FormRequest[]
+  group             Group?              @relation(fields: [groupId], references: [id])
+  groupId           String?
+
+  @@index([programId, createdAt])
+  @@index([operatingPeriodId])
+  @@index([templateVersionId])
+}
+
+model FormRequest {
+  id                 String            @id
+  campaignId         String
+  recipientPersonId  String
+  subjectPersonId    String
+  status             FormRequestStatus @default(OUTSTANDING)
+  completedAt        DateTime?
+  waivedAt           DateTime?
+  retentionExpiresAt DateTime?
+  createdAt          DateTime          @default(now())
+  campaign           FormCampaign      @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  recipientPerson    Person            @relation("FormRequestRecipient", fields: [recipientPersonId], references: [id], onDelete: Restrict)
+  subjectPerson      Person            @relation("FormRequestSubject", fields: [subjectPersonId], references: [id], onDelete: Restrict)
+  response           FormResponse?
+  reminders          FormReminder[]
+
+  @@unique([campaignId, recipientPersonId, subjectPersonId])
+  @@index([campaignId, status])
+  @@index([recipientPersonId, status])
+  @@index([subjectPersonId, status])
+  @@index([retentionExpiresAt])
+}
+
+model FormResponse {
+  id          String             @id
+  requestId   String             @unique
+  status      FormResponseStatus @default(DRAFT)
+  startedAt   DateTime           @default(now())
+  submittedAt DateTime?
+  recordedBy  String
+  purgedAt    DateTime?
+  request     FormRequest        @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  answers     FormAnswer[]
+  uploads     FormUpload[]
+
+  @@index([status, submittedAt])
+}
+
+model FormAnswer {
+  id                       String       @id
+  responseId               String
+  questionId               String
+  textValue                String?
+  choiceValuesJson         String?
+  booleanValue             Boolean?
+  acknowledgmentRecordedAt DateTime?
+  response                 FormResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  question                 FormQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  @@unique([responseId, questionId])
+  @@index([questionId])
+}
+
+model FormUpload {
+  id          String           @id
+  responseId  String
+  questionId  String
+  fileName    String
+  mimeType    String
+  byteSize    Int
+  storageKey  String           @unique
+  contentHash String
+  status      FormUploadStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  removedAt   DateTime?
+  response    FormResponse     @relation(fields: [responseId], references: [id], onDelete: Restrict)
+  question    FormQuestion     @relation(fields: [questionId], references: [id], onDelete: Restrict)
+
+  @@index([responseId, status])
+  @@index([questionId, status])
+}
+
+model FormReminder {
+  id             String      @id
+  requestId      String
+  announcementId String?
+  createdAt      DateTime    @default(now())
+  createdBy      String
+  request        FormRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt])
+  @@index([announcementId])
+}
+
+model EventSeries {
+  id          String   @id
+  programId   String
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  createdBy   String
+  program     Program  @relation(fields: [programId], references: [id], onDelete: Restrict)
+  events      Event[]
+
+  @@unique([programId, name])
+  @@index([programId, active])
+}
+
+model Event {
+  id                     String                 @id
+  programId              String
+  operatingPeriodId      String
+  seriesId               String?
+  name                   String
+  description            String?
+  startsAt               DateTime
+  endsAt                 DateTime?
+  location               String?
+  visibility             EventVisibility        @default(PRIVATE)
+  status                 EventStatus            @default(DRAFT)
+  itinerary              String?
+  notes                  String?
+  rsvpEnabled            Boolean                @default(false)
+  attendanceEnabled      Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  createdBy              String
+  program                Program                @relation(fields: [programId], references: [id], onDelete: Restrict)
+  operatingPeriod        OperatingPeriod        @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  series                 EventSeries?           @relation(fields: [seriesId], references: [id], onDelete: Restrict)
+  groups                 EventGroup[]
+  participants           EventParticipant[]
+  equipmentItems         EventEquipmentItem[]
+  resources              EventResource[]
+  volunteerOpportunities VolunteerOpportunity[]
+  reminders              EventReminder[]
+
+  @@index([programId, startsAt])
+  @@index([programId, status, startsAt])
+  @@index([operatingPeriodId])
+  @@index([seriesId, startsAt])
+}
+
+model EventGroup {
+  id         String    @id
+  eventId    String
+  groupId    String
+  includedAt DateTime  @default(now())
+  removedAt  DateTime?
+  event      Event     @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  group      Group     @relation(fields: [groupId], references: [id], onDelete: Restrict)
+
+  @@unique([eventId, groupId])
+  @@index([groupId, removedAt])
+}
+
+model EventParticipant {
+  id         String                 @id
+  eventId    String
+  personId   String
+  status     EventParticipantStatus @default(ACTIVE)
+  addedAt    DateTime               @default(now())
+  removedAt  DateTime?
+  addedBy    String
+  event      Event                  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  person     Person                 @relation(fields: [personId], references: [id], onDelete: Restrict)
+  rsvp       EventRsvp?
+  attendance AttendanceRecord?
+
+  @@unique([eventId, personId])
+  @@index([eventId, status])
+  @@index([personId, status])
+}
+
+model EventRsvp {
+  id            String           @id
+  participantId String           @unique
+  status        EventRsvpStatus  @default(PENDING)
+  recordedAt    DateTime?
+  recordedBy    String?
+  updatedAt     DateTime         @updatedAt
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+
+  @@index([status, recordedAt])
+}
+
+model AttendanceRecord {
+  id            String           @id
+  participantId String           @unique
+  status        AttendanceStatus @default(NOT_RECORDED)
+  recordedAt    DateTime?
+  recordedBy    String?
+  updatedAt     DateTime         @updatedAt
+  participant   EventParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+
+  @@index([status, recordedAt])
+}
+
+model EventEquipmentItem {
+  id             String   @id
+  eventId        String
+  assetId        String?
+  label          String
+  quantity       Int      @default(1)
+  packedQuantity Int      @default(0)
+  notes          String?
+  createdAt      DateTime @default(now())
+  createdBy      String
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  asset          Asset?   @relation(fields: [assetId], references: [id], onDelete: Restrict)
+
+  @@index([eventId])
+  @@index([assetId])
+}
+
+model EventResource {
+  id          String              @id
+  eventId     String
+  kind        EventResourceKind
+  label       String
+  fileName    String?
+  mimeType    String?
+  byteSize    Int?
+  storageKey  String?             @unique
+  contentHash String?
+  externalUrl String?
+  status      EventResourceStatus @default(ACTIVE)
+  createdAt   DateTime            @default(now())
+  removedAt   DateTime?
+  createdBy   String
+  event       Event               @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  @@index([eventId, status])
+  @@index([storageKey])
+}
+
+model VolunteerOpportunity {
+  id          String                     @id
+  eventId     String
+  title       String
+  description String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  capacity    Int
+  status      VolunteerOpportunityStatus @default(OPEN)
+  createdAt   DateTime                   @default(now())
+  createdBy   String
+  event       Event                      @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  signups     VolunteerSignup[]
+
+  @@index([eventId, status])
+}
+
+model VolunteerSignup {
+  id            String                @id
+  opportunityId String
+  personId      String
+  status        VolunteerSignupStatus @default(CONFIRMED)
+  signedUpAt    DateTime              @default(now())
+  createdBy     String
+  opportunity   VolunteerOpportunity  @relation(fields: [opportunityId], references: [id], onDelete: Restrict)
+  person        Person                @relation(fields: [personId], references: [id], onDelete: Restrict)
+
+  @@unique([opportunityId, personId])
+  @@index([personId, status])
+}
+
+model EventReminder {
+  id             String                @id
+  eventId        String
+  announcementId String?
+  audience       EventReminderAudience
+  scheduledFor   DateTime?
+  createdAt      DateTime              @default(now())
+  createdBy      String
+  event          Event                 @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  announcement   Announcement?         @relation(fields: [announcementId], references: [id], onDelete: Restrict)
+
+  @@index([eventId, createdAt])
+  @@index([announcementId])
+}
+
+model CalendarSubscription {
+  id         String    @id
+  programId  String
+  name       String
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdBy  String
+  program    Program   @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  @@index([programId, revokedAt])
+}
+
+model AuditLog {
+  id             String   @id
+  programId      String
+  timestamp      DateTime @default(now())
+  actor          String
+  action         String
+  entityType     String
+  entityId       String
+  changeSummary  String
+  changeDiffJson String?
+  program        Program  @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  @@index([programId, timestamp])
+  @@index([entityType, entityId])
+}
+
+model FinancialBatch {
+  id                String           @id
+  programId         String
+  operatingPeriodId String
+  groupId           String
+  description       String
+  amount            Decimal
+  occurredAt        DateTime
+  dueDate           DateTime?
+  createdAt         DateTime         @default(now())
+  createdBy         String
+  program           Program          @relation(fields: [programId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod  @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  group             Group            @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  entries           FinancialEntry[]
+
+  @@index([programId, occurredAt])
+  @@index([groupId, occurredAt])
+  @@index([operatingPeriodId])
+}
+
+model FinancialEntry {
+  id                String             @id
+  programId         String
+  personId          String
+  operatingPeriodId String
+  groupId           String?
+  batchId           String?
+  type              FinancialEntryType
+  amount            Decimal
+  occurredAt        DateTime
+  dueDate           DateTime?
+  description       String
+  reference         String?
+  reversalOfId      String?            @unique
+  createdAt         DateTime           @default(now())
+  createdBy         String
+  program           Program            @relation(fields: [programId], references: [id], onDelete: Restrict)
+  person            Person             @relation(fields: [personId], references: [id], onDelete: Restrict)
+  operatingPeriod   OperatingPeriod    @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  group             Group?             @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  batch             FinancialBatch?    @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  reversalOf        FinancialEntry?    @relation("FinancialEntryReversal", fields: [reversalOfId], references: [id], onDelete: Restrict)
+  reversedBy        FinancialEntry?    @relation("FinancialEntryReversal")
+
+  @@index([programId, occurredAt])
+  @@index([personId, occurredAt])
+  @@index([operatingPeriodId])
+  @@index([groupId])
+  @@index([batchId])
+  @@index([type])
+}
+
+model EmailConnection {
+  id                  String                @id
+  programId           String                @unique
+  provider            EmailProviderKind     @default(SMTP)
+  status              EmailConnectionStatus @default(DISCONNECTED)
+  fromName            String
+  fromAddress         String
+  replyTo             String?
+  smtpHost            String?
+  smtpPort            Int?
+  smtpSecure          Boolean               @default(false)
+  authUsername        String?
+  credentialReference String?
+  lastVerifiedAt      DateTime?
+  lastError           String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  program             Program               @relation(fields: [programId], references: [id], onDelete: Restrict)
+  announcements       Announcement[]
+
+  @@index([programId, status])
+}
+
+model EmailContactState {
+  id              String             @id
+  programId       String
+  emailNormalized String
+  status          EmailContactStatus @default(ENABLED)
+  reason          String?
+  updatedAt       DateTime           @updatedAt
+  updatedBy       String
+  program         Program            @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  @@unique([programId, emailNormalized])
+  @@index([programId, status])
+}
+
+model EmailTemplate {
+  id        String   @id
+  programId String
+  name      String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  @@unique([programId, name])
+  @@index([programId, updatedAt])
+}
+
+model Announcement {
+  id                 String                       @id
+  programId          String
+  operatingPeriodId  String
+  emailConnectionId  String?
+  subject            String
+  body               String
+  status             AnnouncementStatus           @default(DRAFT)
+  scheduledAt        DateTime?
+  audienceResolvedAt DateTime?
+  sentAt             DateTime?
+  createdAt          DateTime                     @default(now())
+  updatedAt          DateTime                     @updatedAt
+  createdBy          String
+  program            Program                      @relation(fields: [programId], references: [id], onDelete: Restrict)
+  operatingPeriod    OperatingPeriod              @relation(fields: [operatingPeriodId], references: [id], onDelete: Restrict)
+  emailConnection    EmailConnection?             @relation(fields: [emailConnectionId], references: [id], onDelete: Restrict)
+  audienceTargets    AnnouncementAudienceTarget[]
+  recipients         AnnouncementRecipient[]
+  attachments        AnnouncementAttachment[]
+  jobs               CommunicationJob[]
+  eventReminders     EventReminder[]
+
+  @@index([programId, createdAt])
+  @@index([programId, status, scheduledAt])
+  @@index([operatingPeriodId])
+}
+
+model AnnouncementAudienceTarget {
+  id             String                     @id
+  announcementId String
+  targetType     EmailAudienceTargetType
+  recipientKind  EmailAudienceRecipientKind @default(SELF)
+  classification PersonClassificationType?
+  groupId        String?
+  grade          Int?
+  personId       String?
+  announcement   Announcement               @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  group          Group?                     @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  person         Person?                    @relation(fields: [personId], references: [id], onDelete: Restrict)
+
+  @@index([announcementId])
+  @@index([groupId])
+  @@index([personId])
+}
+
+model AnnouncementRecipient {
+  id                      String                      @id
+  announcementId          String
+  destinationKey          String
+  emailSnapshot           String?
+  emailNormalized         String?
+  displayNameSnapshot     String
+  associatedPersonIdsJson String
+  inclusionReasonsJson    String
+  permissionResult        AnnouncementRecipientStatus
+  status                  AnnouncementRecipientStatus
+  attemptCount            Int                         @default(0)
+  lastAttemptAt           DateTime?
+  lastError               String?
+  providerMessageId       String?
+  announcement            Announcement                @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  attempts                DeliveryAttempt[]
+
+  @@unique([announcementId, destinationKey])
+  @@index([announcementId, status])
+  @@index([emailNormalized])
+}
+
+model AnnouncementAttachment {
+  id             String       @id
+  announcementId String
+  fileName       String
+  mimeType       String
+  byteSize       Int
+  sha256         String
+  content        Bytes
+  createdAt      DateTime     @default(now())
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@index([announcementId])
+}
+
+model DeliveryAttempt {
+  id                String                @id
+  recipientId       String
+  status            DeliveryAttemptStatus
+  attemptedAt       DateTime              @default(now())
+  completedAt       DateTime
+  errorCode         String?
+  errorMessage      String?
+  providerMessageId String?
+  recipient         AnnouncementRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, attemptedAt])
+  @@index([status, attemptedAt])
+}
+
+model CommunicationJob {
+  id             String                 @id
+  announcementId String
+  status         CommunicationJobStatus @default(PENDING)
+  runAt          DateTime
+  leaseToken     String?
+  leaseExpiresAt DateTime?
+  attemptCount   Int                    @default(0)
+  maxAttempts    Int                    @default(3)
+  idempotencyKey String                 @unique
+  lastError      String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  announcement   Announcement           @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@index([status, runAt])
+  @@index([announcementId])
+}

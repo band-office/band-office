@@ -1,0 +1,15 @@
+services:
+  bandos:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "file:/data/bandos.db"
+      BANDOS_LOAD_DEMO: "${BANDOS_LOAD_DEMO:-false}"
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - bandos-data:/data
+    restart: unless-stopped
+
+volumes:
+  bandos-data:
