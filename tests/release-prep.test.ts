@@ -70,10 +70,14 @@ describe("public release preparation", () => {
     const readme = await readFile("README.md", "utf8");
     const channels = await readFile("RELEASE_CHANNELS.md", "utf8");
     const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
+    const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
+    const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
     expect(readme).toContain("No public Desktop alpha or supported Server release has been issued");
     expect(channels).toContain("Band Office Server Technical Preview");
     expect(deployment).toContain("controlled evaluation with fictional data");
+    expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
+    expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
   });
 });
