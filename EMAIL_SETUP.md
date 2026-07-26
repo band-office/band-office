@@ -1,6 +1,6 @@
 # Band Office Email Setup
 
-Band Office v0.4 sends through one shared program mailbox using standard SMTP. Google and Microsoft OAuth are not yet implemented.
+The current Band Office release candidate sends through one shared program mailbox using standard SMTP. Google and Microsoft OAuth are not yet implemented.
 
 ## Desktop
 

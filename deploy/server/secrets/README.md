@@ -1,5 +1,7 @@
 # Runtime secrets
 
+These instructions belong to the Server technical preview. Use synthetic credentials during fictional-data acceptance.
+
 Create these two files on the server. Do not commit, email, or place them in a support ticket.
 
 - `worker-token.txt`: one line containing at least 32 random characters. Generate it with `openssl rand -hex 32`.

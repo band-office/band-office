@@ -12,7 +12,19 @@
     },
     {
       "claim": "Direct dependency versions are reproducible",
-      "detail": "All production and build dependencies are exact versions with package-lock.json"
+      "detail": "All production and build dependencies are exact versions with package-lock.json; npm publication remains disabled"
+    },
+    {
+      "claim": "Desktop packages include release legal files",
+      "detail": "LICENSE and NOTICE are configured under resources/legal"
+    },
+    {
+      "claim": "Signed Desktop commands fail closed",
+      "detail": "Signed macOS and Windows commands force signing; macOS also forces notarization"
+    },
+    {
+      "claim": "Desktop alpha publication is signed and fail-closed",
+      "detail": "Protected-environment credentials, post-signing platform checks, legal verification, and prerelease-only publication are required"
     },
     {
       "claim": "Desktop shell enforces the local boundary",

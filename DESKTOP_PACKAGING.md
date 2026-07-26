@@ -11,7 +11,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 - Camera permission is limited to director-initiated inventory scanning; audio and all unrelated Electron permissions remain denied.
 - SMTP credentials are encrypted with Electron `safeStorage`, excluded from the database and backups, and passed only to the supervised local server process after restart.
 - Unsigned Windows NSIS and ZIP packaging plus packaged-app smoke acceptance pass in public GitHub Actions.
-- macOS and Windows signing are not configured. Current artifacts are test builds only.
+- The repository includes a fail-closed signed alpha workflow, but the protected environment does not yet contain Apple or Windows signing credentials. Current artifacts are test builds only.
 
 ## Runtime layout
 
@@ -52,6 +52,8 @@ npm run desktop:dist:win:signed
 ```
 
 Those commands set `BANDOS_SIGN_DESKTOP=1`, which permits electron-builder credential discovery. They do not make a release trustworthy by themselves. The release runner still needs platform credentials, Apple notarization configuration, timestamping, and post-build signature verification.
+
+The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It requires the protected `desktop-alpha-release` environment, forces signing, verifies signatures after packaging, verifies the packaged legal files, and creates a GitHub prerelease only after both platform jobs pass. See [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
 ## Public release gates
 

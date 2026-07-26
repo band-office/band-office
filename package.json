@@ -22,6 +22,9 @@
     "audit:release": "node scripts/audit-release.mjs",
     "audit:tree": "node scripts/audit-dependency-tree.mjs",
     "audit:dependencies": "npm audit --omit=dev --audit-level=high",
+    "release:tag:verify": "node scripts/verify-desktop-alpha-tag.mjs",
+    "release:desktop:verify": "node scripts/verify-desktop-alpha-artifact.mjs",
+    "release:manifest": "node scripts/write-release-manifest.mjs",
     "brand:github": "node scripts/generate-github-brand-assets.mjs && cross-env BANDOS_BRAND_DATABASE_PATH=data/brand.db DATABASE_URL=file:./data/brand.db node --import tsx scripts/prepare-brand-db.ts && node scripts/capture-github-screenshots.mjs",
     "release:verify": "node scripts/verify-release.mjs",
     "desktop:prepare": "node scripts/prepare-desktop-runtime.mjs",
@@ -29,9 +32,9 @@
     "desktop:icon": "node scripts/generate-desktop-icon.mjs",
     "desktop:pack": "node scripts/package-desktop.mjs --dir",
     "desktop:dist:mac": "node scripts/package-desktop.mjs --mac dmg zip",
-    "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip",
+    "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --config.forceCodeSigning=true --config.mac.notarize=true",
     "desktop:dist:win": "node scripts/package-desktop.mjs --win nsis zip",
-    "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip",
+    "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip --config.forceCodeSigning=true",
     "server:bundle": "node scripts/build-server-bundle.mjs",
     "server:verify": "node scripts/verify-server-bundle.mjs",
     "db:generate": "prisma generate",
@@ -128,6 +131,14 @@
           "!**/.env*",
           "!data{,/**/*}"
         ]
+      },
+      {
+        "from": "LICENSE",
+        "to": "legal/LICENSE"
+      },
+      {
+        "from": "NOTICE",
+        "to": "legal/NOTICE"
       }
     ],
     "directories": {

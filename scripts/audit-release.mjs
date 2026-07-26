@@ -81,8 +81,41 @@ const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "
 for (const group of ["dependencies", "devDependencies", "overrides"]) {
   for (const [name, version] of Object.entries(packageJson[group] ?? {})) if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) findings.push(`package.json ${group}.${name} is not pinned exactly: ${version}`);
 }
-if (!packageJson.private) findings.push("package.json must remain private until the public license and release gate are approved");
-evidence.push({ claim: "Direct dependency versions are reproducible", detail: "All production and build dependencies are exact versions with package-lock.json" });
+if (!packageJson.private) findings.push("package.json must remain private so Desktop distribution cannot be confused with npm publication");
+evidence.push({ claim: "Direct dependency versions are reproducible", detail: "All production and build dependencies are exact versions with package-lock.json; npm publication remains disabled" });
+
+for (const [source, destination] of [["LICENSE", "legal/LICENSE"], ["NOTICE", "legal/NOTICE"]]) {
+  const resource = packageJson.build?.extraResources?.find((entry) => entry.from === source && entry.to === destination);
+  if (!resource) findings.push(`package.json must package ${source} at resources/${destination}`);
+}
+evidence.push({ claim: "Desktop packages include release legal files", detail: "LICENSE and NOTICE are configured under resources/legal" });
+
+for (const [script, markers] of Object.entries({
+  "desktop:dist:mac:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
+  "desktop:dist:win:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true"],
+})) {
+  const command = packageJson.scripts?.[script] ?? "";
+  for (const marker of markers) if (!command.includes(marker)) findings.push(`package.json ${script} is missing ${marker}`);
+}
+evidence.push({ claim: "Signed Desktop commands fail closed", detail: "Signed macOS and Windows commands force signing; macOS also forces notarization" });
+
+const alphaWorkflow = await readFile(path.join(root, ".github/workflows/desktop-alpha-release.yml"), "utf8");
+for (const marker of [
+  'tags:\n      - "v*-alpha.*"',
+  "git fetch --no-tags origin main:refs/remotes/origin/main",
+  "environment: desktop-alpha-release",
+  "MACOS_CSC_LINK",
+  "APPLE_APP_SPECIFIC_PASSWORD",
+  "WINDOWS_CSC_LINK",
+  "codesign --verify --deep --strict",
+  "xcrun stapler validate",
+  "Get-AuthenticodeSignature",
+  "npm run release:desktop:verify",
+  "gh release create",
+  "--prerelease",
+  "--verify-tag",
+]) if (!alphaWorkflow.includes(marker)) findings.push(`Desktop alpha workflow is missing release gate: ${marker}`);
+evidence.push({ claim: "Desktop alpha publication is signed and fail-closed", detail: "Protected-environment credentials, post-signing platform checks, legal verification, and prerelease-only publication are required" });
 
 const desktopMain = await readFile(path.join(root, "desktop/main.mjs"), "utf8");
 for (const marker of [

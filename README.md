@@ -20,9 +20,19 @@ Band Office keeps the operational work of a school music program in one local-fi
 It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
 
 > [!IMPORTANT]
-> Band Office is a **public source release candidate**, not a stable packaged download. The application works, but signing, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
+> Band Office is a **public source release candidate**. No public Desktop alpha or supported Server release has been issued. Signing, clean-machine acceptance, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
+
+## Release channels
+
+| Channel | Current state | Intended user |
+| --- | --- | --- |
+| Source release candidate | Available on `main` | Contributors and technical reviewers using fictional data |
+| Band Office Desktop alpha | Not yet issued | Directors running one local program without public family access |
+| Band Office Server technical preview | Source and operator kit available; no supported image published | District IT evaluation with fictional data |
+
+These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server and family portals remain a district-operated technical preview until the external acceptance gates pass. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
 
 ## Built around real program work
 
@@ -92,17 +102,13 @@ Band Office does not yet replace every Charms or CutTime workflow. Granular guar
 
 The repository screenshots use deterministic fictional data. More views are available in [`docs/screenshots`](./docs/screenshots).
 
-## Desktop test build
+## Desktop release candidate
 
-An unsigned Apple Silicon macOS package is available in [dist-desktop](./dist-desktop):
-
-- `Band-Office-0.1.0-mac-arm64.dmg`
-- `Band-Office-0.1.0-mac-arm64.zip`
-- `SHA256SUMS.txt`
+Unsigned macOS and Windows packages are produced and tested in GitHub Actions, but they are temporary engineering artifacts rather than public downloads. The first Desktop alpha will be published as a GitHub prerelease only after both platform jobs produce signed artifacts and the macOS package passes notarization.
 
 The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
-These artifacts are for local testing. They are not Apple-signed or notarized, so macOS may block or warn on first launch. Do not present the unsigned package as the public director download.
+Do not redistribute unsigned CI artifacts or present them as the director download. See [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md) for the fail-closed signing and publication gate.
 
 ## Clean local setup
 
@@ -130,9 +136,9 @@ The root Compose file is a local technical convenience. It runs one container, e
 BANDOS_LOAD_DEMO=true docker compose up --build
 ```
 
-## District server and family portals
+## Server and family portal technical preview
 
-The documented public-deployment path is a district-approved Linux server using the separate Band Office Server bundle. It remains a release-candidate operator path until the public-server acceptance gates in [CURRENT_STATUS.md](./CURRENT_STATUS.md) are complete. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
+The documented server path is an operator technical preview for evaluation with fictional data. It is not a supported school deployment. The intended future deployment is a district-approved Linux server using the separate Band Office Server bundle. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
 
 Start with [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md). The complete operator set is:
 
@@ -149,7 +155,7 @@ npm run server:verify
 npm run server:bundle -- --image ghcr.io/OWNER/band-office:VERSION
 ```
 
-Do not use shared hosting, cPanel file upload, home-server port forwarding, the development server, or the root local Compose file for student and guardian access.
+No canonical Band Office Server image has been published. Do not activate real family accounts or use shared hosting, cPanel file upload, home-server port forwarding, the development server, or the root local Compose file for student and guardian access.
 
 ## Backups
 
@@ -206,7 +212,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The application workflow and unsigned desktop packages are usable as release candidates. The macOS package has passed clean-profile startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, DMG verification, and ZIP integrity checks. The Windows package and smoke acceptance also passed in public CI. The Linux ARM64 server image has passed local Compose, HTTPS proxy, migration, restart, worker-isolation, and complete-data-directory restore acceptance. A reviewed release tag, Apple signing/notarization, Windows signing, clean-machine acceptance, public registry publication, packaged third-party-notice verification, public-server acceptance, district approval, and the SDMS real-data pilot remain gates before v0.1 should be called stable or offered as a public director download.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The macOS and Windows package candidates pass automated build and application acceptance, and a local Linux ARM64 server image passed isolated container acceptance. Those results do not create a public product release. A reviewed alpha tag, Apple signing and notarization, Windows signing, clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open.
 
 ## Project and community
 
@@ -217,6 +223,8 @@ The source is publicly available at [band-office/band-office](https://github.com
 - [Security policy](./SECURITY.md)
 - [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [Changelog](./CHANGELOG.md)
+- [Release channels](./RELEASE_CHANNELS.md)
+- [Desktop alpha release process](./DESKTOP_ALPHA_RELEASE.md)
 - [Brand guide](./docs/brand/README.md)
 
 Band Office is maintained in public and welcomes bounded, evidence-backed contributions. The best first contribution is often a reproduced bug, a clearer setup step, an accessibility finding, or a small workflow improvement grounded in the daily work of a school music program.

@@ -51,7 +51,7 @@ It does not require a district dashboard, inter-school asset exchange, fundraisi
 | Track inventory agreements | Forms/Inventory | v0.1/v0.6 | Implemented | Paper assignment status and ordinary form acknowledgments preserve history without representing eSignature |
 | Manage events, calendars, and trip lists | Events | v0.7 | Implemented | Director generates a preserved roster snapshot, itinerary, equipment list, trip roster, and public/private calendar feed |
 | Track attendance and volunteer assignments | Events | v0.7 | Implemented | Attendance and volunteer workflows and exports pass acceptance without medical or disciplinary reason fields |
-| Let students and guardians view authorized records | Portal | v0.8 | Planned | One-time-code access cannot cross member, household, or relationship boundaries |
+| Let students and guardians view authorized records | Portal | v0.8 | Implemented, server preview | Relationship-scoped, read-only accounts use self-service password setup and recovery; public-server acceptance remains open |
 | Collect online payments | Payments | v0.9 | Planned | Hosted provider checkout reconciles idempotently to the internal ledger |
 | Complete year-end rollover | Core | v0.1 onward | Now, then expanded | Backup precedes rollover and next-year records retain required history |
 | Export and restore the whole program | Core | Every phase | Now | Clean-machine restore reproduces authoritative records and attachments |
@@ -91,4 +91,4 @@ Every module plan must answer these questions before implementation:
 
 ## Current Decision
 
-Assets/assignments, People/Groups/Access, the director-side Financials foundation, standard SMTP Email communications, Music Library, director-side Forms, and Events/Attendance are implemented in the current release candidate. Server and Family Portals are the next authorized product phase and require a separate security and deployment specification before implementation. The stated mission and audience are sufficient product direction; interviews, discovery research, and external pilot quotas are not prerequisites.
+Assets/assignments, People/Groups/Access, the director-side Financials foundation, standard SMTP Email communications, Music Library, director-side Forms, Events/Attendance, and a relationship-scoped read-only family portal are implemented in the current release candidate. Desktop remains local-only. Server and Family Portals are a technical preview until the published-image, public-edge, district-ownership, SMTP, recovery, upgrade, and rollback gates pass. The stated mission and audience are sufficient product direction; interviews, discovery research, and external pilot quotas are not prerequisites.

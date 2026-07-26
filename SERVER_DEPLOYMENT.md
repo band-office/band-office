@@ -1,8 +1,11 @@
-# Band Office Server Deployment
+# Band Office Server Technical Preview Deployment
 
 **Audience:** district IT, school technology staff, or an approved hosting administrator.
 
-Band Office Server provides staff login, student and guardian portals, and scheduled email. It is not a static website and cannot be installed by uploading files to ordinary shared hosting. The supported deployment is one district-approved Linux server running Docker Compose behind the included Caddy HTTPS proxy.
+> [!WARNING]
+> Band Office Server is a technical preview for controlled evaluation with fictional data. No supported Server image has been published. Do not activate real family accounts or load real student records until every external gate in `CURRENT_STATUS.md` passes.
+
+Band Office Server provides staff login, student and guardian portals, and scheduled email. It is not a static website and cannot be installed by uploading files to ordinary shared hosting. The intended supported deployment is one district-approved Linux server running Docker Compose behind the included Caddy HTTPS proxy.
 
 ## Responsibility gate
 
@@ -29,7 +32,7 @@ Band Office should be the only application using its hostname. The included Cadd
 
 ## Information to collect
 
-- Published Band Office container image reference from the release notes
+- Published Band Office Server image reference from supported Server release notes; none exists during the technical preview
 - Public hostname
 - School IT contact email for certificate notices
 - IANA timezone such as `America/New_York`
@@ -37,7 +40,9 @@ Band Office should be the only application using its hostname. The included Cadd
 
 Do not use an unqualified `latest` image. Use the exact release tag and, after acceptance, record the image digest.
 
-## Install
+## Technical Preview Install
+
+These steps are reserved for district IT evaluation after building or receiving a controlled preview image. They are not a public production quick start.
 
 1. Point the hostname's DNS A and, when used, AAAA records to the server.
 2. Copy the extracted `Band-Office-Server-<version>` directory to an IT-controlled location such as `/opt/band-office`.

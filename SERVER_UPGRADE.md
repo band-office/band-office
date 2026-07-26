@@ -1,5 +1,7 @@
 # Band Office Server Upgrade
 
+This runbook belongs to the Server technical preview. It requires two controlled, versioned preview or release images; no supported upgrade path exists until those images are published and the drill passes.
+
 Upgrades are manual and owned by the server operator. Do not use an automatic updater or an unqualified `latest` image.
 
 ## Before changing anything

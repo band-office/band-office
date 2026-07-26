@@ -1,9 +1,11 @@
-# Band Office: Product Strategy and v0 Specification
+# Band Office: Initial Product Strategy and v0 Specification
 
 **Date:** July 4, 2026
 **Revised:** July 24, 2026
 **Mode:** Product architecture and staged implementation authority.
 **Author context:** Prepared for Joshua Bloodworth. 15 years as a band director. Current commitments: Practical AI Workbench launch blockers, Gig City AI v1 site build, MBA, SDMS band program, Unit27 Research.
+
+> **Historical strategy record:** This document explains the phased product decisions that led to the current application. Release truth now lives in `README.md`, `CURRENT_STATUS.md`, `RELEASE_CHANNELS.md`, and `CUTTIME_REPLACEMENT_MATRIX.md`.
 
 ## 1. Blunt Verdict
 
@@ -574,16 +576,16 @@ uniform,Fruhauf,Jacket 38R,,RMS-UNI-021,good,available,2017,310
 - Keep the v0.1 asset and assignment specification intact as the first production slice.
 - Establish the shared foundation so later modules do not require a rewrite, but do not prebuild their features.
 - Use `CUTTIME_REPLACEMENT_MATRIX.md` as the scope authority for what is replaced, partial, planned, integrated, or intentionally excluded.
-- Treat the implemented People/Groups/Access foundation as the ownership layer for assignments, financial accounts, communication audiences, library loans, form requests, and event rosters. Director-side Financials, standard SMTP Email, Music Library, Forms, and Events/Attendance are implemented; Server and Family Portals are next.
+- Treat the implemented People/Groups/Access foundation as the ownership layer for assignments, financial accounts, communication audiences, library loans, form requests, and event rosters. Director-side Financials, standard SMTP Email, Music Library, Forms, Events/Attendance, and a relationship-scoped read-only portal are implemented. Public Server operation remains a separate technical-preview release channel.
 - Do not announce Band Office as a CutTime replacement until the README's current coverage table names enough completed workflows to make that statement true for a defined program profile.
 
 The strategic commitment is now clear: Band Office aims to become an open-source Charms/CutTime alternative. The operational commitment remains bounded: only the currently approved module enters implementation.
 
 ## 17. Final Deliverables
 
-The thesis, v0 list, replacement roadmap, schema draft, and privacy rules are above. Companion planning and build files:
+The thesis, v0 list, replacement roadmap, schema draft, and privacy rules are above. Current companion authority files:
 
-- `stage-2-codex-build-prompt.md`
-- `README-draft.md`
+- `CURRENT_STATUS.md`
+- `RELEASE_CHANNELS.md`
 - `PRINCIPAL_CLEARANCE_DRAFT.md`
 - `CUTTIME_REPLACEMENT_MATRIX.md`

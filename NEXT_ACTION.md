@@ -1,20 +1,26 @@
 # Band Office Next Action
 
-The current release candidate is implemented as a functioning local web and Electron desktop application. It includes secure staff accounts and fixed roles, a unified People directory, student profiles, guardian links, reusable flat groups and memberships, group-context assignments, student fee accounts, group assessments, manual payments and credits, immutable reversals, printable statements, financial reports, shared-mailbox SMTP email, deduplicated audience previews, templates, attachments, schedules, delivery retries and reports, a whole-set music library, library loans, component exceptions, managed files and links, performance history, versioned form templates, student and guardian campaigns, response entry, uploads, reminders, retention and exports, event series, roster snapshots, RSVP, attendance, itineraries, equipment packing, volunteers, event files, reminder drafts and calendar feeds, CSV student and asset import, inventory and components, barcode/QR scanning, label printing, checkout and check-in, printable agreements, repairs, encrypted backups, verified desktop restore, audit history, guarded period rollover, and automatic desktop database migrations.
+The current work is release engineering, not another feature module.
 
-The Electron packaging and local release-hardening pass are complete. An unsigned Apple Silicon `.app`, DMG, and ZIP pass fresh startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, and archive-integrity checks. GitHub Actions release-candidate run `30215288767` also passed the full quality gate plus unsigned macOS and Windows package and smoke acceptance against commit `e789f15fd77c8db66c19fe5543569ad4dd469215`. Atomic backup/restore, forced migration rollback, exact dependency pins, hard-coded-destination auditing, a manual update policy, and cross-platform CI acceptance are in place. Optional SMTP is isolated to the communications adapter and disabled until configured.
+## Desktop Alpha
 
-The July 24 trust-boundary pass added explicit view permissions for People, Groups, Inventory, Repairs, and Reports; removed event data from inventory-helper and read-only dashboards; separated contact and family-link access from operational student identity; constrained event status transitions; made roster restoration explicit; made event reminder creation atomic; removed private calendar bearer tokens from page URLs; and aligned API `401`/`403` behavior with the security record.
+1. Merge the public-release cleanup and fail-closed signing workflow through protected CI.
+2. Obtain an Apple Developer ID Application certificate and notarization credentials.
+3. Obtain a Windows code-signing certificate suitable for CI.
+4. Configure the protected `desktop-alpha-release` GitHub environment and required reviewer.
+5. Add the seven environment secrets listed in `DESKTOP_ALPHA_RELEASE.md`.
+6. Create the signed `v0.1.0-alpha.1` tag from accepted `main`.
+7. Verify the GitHub prerelease, checksums, signatures, notarization ticket, and legal files.
+8. Run clean-machine installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
 
-The remaining v0.1 release gates are public-grade distribution and real-school validation:
+Do not publish unsigned Actions artifacts as director downloads.
 
-1. Complete third-party notice verification for every packaged macOS, Windows, and server artifact.
-2. Obtain Apple and Windows signing credentials; sign and notarize the macOS build.
-3. Run clean-machine install, backup, restore, upgrade, rollback, and uninstall checks on both platforms.
-4. Create a release tag only after the artifact, signing, and clean-machine gates pass.
-5. Complete SDMS approval and the real-data pilot before calling v0.1 stable.
-6. Run the controlled live-mailbox acceptance in `EMAIL_SETUP.md`; mock transport proves workflow behavior but not district-provider policy or deliverability.
+## Server Technical Preview
 
-The repository now contains the first Band Office Server deployment kit and the read-only family portal. Local container acceptance is complete and recorded in `SERVER_ACCEPTANCE_RECORD.md`, including HTTPS proxy behavior, migration and restart checks, worker-secret enforcement, port isolation, and an isolated backup/restore drill.
+Desktop alpha work does not authorize the Server channel. The next Server action is to publish a versioned multi-platform image, record immutable digests, deploy to a clean Linux server with real DNS, and execute the remaining acceptance record using fictional data.
 
-The canonical GitHub organization and public Apache-2.0 repository are `band-office/band-office`; the accepted source and cross-platform CI evidence are at commit `e789f15fd77c8db66c19fe5543569ad4dd469215`. The next server action is registry publication and external acceptance: publish the multi-platform versioned image, deploy the generated bundle to a clean Linux server with real DNS, run the remaining checklist in `SERVER_DEPLOYMENT.md`, then test district SMTP, upgrade, and rollback. Do not describe the server path as supported for schools until those external checks pass. Google and Microsoft OAuth remain connector extensions; optional payment connectors follow server and guardian-permission acceptance.
+Do not activate real family accounts until district ownership, public-edge, SMTP, password-recovery, upgrade, rollback, and restore gates pass.
+
+## Stable Release
+
+The first stable release remains gated on district approval, the SDMS real-data pilot, verified encrypted-backup restoration, and controlled live-mailbox acceptance.
