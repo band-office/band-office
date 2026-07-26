@@ -22,6 +22,7 @@
     "audit:release": "node scripts/audit-release.mjs",
     "audit:tree": "node scripts/audit-dependency-tree.mjs",
     "audit:dependencies": "npm audit --omit=dev --audit-level=high",
+    "brand:github": "node scripts/generate-github-brand-assets.mjs && cross-env BANDOS_BRAND_DATABASE_PATH=data/brand.db DATABASE_URL=file:./data/brand.db node --import tsx scripts/prepare-brand-db.ts && node scripts/capture-github-screenshots.mjs",
     "release:verify": "node scripts/verify-release.mjs",
     "desktop:prepare": "node scripts/prepare-desktop-runtime.mjs",
     "desktop:dev": "node scripts/run-desktop-dev.mjs",

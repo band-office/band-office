@@ -1,0 +1,84 @@
+name: Bug report
+description: Report a reproducible Band Office defect using fictional data.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Band Office. Do not include credentials, backups, private logs, or real student, guardian, staff, payment, or school data.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I reproduced this on the latest `main` or identified the exact release-candidate commit.
+          required: true
+        - label: I am using fictional or deterministic demo data.
+          required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      options:
+        - Local web development
+        - Electron desktop
+        - Local Docker
+        - District server bundle
+        - Packaging or release workflow
+        - Documentation only
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: Commit SHA, branch, or package name
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and its effect on the school-program task.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open…
+        2. Choose…
+        3. Observe…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Operating system, browser, Node version, architecture, and relevant deployment details
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add screenshots or logs only after removing private records, secrets, tokens, and local personal paths.
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security
+      options:
+        - label: This is not a security vulnerability. I will use the private process in SECURITY.md for security reports.
+          required: true

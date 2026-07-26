@@ -1,14 +1,45 @@
-# Band Office
+![Band Office — Open-source operations for school music programs](./docs/brand/github/readme-hero.png)
 
-Band Office is a free, open-source Charms Office/CutTime alternative for school music programs. The current release candidate is a functioning local-first program directory, group, access, inventory, assignment, student-fee ledger, outbound email console, whole-set music library, routine forms system, events and attendance workspace, and read-only student/guardian portal.
+<p align="center">
+  <a href="./LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563EB.svg"></a>
+  <a href="./CURRENT_STATUS.md"><img alt="Release candidate" src="https://img.shields.io/badge/status-release%20candidate-08172B.svg"></a>
+  <a href="./package.json"><img alt="Node 20.9 or newer" src="https://img.shields.io/badge/node-%3E%3D20.9-334155.svg"></a>
+  <a href="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml"><img alt="Band Office release candidate workflow" src="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml/badge.svg"></a>
+</p>
 
-The product name is **Band Office**. The repository and package identity use **`band-office`**.
+<p align="center">
+  <strong><a href="#clean-local-setup">Set up locally</a></strong> ·
+  <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
+  <strong><a href="./SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
+  <strong><a href="./CONTRIBUTING.md">Contribute</a></strong> ·
+  <strong><a href="./ROADMAP.md">Roadmap</a></strong>
+</p>
+
+Band Office keeps the operational work of a school music program in one local-first, self-hostable system: people and groups, instruments and uniforms, checkout and repairs, student fees, communications, music library records, forms, events, attendance, reports, rollover, and a relationship-scoped family portal.
+
+It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
+
+> [!IMPORTANT]
+> Band Office is a **public source release candidate**, not a stable packaged download. The application works, but signing, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
 
-It does not yet replace all of CutTime. Granular guardian permissions, household accounting, payment processing, and family form submission remain later releases and do not appear as inactive navigation. Standard SMTP email, Music Library, director-side Forms, Events, and a relationship-scoped read-only family portal are implemented; Google and Microsoft OAuth connections remain planned adapters.
+## Built around real program work
 
-## What works now
+| Program work | What Band Office covers |
+| --- | --- |
+| People and groups | Students, guardians, staff, boosters, contact relationships, classifications, sections, and reusable groups |
+| Property and custody | Instruments, uniforms, equipment, labels, scanning, checkout, check-in, condition history, repairs, and rollover |
+| Money records | Student charges, manual payments, credits, group assessments, balances, statements, reversals, and exports |
+| Communication | Shared-mailbox SMTP, audiences, templates, attachments, schedules, holds, delivery history, and reporting |
+| Library, forms, and events | Whole-set music records, versioned form campaigns, calendars, RSVP, attendance, itineraries, equipment, and volunteers |
+| Stewardship | Role-based access, append-only audit history, encrypted backups, CSV reports, and district-operated deployment |
+
+Band Office does not yet replace every Charms or CutTime workflow. Granular guardian permissions, household accounting, payment processing, family form submission, and provider OAuth adapters remain later work. Drill design and Pyware replacement are explicitly outside this project’s current scope.
+
+<details>
+<summary><strong>Complete release-candidate feature inventory</strong></summary>
+
 
 - First-run program setup and local staff accounts protected with Argon2id
 - 30-minute inactivity sessions and protected application/export routes
@@ -50,6 +81,17 @@ It does not yet replace all of CutTime. Granular guardian permissions, household
 - Append-only audit history for record changes, imports, exports, and backups
 - Archive-gated operating-period rollover with configurable graduation grade
 
+</details>
+
+## Product preview
+
+<p>
+  <img src="./docs/screenshots/today-dashboard.png" alt="Band Office Today dashboard" width="68%">
+  <img src="./docs/screenshots/today-mobile.png" alt="Band Office Today view on a mobile screen" width="28%">
+</p>
+
+The repository screenshots use deterministic fictional data. More views are available in [`docs/screenshots`](./docs/screenshots).
+
 ## Desktop test build
 
 An unsigned Apple Silicon macOS package is available in [dist-desktop](./dist-desktop):
@@ -90,7 +132,7 @@ BANDOS_LOAD_DEMO=true docker compose up --build
 
 ## District server and family portals
 
-The supported public deployment is a district-approved Linux server using the separate Band Office Server bundle. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
+The documented public-deployment path is a district-approved Linux server using the separate Band Office Server bundle. It remains a release-candidate operator path until the public-server acceptance gates in [CURRENT_STATUS.md](./CURRENT_STATUS.md) are complete. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
 
 Start with [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md). The complete operator set is:
 
@@ -164,4 +206,17 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The application workflow and unsigned Apple Silicon desktop package are usable as a release candidate. The packaged app has passed clean-profile startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, DMG verification, and ZIP integrity checks. The Linux ARM64 server image has also passed local Compose, HTTPS proxy, migration, restart, worker-isolation, and complete-data-directory restore acceptance. A reviewed release tag, Apple signing/notarization, Windows packaging and clean-machine acceptance, public registry publication, packaged third-party-notice verification, public-server acceptance, district approval, and the SDMS real-data pilot remain gates before v0.1 should be called stable or offered as a public director download.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The application workflow and unsigned desktop packages are usable as release candidates. The macOS package has passed clean-profile startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, DMG verification, and ZIP integrity checks. The Windows package and smoke acceptance also passed in public CI. The Linux ARM64 server image has passed local Compose, HTTPS proxy, migration, restart, worker-isolation, and complete-data-directory restore acceptance. A reviewed release tag, Apple signing/notarization, Windows signing, clean-machine acceptance, public registry publication, packaged third-party-notice verification, public-server acceptance, district approval, and the SDMS real-data pilot remain gates before v0.1 should be called stable or offered as a public director download.
+
+## Project and community
+
+- [Contributing](./CONTRIBUTING.md)
+- [Roadmap](./ROADMAP.md)
+- [Governance](./GOVERNANCE.md)
+- [Support](./SUPPORT.md)
+- [Security policy](./SECURITY.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Changelog](./CHANGELOG.md)
+- [Brand guide](./docs/brand/README.md)
+
+Band Office is maintained in public and welcomes bounded, evidence-backed contributions. The best first contribution is often a reproduced bug, a clearer setup step, an accessibility finding, or a small workflow improvement grounded in the daily work of a school music program.

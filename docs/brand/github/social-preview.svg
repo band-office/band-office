@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04101F" />
+      <stop offset="0.62" stop-color="#08172B" />
+      <stop offset="1" stop-color="#0D2340" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.15" r="0.8">
+      <stop offset="0" stop-color="#2563EB" stop-opacity="0.20" />
+      <stop offset="1" stop-color="#2563EB" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#background)" />
+  <rect width="1280" height="640" fill="url(#glow)" />
+
+  <line x1="710" y1="88" x2="1230" y2="88" stroke="#93C5FD" stroke-width="2" opacity="0.08" /><line x1="710" y1="126" x2="1230" y2="126" stroke="#93C5FD" stroke-width="2" opacity="0.08" /><line x1="710" y1="164" x2="1230" y2="164" stroke="#93C5FD" stroke-width="2" opacity="0.08" /><line x1="710" y1="202" x2="1230" y2="202" stroke="#93C5FD" stroke-width="2" opacity="0.08" /><line x1="710" y1="240" x2="1230" y2="240" stroke="#93C5FD" stroke-width="2" opacity="0.08" />
+  <line x1="820" y1="450" x2="1230" y2="450" stroke="#93C5FD" stroke-width="2" opacity="0.05" /><line x1="820" y1="488" x2="1230" y2="488" stroke="#93C5FD" stroke-width="2" opacity="0.05" /><line x1="820" y1="526" x2="1230" y2="526" stroke="#93C5FD" stroke-width="2" opacity="0.05" />
+  <rect x="70" y="70" width="500" height="500" rx="38" fill="#0B1F38" stroke="#213B5A" stroke-width="2" />
+  <image href="avatar-1024.png" x="144" y="144" width="352" height="352" />
+  <text x="632" y="250" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800" letter-spacing="-2.5">Band Office</text>
+  <text x="636" y="312" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="29" font-weight="650">Open-source operations</text>
+  <text x="636" y="352" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="29" font-weight="650">for school music programs.</text>
+  <line x1="636" y1="402" x2="1150" y2="402" stroke="#29425F" stroke-width="2" />
+  <text x="636" y="450" fill="#A9B8CC" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">SELF-HOSTED  ·  APACHE 2.0</text>
+
+</svg>

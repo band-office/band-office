@@ -10,7 +10,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 - Native `argon2` and `better-sqlite3` modules are rebuilt explicitly for the installed Electron version.
 - Camera permission is limited to director-initiated inventory scanning; audio and all unrelated Electron permissions remain denied.
 - SMTP credentials are encrypted with Electron `safeStorage`, excluded from the database and backups, and passed only to the supervised local server process after restart.
-- Windows build configuration exists but has not been executed or accepted on Windows.
+- Unsigned Windows NSIS and ZIP packaging plus packaged-app smoke acceptance pass in public GitHub Actions.
 - macOS and Windows signing are not configured. Current artifacts are test builds only.
 
 ## Runtime layout

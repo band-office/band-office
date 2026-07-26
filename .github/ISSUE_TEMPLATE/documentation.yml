@@ -1,0 +1,30 @@
+name: Documentation improvement
+description: Report unclear, missing, or incorrect Band Office documentation.
+title: "[Docs]: "
+labels:
+  - documentation
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Document or page
+      placeholder: Link or repository path
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who needs this?
+      description: Director, contributor, self-hoster, district operator, or another reader
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement

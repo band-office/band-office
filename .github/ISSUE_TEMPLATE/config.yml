@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support boundary and setup guides
+    url: https://github.com/band-office/band-office/blob/main/SUPPORT.md
+    about: Read the support and deployment boundaries before opening an issue.
+  - name: Report a security vulnerability
+    url: https://github.com/band-office/band-office/security/policy
+    about: Follow the private reporting process. Do not open a public security issue.

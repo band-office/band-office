@@ -1,0 +1,66 @@
+name: Feature request
+description: Propose a bounded school music workflow improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start with the real school-program task. A small, testable workflow is more useful than a broad platform request.
+  - type: textarea
+    id: problem
+    attributes:
+      label: School-program problem
+      description: Who is doing what, when, and what breaks down today?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current workaround
+      description: How is the task handled now?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Smallest useful outcome
+      description: Describe the minimum change that would materially help.
+    validations:
+      required: true
+  - type: dropdown
+    id: users
+    attributes:
+      label: Primary users
+      multiple: true
+      options:
+        - Director
+        - Assistant director
+        - Inventory helper
+        - Read-only staff
+        - Student
+        - Guardian
+        - District technology staff
+        - Contributor or operator
+    validations:
+      required: true
+  - type: textarea
+    id: records
+    attributes:
+      label: Records and permissions
+      description: What data is involved, who may see or change it, and what must remain private?
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What should this proposal deliberately avoid?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Workflow evidence
+      description: Share a fictional example, sketch, or sanitized process description. Do not include real student or school records.
