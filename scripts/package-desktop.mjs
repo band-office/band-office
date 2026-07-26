@@ -10,6 +10,31 @@ const electronVersion = JSON.parse(await readFile(path.resolve("node_modules/ele
 const requestedTargets = process.argv.slice(2);
 if (!requestedTargets.length) throw new Error("Pass electron-builder targets, for example --dir or --mac dmg zip.");
 
+function requireEnvironment(name) {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} is required for signed Windows packaging.`);
+  return value;
+}
+
+if (process.env.BANDOS_SIGN_DESKTOP === "1" && requestedTargets.includes("--win")) {
+  for (const name of ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET"]) requireEnvironment(name);
+
+  const azureSigning = {
+    publisherName: requireEnvironment("AZURE_SIGNING_PUBLISHER_NAME"),
+    endpoint: requireEnvironment("AZURE_SIGNING_ENDPOINT"),
+    certificateProfileName: requireEnvironment("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME"),
+    codeSigningAccountName: requireEnvironment("AZURE_SIGNING_ACCOUNT_NAME"),
+  };
+
+  if (!azureSigning.endpoint.startsWith("https://")) {
+    throw new Error("AZURE_SIGNING_ENDPOINT must be an HTTPS Artifact Signing endpoint.");
+  }
+
+  for (const [name, value] of Object.entries(azureSigning)) {
+    requestedTargets.push(`--config.win.azureSignOptions.${name}=${value}`);
+  }
+}
+
 function run(command, args, environment = process.env) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: "inherit", env: environment });

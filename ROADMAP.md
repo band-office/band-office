@@ -4,7 +4,7 @@ This roadmap describes direction, not a delivery promise. Release truth lives in
 
 ## Now: prove the release candidate
 
-- Install Windows signing credentials in the protected release environment and complete clean-machine acceptance.
+- Complete Microsoft Artifact Signing enrollment, install its CI credentials in the protected release environment, and complete clean-machine acceptance.
 - Install Apple signing and notarization credentials in the protected release environment and complete Gatekeeper acceptance.
 - Publish the first Desktop alpha only after both signed platform jobs pass.
 - Publish and digest-pin the canonical server image.

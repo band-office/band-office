@@ -86,19 +86,39 @@ jobs:
     timeout-minutes: 35
     environment: desktop-alpha-release
     env:
-      WIN_CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
-      WIN_CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SIGNING_PUBLISHER_NAME: ${{ vars.AZURE_SIGNING_PUBLISHER_NAME }}
+      AZURE_SIGNING_ENDPOINT: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+      AZURE_SIGNING_CERTIFICATE_PROFILE_NAME: ${{ vars.AZURE_SIGNING_CERTIFICATE_PROFILE_NAME }}
+      AZURE_SIGNING_ACCOUNT_NAME: ${{ vars.AZURE_SIGNING_ACCOUNT_NAME }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
-      - name: Require Windows signing credentials
+      - name: Require Microsoft Artifact Signing configuration
         shell: pwsh
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_LINK)) { throw "WINDOWS_CSC_LINK is required." }
-          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_KEY_PASSWORD)) { throw "WINDOWS_CSC_KEY_PASSWORD is required." }
+          $required = @(
+            "AZURE_TENANT_ID",
+            "AZURE_CLIENT_ID",
+            "AZURE_CLIENT_SECRET",
+            "AZURE_SIGNING_PUBLISHER_NAME",
+            "AZURE_SIGNING_ENDPOINT",
+            "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
+            "AZURE_SIGNING_ACCOUNT_NAME"
+          )
+          foreach ($name in $required) {
+            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+              throw "$name is required."
+            }
+          }
+          if (-not $env:AZURE_SIGNING_ENDPOINT.StartsWith("https://")) {
+            throw "AZURE_SIGNING_ENDPOINT must use HTTPS."
+          }
       - run: npm ci
       - run: npm run desktop:dist:win:signed
       - run: npm run test:desktop-package

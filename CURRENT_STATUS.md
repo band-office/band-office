@@ -12,7 +12,7 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-The merged public-release baseline at commit `796389db11308ba55e57393522d00402f62ec1c3` passed [GitHub Actions run 30220081390](https://github.com/band-office/band-office/actions/runs/30220081390):
+The merged public-release baseline at commit `42522d9eaa80b5b8d95e5cf58d4be8b15bcd0383` passed [GitHub Actions run 30221302221](https://github.com/band-office/band-office/actions/runs/30221302221):
 
 - Linux release verification;
 - unsigned macOS packaging and packaged-application acceptance;
@@ -28,7 +28,7 @@ The application and cross-platform package candidates are implemented. The relea
 The first Desktop alpha remains blocked on:
 
 1. Apple Developer ID signing credentials and notarization credentials.
-2. Windows code-signing credentials.
+2. Microsoft Artifact Signing enrollment, certificate profile, and CI credentials.
 3. Successful signed workflow execution from an accepted alpha tag.
 4. Clean-machine install, backup, restore, upgrade, and uninstall acceptance.
 5. District approval and the SDMS real-data pilot before stable use.
