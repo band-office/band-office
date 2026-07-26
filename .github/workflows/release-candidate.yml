@@ -64,7 +64,14 @@ jobs:
       - name: Write checksums
         shell: pwsh
         run: |
-          Get-ChildItem dist-desktop/Band-Office-*-win-*.exe, dist-desktop/Band-Office-*-win-*.zip | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } | Set-Content dist-desktop/SHA256SUMS-windows.txt
+          $lines = Get-ChildItem dist-desktop/Band-Office-*-win-*.exe, dist-desktop/Band-Office-*-win-*.zip |
+            Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" }
+          [System.IO.File]::WriteAllText(
+            "dist-desktop/SHA256SUMS-windows.txt",
+            (($lines -join "`n") + "`n"),
+            [System.Text.UTF8Encoding]::new($false)
+          )
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: unsigned-windows-test-artifacts
