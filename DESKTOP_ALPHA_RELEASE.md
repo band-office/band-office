@@ -24,10 +24,43 @@ Store these secrets in that environment:
 | `APPLE_ID` | Apple account used for notarization |
 | `APPLE_APP_SPECIFIC_PASSWORD` | App-specific notarization password |
 | `APPLE_TEAM_ID` | Apple Developer team identifier |
-| `WINDOWS_CSC_LINK` | Base64-encoded Windows code-signing `.pfx` |
-| `WINDOWS_CSC_KEY_PASSWORD` | Password for the `.pfx` |
+| `AZURE_TENANT_ID` | Microsoft Entra tenant used by the signing service principal |
+| `AZURE_CLIENT_ID` | Application/client ID for the signing service principal |
+| `AZURE_CLIENT_SECRET` | Client secret for the signing service principal |
+
+Store these non-secret values as environment variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `AZURE_SIGNING_PUBLISHER_NAME` | Exact Common Name shown by the Public Trust certificate |
+| `AZURE_SIGNING_ENDPOINT` | Regional Artifact Signing endpoint, including `https://` |
+| `AZURE_SIGNING_CERTIFICATE_PROFILE_NAME` | Public Trust certificate profile name |
+| `AZURE_SIGNING_ACCOUNT_NAME` | Artifact Signing account name |
 
 Never place certificates or passwords in the repository, workflow file, release notes, issue, or application data.
+
+## Signing Enrollment
+
+### Apple
+
+1. Enroll the publisher in the [Apple Developer Program](https://developer.apple.com/programs/enroll/).
+2. Create a Developer ID Application certificate and export it as a password-protected `.p12`.
+3. Create an app-specific password for the Apple account used by notarization.
+4. Record the Apple team ID.
+
+The account holder must complete enrollment, payment, agreements, and identity checks. Do not transmit the certificate or passwords through an issue or chat.
+
+### Microsoft
+
+1. Use a paid Azure subscription whose billing identity matches the intended certificate subject.
+2. Register the `Microsoft.CodeSigning` provider and create an Artifact Signing account.
+3. Complete Public Trust identity validation in the Azure portal.
+4. Create a Public Trust certificate profile.
+5. Create a dedicated Microsoft Entra application/service principal for GitHub Actions.
+6. Assign that service principal the `Artifact Signing Certificate Profile Signer` role at the certificate-profile scope.
+7. Record the three service-principal secrets and four profile values listed above.
+
+Use Microsoft’s [Artifact Signing quickstart](https://learn.microsoft.com/en-us/azure/artifact-signing/quickstart) and [role-assignment guide](https://learn.microsoft.com/en-us/azure/artifact-signing/tutorial-assign-roles) as the source of truth. Band Office uses Electron Builder’s `win.azureSignOptions`; no exportable Windows `.pfx` is stored in GitHub.
 
 ## Before Tagging
 
@@ -36,7 +69,7 @@ Never place certificates or passwords in the repository, workflow file, release 
 3. Run `npm ci` and `npm run release:verify`.
 4. Update `CHANGELOG.md` and `CURRENT_STATUS.md`.
 5. Confirm the package version is the intended alpha version.
-6. Confirm the protected environment contains all seven signing secrets.
+6. Confirm the protected environment contains all eight signing secrets and four Artifact Signing variables.
 7. Confirm a named reviewer is available to approve the environment deployment.
 
 ## Create The Alpha
@@ -63,7 +96,7 @@ The tag starts the signed workflow. Do not create the GitHub Release manually an
 
 ### Windows
 
-- Electron Builder signs the NSIS installer and unpacked executable.
+- Electron Builder signs the NSIS installer and unpacked executable through Microsoft Artifact Signing.
 - Authenticode reports `Valid` for both.
 - Packaged application acceptance passes.
 

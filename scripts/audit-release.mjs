@@ -106,7 +106,13 @@ for (const marker of [
   "environment: desktop-alpha-release",
   "MACOS_CSC_LINK",
   "APPLE_APP_SPECIFIC_PASSWORD",
-  "WINDOWS_CSC_LINK",
+  "AZURE_TENANT_ID",
+  "AZURE_CLIENT_ID",
+  "AZURE_CLIENT_SECRET",
+  "AZURE_SIGNING_PUBLISHER_NAME",
+  "AZURE_SIGNING_ENDPOINT",
+  "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
+  "AZURE_SIGNING_ACCOUNT_NAME",
   "codesign --verify --deep --strict",
   "xcrun stapler validate",
   "Get-AuthenticodeSignature",
@@ -115,6 +121,9 @@ for (const marker of [
   "--prerelease",
   "--verify-tag",
 ]) if (!alphaWorkflow.includes(marker)) findings.push(`Desktop alpha workflow is missing release gate: ${marker}`);
+for (const forbiddenMarker of ["WINDOWS_CSC_LINK", "WINDOWS_CSC_KEY_PASSWORD"]) {
+  if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow still uses exportable PFX credential: ${forbiddenMarker}`);
+}
 evidence.push({ claim: "Desktop alpha publication is signed and fail-closed", detail: "Protected-environment credentials, post-signing platform checks, legal verification, and prerelease-only publication are required" });
 
 const desktopMain = await readFile(path.join(root, "desktop/main.mjs"), "utf8");

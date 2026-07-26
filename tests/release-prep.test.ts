@@ -79,5 +79,7 @@ describe("public release preparation", () => {
     expect(deployment).toContain("controlled evaluation with fictional data");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
+    expect(signedWorkflow).toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
+    expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
   });
 });

@@ -7,8 +7,8 @@ The current work is release engineering, not another feature module.
 The public-release cleanup, fail-closed signing workflow, protected `desktop-alpha-release` environment, required reviewer, and native unsigned package acceptance are complete.
 
 1. Obtain an Apple Developer ID Application certificate and notarization credentials.
-2. Obtain a Windows code-signing certificate suitable for CI.
-3. Add the seven environment secrets listed in `DESKTOP_ALPHA_RELEASE.md`.
+2. Complete Microsoft Artifact Signing Public Trust identity validation and create the signing profile and service principal.
+3. Add the eight secrets and four Artifact Signing variables listed in `DESKTOP_ALPHA_RELEASE.md`.
 4. Create the signed `v0.1.0-alpha.1` tag from accepted `main`.
 5. Verify the GitHub prerelease, checksums, signatures, notarization ticket, and legal files.
 6. Run clean-machine installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
