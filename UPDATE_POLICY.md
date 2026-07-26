@@ -1,20 +1,22 @@
-# BandOS v0.1 Update Policy
+# Band Office v0.1 Update Policy
 
-BandOS v0.1 uses manual, director-initiated updates. The application contains no update service, update polling, silent download, or automatic installer. This preserves the zero-runtime-network boundary and prevents an updater from changing a live school database without a recovery path.
+Band Office v0.1 uses manual, director-initiated updates. The application contains no update service, update polling, silent download, or automatic installer. This preserves the zero-runtime-network boundary and prevents an updater from changing a live school database without a recovery path.
+
+This document governs Desktop. District-hosted installations follow [SERVER_UPGRADE.md](./SERVER_UPGRADE.md), including an offline complete-data backup and image-digest record.
 
 ## Supported update sequence
 
-1. Create an encrypted BandOS backup and verify it with `npm run backup:verify -- <archive> <passphrase>`.
-2. Quit BandOS completely.
+1. Create an encrypted Band Office backup and verify it with `npm run backup:verify -- <archive> <passphrase>`.
+2. Quit Band Office completely.
 3. Install the signed replacement application from the official release artifact for the same platform.
-4. Start BandOS. Before applying pending migrations, the desktop launcher writes a consistent `pre-migration-*.db` recovery snapshot under the BandOS application-data directory.
+4. Start Band Office. Before applying pending migrations, the desktop launcher writes a consistent `pre-migration-*.db` recovery snapshot under the Band Office application-data directory.
 5. Confirm the program, roster, inventory counts, current assignments, and newest audit entry before deleting the prior installer.
 
 The application bundle and the live database are stored separately. Replacing the application must not remove the operating system application-data directory.
 
 ## Failure and rollback
 
-- Do not open a migrated database with an older BandOS build.
+- Do not open a migrated database with an older Band Office build.
 - Preserve the application-data directory and `recovery-snapshots/` before troubleshooting.
 - Reinstall the prior signed application only with its compatible database, or restore the verified pre-update backup through the desktop restore workflow.
 - A failed migration restores the pre-migration snapshot before startup exits. An interrupted restore preserves or recovers the displaced database before retrying.

@@ -1,8 +1,9 @@
 {
-  "name": "bandos",
+  "name": "band-office",
   "version": "0.1.0",
-  "description": "A local-first asset and assignment ledger for school music programs.",
+  "description": "Open-source operations for school music programs.",
   "author": "Joshua Bloodworth",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "main": "desktop/main.mjs",
@@ -30,16 +31,19 @@
     "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip",
     "desktop:dist:win": "node scripts/package-desktop.mjs --win nsis zip",
     "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip",
+    "server:bundle": "node scripts/build-server-bundle.mjs",
+    "server:verify": "node scripts/verify-server-bundle.mjs",
     "db:generate": "prisma generate",
-    "db:init": "prisma migrate deploy && prisma db seed",
+    "db:init": "npm run db:deploy && prisma db seed",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:deploy": "node scripts/deploy-sqlite-migrations.mjs",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force",
     "backup:verify": "node scripts/verify-backup.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "5.2.8",
     "@prisma/adapter-better-sqlite3": "7.8.0",
     "@prisma/client": "7.8.0",
     "argon2": "0.45.0",
@@ -51,7 +55,8 @@
     "nodemailer": "9.0.3",
     "papaparse": "5.5.4",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "tsx": "4.23.1"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
@@ -69,7 +74,6 @@
     "eslint-config-next": "16.2.11",
     "prisma": "7.8.0",
     "sharp": "0.35.3",
-    "tsx": "4.23.1",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
   },
@@ -81,9 +85,9 @@
   },
   "build": {
     "appId": "org.bandos.desktop",
-    "productName": "BandOS",
+    "productName": "Band Office",
     "icon": "desktop/assets/icon.png",
-    "artifactName": "BandOS-${version}-${os}-${arch}.${ext}",
+    "artifactName": "Band-Office-${version}-${os}-${arch}.${ext}",
     "afterPack": "scripts/after-pack-desktop.mjs",
     "asar": true,
     "asarUnpack": [
@@ -134,7 +138,7 @@
       "entitlements": "desktop/entitlements.mac.plist",
       "entitlementsInherit": "desktop/entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "BandOS uses the camera only when a director chooses to scan an inventory barcode or QR code."
+        "NSCameraUsageDescription": "Band Office uses the camera only when a director chooses to scan an inventory barcode or QR code."
       },
       "hardenedRuntime": true,
       "gatekeeperAssess": false,

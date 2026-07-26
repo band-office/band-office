@@ -1,4 +1,4 @@
-# BandOS: Product Strategy and v0 Specification
+# Band Office: Product Strategy and v0 Specification
 
 **Date:** July 4, 2026
 **Revised:** July 24, 2026
@@ -7,7 +7,7 @@
 
 ## 1. Blunt Verdict
 
-**Is BandOS worth reviving?** Yes, as a phased open-source replacement for the operational jobs directors once handled in Charms Office and now handle in CutTime. It is not credible as a single release. It is credible as a modular product in which every release replaces one complete band-room workflow.
+**Is Band Office worth reviving?** Yes, as a phased open-source replacement for the operational jobs directors once handled in Charms Office and now handle in CutTime. It is not credible as a single release. It is credible as a modular product in which every release replaces one complete band-room workflow.
 
 **The sharpest wedge:** the physical asset lifecycle. Instruments, uniforms, and school-owned equipment. Who has what, in what condition, since when, with what repair history, and how it all closes out at year end.
 
@@ -20,23 +20,23 @@ This wedge wins for four reasons:
 
 **What makes the full vision dangerous:** communication, payments, forms, and parent portals carry most of the compliance, uptime, security, and support burden. They belong on the roadmap because they are part of the replacement goal, but none belongs in the first release. The failure mode is attempting horizontal parity before one vertical workflow works in a real band room.
 
-**The honest framing:** BandOS is public-interest infrastructure for school music programs that cannot justify another annual subscription. SDMS is the reference deployment, not the only intended user. Public usefulness is the mission even though the project does not depend on interviews, formal pilots, or an adoption target.
+**The honest framing:** Band Office is public-interest infrastructure for school music programs that cannot justify another annual subscription. SDMS is the reference deployment, not the only intended user. Public usefulness is the mission even though the project does not depend on interviews, formal pilots, or an adoption target.
 
-**Opportunity cost, stated plainly:** BandOS is not a near-term revenue project. Practical AI Workbench and Gig City AI still have commercial priority. Planning the full replacement does not authorize building all of it. The implementation sequence begins only when a calendar slot exists, and it begins with the asset lifecycle module already specified below.
+**Opportunity cost, stated plainly:** Band Office is not a near-term revenue project. Practical AI Workbench and Gig City AI still have commercial priority. Planning the full replacement does not authorize building all of it. The implementation sequence begins only when a calendar slot exists, and it begins with the asset lifecycle module already specified below.
 
 ## 2. Existing Landscape
 
 **Category:** fine arts program management software, a niche of K-12 operational SaaS.
 
-CutTime currently presents six primary product surfaces: members, communications, financials, inventory, administration/forms, and district management. It also connects fundraising and event-ticketing products. Those categories define the replacement landscape, but they do not dictate BandOS's information architecture or release order. Sources: [CutTime overview](https://gocuttime.com/) and [current feature summary](https://gocuttime.com/features).
+CutTime currently presents six primary product surfaces: members, communications, financials, inventory, administration/forms, and district management. It also connects fundraising and event-ticketing products. Those categories define the replacement landscape, but they do not dictate Band Office's information architecture or release order. Sources: [CutTime overview](https://gocuttime.com/) and [current feature summary](https://gocuttime.com/features).
 
 The category converged on cloud SaaS, per-program subscriptions, parent-facing portals, payments, and communications. Nobody in the category is meaningfully open source, self-hosted, or centered on a director-owned complete operational history in open formats.
 
-That gap is real. It is also real for a reason: communications, payments, portals, and support are operational services, not merely software screens. BandOS must distinguish between features that work entirely on school-controlled infrastructure and optional connectors that depend on email or payment providers.
+That gap is real. It is also real for a reason: communications, payments, portals, and support are operational services, not merely software screens. Band Office must distinguish between features that work entirely on school-controlled infrastructure and optional connectors that depend on email or payment providers.
 
-**Replacement means job coverage, not screen parity.** BandOS replaces a CutTime capability when a director can complete the corresponding real workflow, preserve its history, export the result, and recover from failure without returning to CutTime. Similar-looking menus do not count.
+**Replacement means job coverage, not screen parity.** Band Office replaces a CutTime capability when a director can complete the corresponding real workflow, preserve its history, export the result, and recover from failure without returning to CutTime. Similar-looking menus do not count.
 
-**What BandOS must not copy:** magic-link authentication UX, seasons concept/naming, import template structures, usage agreement wording, portal layouts, fundraising concepts, QR tag workflows as designed by competitors, or any screenshot, icon, color scheme, or marketing language from existing vendors. Build every workflow from band-room reality.
+**What Band Office must not copy:** magic-link authentication UX, seasons concept/naming, import template structures, usage agreement wording, portal layouts, fundraising concepts, QR tag workflows as designed by competitors, or any screenshot, icon, color scheme, or marketing language from existing vendors. Build every workflow from band-room reality.
 
 **Open-source and self-hosted tools worth borrowing from conceptually:**
 
@@ -49,9 +49,9 @@ General patterns to borrow: a no-terminal desktop installer for directors, singl
 
 ## 3. Product Thesis
 
-**One sentence:** BandOS is a free, open-source, local-first program management system for school music organizations, built so young teachers and under-resourced programs can run their operations without an annual software subscription or vendor-controlled history.
+**One sentence:** Band Office is a free, open-source, local-first program management system for school music organizations, built so young teachers and under-resourced programs can run their operations without an annual software subscription or vendor-controlled history.
 
-**The product model:** one program per installation, a small shared foundation, and independently releasable modules. The foundation owns program identity, operating periods, people, groups, permissions, audit history, import, export, and backup. Modules own inventory, financials, communications, library, forms, events, and portals. BandOS remains a modular monolith, not a collection of services.
+**The product model:** one program per installation, a small shared foundation, and independently releasable modules. The foundation owns program identity, operating periods, people, groups, permissions, audit history, import, export, and backup. Modules own inventory, financials, communications, library, forms, events, and portals. Band Office remains a modular monolith, not a collection of services.
 
 **Who it is for:**
 
@@ -67,7 +67,7 @@ General patterns to borrow: a no-terminal desktop installer for directors, singl
 
 - Programs that need parent portals or online payments before those modules reach a stable release.
 - Boosters seeking a fundraising storefront or ticket-sales platform.
-- Chromebook-only programs whose district will neither install a desktop application nor host BandOS on a server.
+- Chromebook-only programs whose district will neither install a desktop application nor host Band Office on a server.
 - Districts that require vendor DPAs, SOC 2 reports, and support contracts.
 
 **What pain it solves first:** the August and May problem. In August, a director checks out 50 to 200 instruments and uniform sets in a chaotic week and needs each assignment recorded with condition in under a minute per student. In May, the director needs everything back, needs to know what is missing and damaged, and needs a clean report for the school and boosters. Between those two points, repairs happen and nobody remembers which trombone went to the shop twice.
@@ -87,7 +87,7 @@ General patterns to borrow: a no-terminal desktop installer for directors, singl
 2. Local-first is the default; external services are optional, named connectors.
 3. No module may silently expand the data collected about a student.
 4. A module ships only when it replaces a complete real workflow.
-5. BandOS never copies a competitor's interface, language, forms, or proprietary file structures.
+5. Band Office never copies a competitor's interface, language, forms, or proprietary file structures.
 6. Normal director use never requires a terminal, Node.js, Docker, or database administration.
 7. Migration and first-run guidance are product features, not documentation left for later.
 
@@ -95,7 +95,7 @@ General patterns to borrow: a no-terminal desktop installer for directors, singl
 
 **Cut from v0: forms and signatures.** Forms drag in guardians, legal acknowledgment weight, delivery tracking, and the question of what a digital signature means at your school.
 
-**Changed shape: "simple forms" becomes printable paper plus a status flag.** BandOS generates a printable checkout agreement from a director-editable text template, pre-filled with student name, asset details, and condition. The parent signs paper. The school files it. The director marks the assignment "agreement on file."
+**Changed shape: "simple forms" becomes printable paper plus a status flag.** Band Office generates a printable checkout agreement from a director-editable text template, pre-filled with student name, asset details, and condition. The parent signs paper. The school files it. The director marks the assignment "agreement on file."
 
 **Added: audit log from day one.** Every create, update, delete, checkout, and checkin gets an append-only log row with timestamp and acting user.
 
@@ -133,7 +133,7 @@ The v0 scope in Section 4. Replacement outcome: retire the instrument, uniform, 
 - Local director, assistant director, inventory helper, and read-only staff accounts with server-enforced permission sets. Inventory helpers cannot view notes or export data.
 - Student CSV reconciliation creates or reuses section groups and memberships. Historical v0.1 member rows, sections, and assignments migrate to the new model without changing their IDs.
 
-Households, configurable capability grants, financial/portal guardian permissions, contact verification, and student/guardian authentication remain deferred to the modules that need them. Replacement outcome: BandOS now provides the authoritative person, group, staff-access, and asset-responsibility foundation for one program; it is not yet the family portal or household-statement system.
+Households, configurable capability grants, financial/portal guardian permissions, contact verification, and student/guardian authentication remain deferred to the modules that need them. Replacement outcome: Band Office now provides the authoritative person, group, staff-access, and asset-responsibility foundation for one program; it is not yet the family portal or household-statement system.
 
 ### v0.3: Financial ledger (implemented foundation)
 
@@ -144,7 +144,7 @@ Households, configurable capability grants, financial/portal guardian permission
 - Printable individual statements plus CSV exports for balances, the full transaction ledger, group assessment history, and individual statements.
 - Group assessments snapshot membership into separate student entries, so later membership changes do not rewrite financial history.
 - Director and assistant-director financial access. Inventory helpers and read-only users cannot view financial records.
-- No card or bank credentials stored by BandOS.
+- No card or bank credentials stored by Band Office.
 
 Deferred financial extensions: payment-to-charge allocation, waivers/write-offs as distinct entry types, printable receipts, deposit batches, financial-period close, transfers, refunds, household statement snapshots, and payment-provider reconciliation. Replacement outcome for the implemented foundation: a director can retire a simple student-account spreadsheet that tracks charges, credits, manual payments, balances, statements, and reports without adopting online payments.
 
@@ -154,10 +154,10 @@ Deferred financial extensions: payment-to-charge allocation, waivers/write-offs 
 - Recipient targeting for guardians, students, staff, boosters, external contacts, groups, grades, sections, and selected people.
 - Guardian deduplication across siblings while preserving why each recipient was included.
 - Templates, attachments, scheduling, audience preview, sent history, delivery status, and a visible failure queue.
-- Replies return to the connected school mailbox; BandOS is not a two-way inbox.
+- Replies return to the connected school mailbox; Band Office is not a two-way inbox.
 - Contact states include enabled, disabled by contact, invalid/bounced, and administratively suppressed.
-- Desktop scheduling runs only while BandOS is open; overdue messages require confirmation on reopen. Unattended scheduling requires the server edition.
-- Remind support is limited to a copy/export handoff unless Remind publishes and approves a suitable outbound API. SMS is not a BandOS core capability.
+- Desktop scheduling runs only while Band Office is open; overdue messages require confirmation on reopen. Unattended scheduling requires the server edition.
+- Remind support is limited to a copy/export handoff unless Remind publishes and approves a suitable outbound API. SMS is not a Band Office core capability.
 
 Replacement outcome: programs with an approved email connection can move routine announcements from CutTime without adopting an SMS vendor.
 
@@ -174,7 +174,7 @@ Replacement outcome: retire the music-library spreadsheet while preserving the p
 
 - Versioned form templates with short text, long text, choices, checkboxes, file uploads, and acknowledgments.
 - Requests to members, guardians, or both; completion status, reminders, response exports, and per-form retention rules.
-- Acknowledgments are ordinary recorded responses, not legal eSignatures. BandOS does not implement eSignature.
+- Acknowledgments are ordinary recorded responses, not legal eSignatures. Band Office does not implement eSignature.
 - Director and assistant staff can record paper, in-person, or approved-channel responses in the local release. Student and guardian self-service uses the same request records later, after portal authentication and relationship authorization pass their separate security gate.
 
 Replacement outcome: routine information collection no longer requires CutTime, while official district forms may remain in district systems.
@@ -203,14 +203,14 @@ Replacement outcome: families can retrieve their authorized current program info
 ### v0.9: Payment connectors
 
 - Optional provider adapters for hosted checkout pages and webhook-confirmed receipts.
-- BandOS stores provider references and ledger events, never card or bank credentials.
+- Band Office stores provider references and ledger events, never card or bank credentials.
 - Reconciliation, refunds, reversals, idempotency, and failed-webhook recovery are required before release.
 
 Replacement outcome: approved programs can accept payments while keeping the internal ledger provider-independent.
 
 ### v1.0: Single-program replacement release
 
-v1.0 is earned when the reference program can complete one full school year using BandOS for roster management, inventory, library, events, manual financials, forms, communications, family access, rollover, backup, and export without relying on CutTime for those jobs.
+v1.0 is earned when the reference program can complete one full school year using Band Office for roster management, inventory, library, events, manual financials, forms, communications, family access, rollover, backup, and export without relying on CutTime for those jobs.
 
 District dashboards, inter-school transfers, native mobile apps, fundraising commerce, and first-party hosting are not required for v1.0.
 
@@ -224,7 +224,7 @@ District dashboards, inter-school transfers, native mobile apps, fundraising com
 - Member and guardian portals.
 - District administration, only after the single-program release is stable.
 
-**Not planned as native BandOS capabilities:**
+**Not planned as native Band Office capabilities:**
 
 - Fundraising storefronts, product sales, ticketing, and donor cultivation. Integrate or export instead.
 - Grade, GPA, eligibility tracking, or UIL/TSSAA-style eligibility logic.
@@ -233,8 +233,8 @@ District dashboards, inter-school transfers, native mobile apps, fundraising com
 - Full volunteer-management systems beyond bounded event opportunities.
 - Deep SIS integrations. CSV remains the baseline integration; optional district-owned adapters may come later.
 - Native mobile apps before responsive web and installable PWA behavior prove insufficient.
-- A first-party hosted BandOS cloud service. Hosting would be a separate business and compliance decision.
-- Native SMS delivery. BandOS may provide a Remind-ready copy/export handoff, but it does not depend on an undocumented integration.
+- A first-party hosted Band Office cloud service. Hosting would be a separate business and compliance decision.
+- Native SMS delivery. Band Office may provide a Remind-ready copy/export handoff, but it does not depend on an undocumented integration.
 - eSignature.
 - Chat, AI assistants for parents, or AI features that write to records or send anything.
 - Photo storage of students.
@@ -333,7 +333,7 @@ Not tables in v0.1. `agreement_on_file` on assignment covers the first workflow.
 - `event`: id, operating_period_id, name, starts_at, ends_at, location, visibility, series_id (O), itinerary, notes.
 - `event_group`, `event_attachment`, `event_rsvp`, `event_equipment_item`, and bounded `volunteer_opportunity`/`volunteer_signup` records.
 - `attendance_record`: event_id, person_id, status (present, absent, late, excused, not_recorded), recorded_by, recorded_at.
-- There is no attendance reason field. Medical and disciplinary explanations belong in approved school systems, not BandOS.
+- There is no attendance reason field. Medical and disciplinary explanations belong in approved school systems, not Band Office.
 - Public and private calendar feeds expose only fields permitted by event visibility.
 
 ### communication records (v0.4)
@@ -383,7 +383,7 @@ Not tables in v0.1. `agreement_on_file` on assignment covers the first workflow.
 - Rollover always writes the archive bundle before anonymization is possible.
 - Posted financial records and issued statement snapshots follow the configured records-retention policy and cannot be removed through ordinary member archival.
 
-**Network posture:** BandOS makes no external runtime calls by default. Enabling the SMTP connector permits outbound delivery only to the host an administrator configures; desktop browser traffic remains loopback-only. Connector settings name the provider, data sent, purpose, and last successful call. No release adds telemetry, advertising, silent update pings, or external error reporting.
+**Network posture:** Band Office makes no external runtime calls by default. Enabling the SMTP connector permits outbound delivery only to the host an administrator configures; desktop browser traffic remains loopback-only. Connector settings name the provider, data sent, purpose, and last successful call. No release adds telemetry, advertising, silent update pings, or external error reporting.
 
 **What never goes to an LLM:** any row from member or guardian, any notes field, and any export containing names. AI features receive schema, aggregates, and redacted structures only.
 
@@ -401,7 +401,7 @@ Screens designed from the band-room day:
 6. **Checkout station.** Big search for any active person, optional group context, search or scan asset, condition picker, agreement print button, confirm. Keyboard-first. Under 30 seconds.
 7. **Check-in station.** Search or scan asset, condition picker, flag damage, prefill repair entry, confirm.
 8. **Repair queue.** Open repairs worklist, closed-repairs history, per-asset and per-year totals.
-9. **Reports.** A fixed library of trusted reports with print layouts and CSV export. BandOS does not begin with a general drag-and-drop report builder.
+9. **Reports.** A fixed library of trusted reports with print layouts and CSV export. Band Office does not begin with a general drag-and-drop report builder.
 10. **Rollover wizard.** Linear, numbered, cannot skip archive step.
 11. **Settings, import, export.** Backup, full export, agreement template editor, operating-period management, audit log viewer.
 
@@ -409,7 +409,7 @@ Later modules add work-centered surfaces rather than a generic application maze:
 
 **Reporting catalog:**
 
-The baseline intentionally covers CutTime's documented member extracts, cost and payment reports, balance summaries, statements, inventory and library exports, form-response exports, announcement delivery status, volunteer exports, and year-end review. BandOS adds native attendance reporting because CutTime's current event documentation states that event attendance is not tracked. Sources: [financial reporting](https://support.gocuttime.com/article/911-financial-reporting), [member exports](https://support.gocuttime.com/article/844-student-management-overview), [instrument exports](https://support.gocuttime.com/article/910-instrument-management-overview), [forms](https://support.gocuttime.com/article/1039-custom-forms), [announcements](https://support.gocuttime.com/article/278-sending-announcements), and [events](https://support.gocuttime.com/article/277-events).
+The baseline intentionally covers CutTime's documented member extracts, cost and payment reports, balance summaries, statements, inventory and library exports, form-response exports, announcement delivery status, volunteer exports, and year-end review. Band Office adds native attendance reporting because CutTime's current event documentation states that event attendance is not tracked. Sources: [financial reporting](https://support.gocuttime.com/article/911-financial-reporting), [member exports](https://support.gocuttime.com/article/844-student-management-overview), [instrument exports](https://support.gocuttime.com/article/910-instrument-management-overview), [forms](https://support.gocuttime.com/article/1039-custom-forms), [announcements](https://support.gocuttime.com/article/278-sending-announcements), and [events](https://support.gocuttime.com/article/277-events).
 
 - **People:** roster by group, grade, position, or status; guardian/contact directory; missing-contact and missing-permission reports; migration and duplicate-resolution reports.
 - **Financials now:** student balances, immutable transaction ledger, group assessment history, and individual student statements. **Later:** charge allocation, waivers/write-offs/transfers, deposit batches, household statement snapshots, period-close, and provider reconciliation.
@@ -469,9 +469,9 @@ Rationale:
 
 **Files:** generated exports and managed library, form, and event attachments live in a mounted data directory through storage adapters. SQLite/Postgres rows store metadata and content hashes, not environment-specific absolute paths.
 
-**Background work:** communications, exports, and connector reconciliation use a database-backed job table with leases, retries, idempotency keys, and a visible failure queue. The desktop worker operates only while BandOS is running and never silently releases overdue email after downtime. The server edition supports unattended workers. Do not introduce Redis or a separate queue service until measured load requires it.
+**Background work:** communications, exports, and connector reconciliation use a database-backed job table with leases, retries, idempotency keys, and a visible failure queue. The desktop worker operates only while Band Office is running and never silently releases overdue email after downtime. The server edition supports unattended workers. Do not introduce Redis or a separate queue service until measured load requires it.
 
-**Connectors:** Google email, Microsoft email, SMTP, calendar publication, and later payment providers implement narrow adapters. The default email sender is one shared program mailbox; optional per-staff mailboxes wait for the multi-user server edition. Domain records never depend on provider-specific payloads. Disabling a connector leaves the underlying BandOS history readable and exportable. There is no native SMS connector in the approved roadmap.
+**Connectors:** Google email, Microsoft email, SMTP, calendar publication, and later payment providers implement narrow adapters. The default email sender is one shared program mailbox; optional per-staff mailboxes wait for the multi-user server edition. Domain records never depend on provider-specific payloads. Disabling a connector leaves the underlying Band Office history readable and exportable. There is no native SMS connector in the approved roadmap.
 
 **Non-goals:** no mandatory external service, telemetry, CDN dependency at runtime, license server, or microservice fleet. After dependencies are installed and cached, `npm run build` must succeed without network access.
 
@@ -547,17 +547,17 @@ uniform,Fruhauf,Jacket 38R,,RMS-UNI-021,good,available,2017,310
 
 **Too broad risk:** the replacement roadmap can become an excuse to build every CutTime menu. Mitigation: each release must retire one named workflow, and only one new high-risk module may be active at a time.
 
-**Parity risk:** CutTime will continue changing while BandOS is built. Mitigation: measure replacement against stable director jobs and exportability, not competitor feature count.
+**Parity risk:** CutTime will continue changing while Band Office is built. Mitigation: measure replacement against stable director jobs and exportability, not competitor feature count.
 
 **Connector risk:** email and payment providers can fail or change terms. Mitigation: connectors are optional adapters; all authoritative records remain provider-independent and failures are visible and recoverable. Remind is a manual handoff unless an approved public API becomes available.
 
 **Distribution risk:** school-managed Windows/macOS devices may block installation, and Chromebook-only programs need a hosted server. Mitigation: publish signed packages, preserve the Docker path for IT, document known platform limits, and avoid claiming universal device support.
 
-**Sequencing risk:** BandOS can consume time intended for commercial commitments. Mitigation: stage 1 requires a written calendar decision before code exists.
+**Sequencing risk:** Band Office can consume time intended for commercial commitments. Mitigation: stage 1 requires a written calendar decision before code exists.
 
 ## 15. Differentiation
 
-1. **The exit is the feature.** BandOS produces a complete, documented export bundle the program controls.
+1. **The exit is the feature.** Band Office produces a complete, documented export bundle the program controls.
 2. **No mandatory software subscription.** Optional hosting, email, or payment providers may still charge their own transparent fees.
 3. **Strong local-first privacy posture.** Student data is designed to stay on a district machine, with the remaining risk shifted to laptop security and backup discipline.
 4. **Offline and durable.**
@@ -575,9 +575,9 @@ uniform,Fruhauf,Jacket 38R,,RMS-UNI-021,good,available,2017,310
 - Establish the shared foundation so later modules do not require a rewrite, but do not prebuild their features.
 - Use `CUTTIME_REPLACEMENT_MATRIX.md` as the scope authority for what is replaced, partial, planned, integrated, or intentionally excluded.
 - Treat the implemented People/Groups/Access foundation as the ownership layer for assignments, financial accounts, communication audiences, library loans, form requests, and event rosters. Director-side Financials, standard SMTP Email, Music Library, Forms, and Events/Attendance are implemented; Server and Family Portals are next.
-- Do not announce BandOS as a CutTime replacement until the README's current coverage table names enough completed workflows to make that statement true for a defined program profile.
+- Do not announce Band Office as a CutTime replacement until the README's current coverage table names enough completed workflows to make that statement true for a defined program profile.
 
-The strategic commitment is now clear: BandOS aims to become an open-source Charms/CutTime alternative. The operational commitment remains bounded: only the currently approved module enters implementation.
+The strategic commitment is now clear: Band Office aims to become an open-source Charms/CutTime alternative. The operational commitment remains bounded: only the currently approved module enters implementation.
 
 ## 17. Final Deliverables
 

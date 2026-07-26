@@ -13,7 +13,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "cross-env BANDOS_TEST_DATABASE_PATH=data/e2e.db node --import tsx scripts/prepare-test-db.ts && cross-env DATABASE_URL=file:./data/e2e.db BANDOS_EMAIL_TRANSPORT=mock NEXT_TELEMETRY_DISABLED=1 next dev -H 127.0.0.1 -p 3102",
+    command: "cross-env BANDOS_TEST_DATABASE_PATH=data/e2e.db node --import tsx scripts/prepare-test-db.ts && cross-env DATABASE_URL=file:./data/e2e.db BANDOS_EMAIL_TRANSPORT=mock BANDOS_TEST_RESET_CODE=24681357 NEXT_DIST_DIR=.next-e2e NEXT_TELEMETRY_DISABLED=1 next dev -H 127.0.0.1 -p 3102",
     url: "http://127.0.0.1:3102/login",
     reuseExistingServer: false,
     timeout: 120_000,

@@ -430,7 +430,7 @@ export async function confirmOverdueAnnouncement(db: DatabaseClient, announcemen
 export async function processDueCommunicationJobs(db: DatabaseClient, startedAt: Date, maxJobs = 3) {
   const now = new Date();
   await db.communicationJob.updateMany({ where: { status: CommunicationJobStatus.LEASED, leaseExpiresAt: { lt: now } }, data: { status: CommunicationJobStatus.PENDING, leaseToken: null, leaseExpiresAt: null, lastError: "The prior worker lease expired before completion." } });
-  await db.communicationJob.updateMany({ where: { status: CommunicationJobStatus.PENDING, runAt: { lt: startedAt } }, data: { status: CommunicationJobStatus.OVERDUE, lastError: "Scheduled time passed while BandOS was not running. Staff confirmation is required." } });
+  await db.communicationJob.updateMany({ where: { status: CommunicationJobStatus.PENDING, runAt: { lt: startedAt } }, data: { status: CommunicationJobStatus.OVERDUE, lastError: "Scheduled time passed while Band Office was not running. Staff confirmation is required." } });
   const due = await db.communicationJob.findMany({ where: { status: CommunicationJobStatus.PENDING, runAt: { lte: now } }, orderBy: { runAt: "asc" }, take: maxJobs });
   let processed = 0;
   for (const job of due) {
@@ -438,7 +438,7 @@ export async function processDueCommunicationJobs(db: DatabaseClient, startedAt:
     const leased = await db.communicationJob.updateMany({ where: { id: job.id, status: CommunicationJobStatus.PENDING }, data: { status: CommunicationJobStatus.LEASED, leaseToken, leaseExpiresAt: new Date(Date.now() + 5 * 60_000), attemptCount: { increment: 1 } } });
     if (!leased.count) continue;
     try {
-      await sendAnnouncement(db, job.announcementId, "desktop-worker");
+      await sendAnnouncement(db, job.announcementId, "communications-worker");
     } catch (error) {
       const detail = transportError(error);
       await db.communicationJob.update({ where: { id: job.id }, data: { status: CommunicationJobStatus.FAILED, leaseToken: null, leaseExpiresAt: null, lastError: detail.message } });

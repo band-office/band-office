@@ -37,6 +37,12 @@ enum StaffRole {
   READ_ONLY
 }
 
+enum PortalUserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+}
+
 enum AssetCategory {
   INSTRUMENT
   UNIFORM
@@ -306,6 +312,7 @@ model Program {
   operatingPeriods      OperatingPeriod[]
   auditLogs             AuditLog[]
   staffUsers            StaffUser[]
+  portalUsers           PortalUser[]
   backupRecords         BackupRecord[]
   financialBatches      FinancialBatch[]
   financialEntries      FinancialEntry[]
@@ -351,6 +358,68 @@ model Session {
   @@index([expiresAt])
 }
 
+model PortalUser {
+  id                    String                       @id
+  programId             String
+  personId              String                       @unique
+  emailNormalized       String
+  passwordHash          String?
+  status                PortalUserStatus             @default(PENDING)
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  program               Program                      @relation(fields: [programId], references: [id], onDelete: Cascade)
+  person                Person                       @relation(fields: [personId], references: [id], onDelete: Restrict)
+  sessions              PortalSession[]
+  passwordResetRequests PortalPasswordResetRequest[]
+
+  @@unique([programId, emailNormalized])
+  @@index([programId, status])
+}
+
+model PortalSession {
+  id         String     @id
+  userId     String
+  tokenHash  String     @unique
+  createdAt  DateTime   @default(now())
+  lastSeenAt DateTime   @default(now())
+  expiresAt  DateTime
+  user       PortalUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PortalPasswordResetRequest {
+  id             String      @id
+  identifierHash String
+  portalUserId   String?
+  codeHash       String
+  createdAt      DateTime    @default(now())
+  expiresAt      DateTime
+  usedAt         DateTime?
+  failedAttempts Int         @default(0)
+  portalUser     PortalUser? @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
+
+  @@index([identifierHash, createdAt])
+  @@index([portalUserId, expiresAt])
+  @@index([expiresAt])
+}
+
+model AuthenticationThrottle {
+  id             String   @id
+  scope          String
+  identifierHash String
+  failedAttempts Int      @default(0)
+  windowStartedAt DateTime @default(now())
+  blockedUntil   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([scope, identifierHash])
+  @@index([updatedAt])
+  @@index([blockedUntil])
+}
+
 model BackupRecord {
   id        String   @id
   programId String
@@ -381,6 +450,7 @@ model Person {
   studentGuardianLinks GuardianStudent[]            @relation("StudentGuardianLinks")
   assignments          Assignment[]
   staffUsers           StaffUser[]
+  portalUser           PortalUser?
   financialEntries     FinancialEntry[]
   announcementTargets  AnnouncementAudienceTarget[]
   libraryLoans         LibraryLoan[]

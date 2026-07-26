@@ -3,10 +3,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "BandOS",
-    template: "%s | BandOS",
+    default: "Band Office",
+    template: "%s | Band Office",
   },
-  description: "Local-first program operations for school music directors",
+  description: "Open-source operations for school music programs.",
+  icons: {
+    icon: "/brand/bandos-mark.png",
+    apple: "/brand/bandos-mark.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

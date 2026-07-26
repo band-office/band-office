@@ -120,7 +120,7 @@ async function writeBackupArchive(databasePath, archivePath, overrides = {}, ver
     for (const file of libraryFiles) zip.file(`library-files/${file.storageKey}`, file.bytes);
     for (const file of formFiles) zip.file(`form-files/${file.storageKey}`, file.bytes);
     for (const file of eventFiles) zip.file(`event-files/${file.storageKey}`, file.bytes);
-    zip.file("manifest.json", JSON.stringify({ format: "BandOS full backup", version, programId: program.id, createdAt: new Date().toISOString(), tables: archiveTables.map(([name]) => name), ...(version >= 6 ? { libraryFiles: libraryFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}), ...(version >= 7 ? { formFiles: formFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}), ...(version >= 8 ? { eventFiles: eventFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}) }));
+    zip.file("manifest.json", JSON.stringify({ format: version < 8 ? "BandOS full backup" : "Band Office full backup", version, programId: program.id, createdAt: new Date().toISOString(), tables: archiveTables.map(([name]) => name), ...(version >= 6 ? { libraryFiles: libraryFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}), ...(version >= 7 ? { formFiles: formFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}), ...(version >= 8 ? { eventFiles: eventFiles.map(({ storageKey, contentHash, byteSize }) => ({ storageKey, contentHash, byteSize })) } : {}) }));
   } finally {
     database.close();
   }
@@ -134,7 +134,7 @@ const snapshotsDirectory = path.join(workDirectory, "snapshots");
 try {
   const freshPath = path.join(workDirectory, "fresh", "bandos.db");
   const firstRun = await runDesktopMigrations({ databasePath: freshPath, migrationsDirectory, snapshotsDirectory });
-  assert.equal(firstRun.applied.length, 9);
+  assert.equal(firstRun.applied.length, 11);
   const secondRun = await runDesktopMigrations({ databasePath: freshPath, migrationsDirectory, snapshotsDirectory });
   assert.deepEqual(secondRun.applied, []);
 
@@ -149,7 +149,7 @@ try {
   assert.equal(legacyValidated.manifest.version, 2);
   assert.equal(legacyValidated.checkedTables, v2ArchiveTables.length);
   const upgrade = await runDesktopMigrations({ databasePath: upgradePath, migrationsDirectory, snapshotsDirectory: upgradeSnapshots });
-  assert.deepEqual(upgrade.applied, ["20260720192637_release_hardening", "20260720192710_program_graduation_grade", "20260721120000_people_groups_access", "20260721180000_financial_ledger", "20260721204612_email_communications", "20260721212904_music_library", "20260722020643_forms", "20260724215148_events_attendance"]);
+  assert.deepEqual(upgrade.applied, ["20260720192637_release_hardening", "20260720192710_program_graduation_grade", "20260721120000_people_groups_access", "20260721180000_financial_ledger", "20260721204612_email_communications", "20260721212904_music_library", "20260722020643_forms", "20260724215148_events_attendance", "20260724233000_portal_password_recovery", "20260726143500_authentication_throttling"]);
   assert.ok(upgrade.snapshotPath);
   const upgraded = new Database(upgradePath, { readonly: true });
   assert.equal(upgraded.prepare('SELECT "name" FROM "Program" WHERE "id" = ?').get("upgrade-program").name, "Upgrade Program");
@@ -163,6 +163,7 @@ try {
   assert.ok(migratedAssignment.groupId);
   assert.equal(upgraded.prepare('SELECT COUNT(*) AS count FROM "Asset"').get().count, 1);
   assert.equal(upgraded.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name IN ('FinancialBatch', 'FinancialEntry')").get().count, 2);
+  assert.equal(upgraded.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name IN ('PortalUser', 'PortalSession', 'PortalPasswordResetRequest')").get().count, 3);
   assert.equal(upgraded.pragma("integrity_check", { simple: true }), "ok");
   assert.equal(upgraded.pragma("foreign_key_check").length, 0);
   upgraded.close();

@@ -22,4 +22,4 @@ function run(command, args) {
 }
 
 for (const [command, args] of commands) await run(command, args);
-console.log("BandOS v0.1 release verification passed.");
+console.log("Band Office v0.1 release verification passed.");

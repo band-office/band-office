@@ -15,7 +15,7 @@ function ensureDatabaseDirectory(databaseUrl: string) {
 }
 
 export function getDatabaseFilePath(databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL) {
-  if (!databaseUrl.startsWith("file:")) throw new Error("BandOS backups currently require a SQLite file database.");
+  if (!databaseUrl.startsWith("file:")) throw new Error("Band Office backups currently require a SQLite file database.");
   const filePath = decodeURIComponent(databaseUrl.slice("file:".length));
   return isAbsolute(filePath) ? filePath : resolve(filePath);
 }

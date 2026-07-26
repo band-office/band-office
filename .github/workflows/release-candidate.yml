@@ -1,4 +1,4 @@
-name: BandOS release candidate
+name: Band Office release candidate
 
 on:
   workflow_dispatch:
@@ -35,15 +35,15 @@ jobs:
       - run: npm run desktop:dist:mac
       - run: npm run test:desktop-package
       - name: Verify disk image
-        run: hdiutil verify dist-desktop/BandOS-*-mac-*.dmg
+        run: hdiutil verify dist-desktop/Band-Office-*-mac-*.dmg
       - name: Write checksums
-        run: shasum -a 256 dist-desktop/BandOS-*-mac-*.dmg dist-desktop/BandOS-*-mac-*.zip > dist-desktop/SHA256SUMS.txt
+        run: shasum -a 256 dist-desktop/Band-Office-*-mac-*.dmg dist-desktop/Band-Office-*-mac-*.zip > dist-desktop/SHA256SUMS.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unsigned-macos-test-artifacts
           path: |
-            dist-desktop/BandOS-*-mac-*.dmg
-            dist-desktop/BandOS-*-mac-*.zip
+            dist-desktop/Band-Office-*-mac-*.dmg
+            dist-desktop/Band-Office-*-mac-*.zip
             dist-desktop/SHA256SUMS.txt
 
   windows-unsigned-acceptance:
@@ -61,11 +61,11 @@ jobs:
       - name: Write checksums
         shell: pwsh
         run: |
-          Get-ChildItem dist-desktop/BandOS-*-win-*.exe, dist-desktop/BandOS-*-win-*.zip | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } | Set-Content dist-desktop/SHA256SUMS-windows.txt
+          Get-ChildItem dist-desktop/Band-Office-*-win-*.exe, dist-desktop/Band-Office-*-win-*.zip | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } | Set-Content dist-desktop/SHA256SUMS-windows.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unsigned-windows-test-artifacts
           path: |
-            dist-desktop/BandOS-*-win-*.exe
-            dist-desktop/BandOS-*-win-*.zip
+            dist-desktop/Band-Office-*-win-*.exe
+            dist-desktop/Band-Office-*-win-*.zip
             dist-desktop/SHA256SUMS-windows.txt

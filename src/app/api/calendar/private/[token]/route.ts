@@ -15,7 +15,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
   return new Response(feed, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": 'inline; filename="bandos-private-calendar.ics"',
+      "Content-Disposition": 'inline; filename="band-office-private-calendar.ics"',
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
     },

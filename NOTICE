@@ -1,0 +1,16 @@
+Band Office
+Copyright 2026 Joshua Bloodworth
+
+Band Office includes the Inter font. Inter is Copyright 2016 The Inter
+Project Authors and is distributed under the SIL Open Font License 1.1.
+The complete font license is retained in the @fontsource-variable/inter
+package and must remain available in distributed builds.
+
+Band Office server and desktop builds may include libvips binaries through
+the sharp package. Those binaries are distributed under LGPL-3.0-or-later.
+Their source and license information are available from:
+https://github.com/libvips/libvips
+
+Third-party dependencies retain their respective copyright and license
+terms. Package identities and resolved versions are recorded in
+package-lock.json.

@@ -1,29 +1,29 @@
-# BandOS CutTime Replacement Matrix
+# Band Office CutTime Replacement Matrix
 
 **Date:** July 24, 2026
 **Status:** Scope and implementation authority
 
 ## Replacement Standard
 
-A capability is **replaced** only when a defined program profile can complete the full workflow in BandOS, preserve and audit its history, export it in open formats, restore it from backup, and recover from ordinary failures without returning to CutTime.
+A capability is **replaced** only when a defined program profile can complete the full workflow in Band Office, preserve and audit its history, export it in open formats, restore it from backup, and recover from ordinary failures without returning to CutTime.
 
 Statuses:
 
 - **Now:** included in the approved v0.1 build scope.
 - **Implemented:** present in the current release candidate and covered by automated acceptance.
 - **Planned:** belongs to the product thesis but has not passed its release gate.
-- **Integration:** BandOS should connect or export rather than build the adjacent business.
+- **Integration:** Band Office should connect or export rather than build the adjacent business.
 - **Excluded:** intentionally outside the product.
 
 ## Target v1.0 Program Profile
 
-BandOS v1.0 targets early-career directors and small or under-resourced school music programs with multiple groups, director and assistant staff, bounded staff and booster roles, students and households, and optional approved email/payment connectors. Directors use a normal desktop installation; district IT may use the server edition.
+Band Office v1.0 targets early-career directors and small or under-resourced school music programs with multiple groups, director and assistant staff, bounded staff and booster roles, students and households, and optional approved email/payment connectors. Directors use a normal desktop installation; district IT may use the server edition.
 
-It does not require a district dashboard, inter-school asset exchange, fundraising storefront, ticket sales, native mobile apps, or first-party BandOS hosting.
+It does not require a district dashboard, inter-school asset exchange, fundraising storefront, ticket sales, native mobile apps, or first-party Band Office hosting.
 
 ## Coverage Matrix
 
-| Director Job | BandOS Module | Phase | Status | Replacement Proof |
+| Director Job | Band Office Module | Phase | Status | Replacement Proof |
 |---|---|---:|---|---|
 | Import and maintain students | People | v0.1/v0.2 | Implemented | Roster reconciles against a new CSV without duplicates or lost history |
 | Organize students into reusable flat groups | People | v0.2 | Implemented | Group definitions and dated memberships persist; assignments retain optional group context |
@@ -83,7 +83,7 @@ Every module plan must answer these questions before implementation:
 
 1. Which existing spreadsheet or CutTime workflow will be retired?
 2. What is the smallest complete workflow, including corrections and failure recovery?
-3. What new student, guardian, financial, or communication data enters BandOS?
+3. What new student, guardian, financial, or communication data enters Band Office?
 4. Who may view, create, change, export, and administer that data?
 5. What open-format export proves the program can leave?
 6. What backup and restore test protects the history?

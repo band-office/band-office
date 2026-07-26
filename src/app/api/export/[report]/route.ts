@@ -90,5 +90,5 @@ export async function GET(request: Request, { params }: { params: Promise<{ repo
   if (!loader) return new Response("Unknown report", { status: 404 });
   const rows = await loader();
   await db.auditLog.create({ data: { id: randomUUID(), programId: program.id, actor: user.username, action: "EXPORT", entityType: "Report", entityId: report, changeSummary: `Exported ${report} report` } });
-  return new Response(rowsToCsv(rows), { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="bandos-${report}.csv"` } });
+  return new Response(rowsToCsv(rows), { headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="band-office-${report}.csv"` } });
 }

@@ -4,7 +4,7 @@
   "checks": [
     {
       "claim": "Runtime source has no hard-coded external destination",
-      "detail": "105 parsed source files; Electron fetch is loopback-only and optional outbound SMTP is isolated to src/lib/email-transport.ts"
+      "detail": "115 parsed source files; Electron fetch is loopback-only and optional outbound SMTP is isolated to src/lib/email-transport.ts"
     },
     {
       "claim": "Styles and fonts are local",

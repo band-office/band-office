@@ -1,0 +1,103 @@
+name: band-office
+
+services:
+  app:
+    image: "${BAND_OFFICE_IMAGE:?Set BAND_OFFICE_IMAGE in .env to the published Band Office image and version}"
+    environment:
+      BAND_OFFICE_SERVER_MODE: "true"
+      BANDOS_LOAD_DEMO: "false"
+      BANDOS_SMTP_PASSWORD_FILE: "/run/secrets/smtp_password"
+      BANDOS_WORKER_TOKEN_FILE: "/run/secrets/worker_token"
+      DATABASE_URL: "file:/data/bandos.db"
+      HOSTNAME: "0.0.0.0"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: "production"
+      PORT: "3000"
+      TZ: "${BAND_OFFICE_TIMEZONE:?Set BAND_OFFICE_TIMEZONE in .env}"
+    expose:
+      - "3000"
+    volumes:
+      - ./data:/data
+    secrets:
+      - smtp_password
+      - worker_token
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - band-office
+
+  worker:
+    image: "${BAND_OFFICE_IMAGE:?Set BAND_OFFICE_IMAGE in .env to the published Band Office image and version}"
+    command: ["worker"]
+    environment:
+      BAND_OFFICE_INTERNAL_URL: "http://app:3000"
+      BAND_OFFICE_SERVER_MODE: "true"
+      BANDOS_WORKER_TOKEN_FILE: "/run/secrets/worker_token"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: "production"
+      TZ: "${BAND_OFFICE_TIMEZONE:?Set BAND_OFFICE_TIMEZONE in .env}"
+    secrets:
+      - worker_token
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      disable: true
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - band-office
+
+  caddy:
+    image: "caddy:2.11.4-alpine"
+    environment:
+      ACME_EMAIL: "${ACME_EMAIL:?Set ACME_EMAIL in .env}"
+      BAND_OFFICE_HOSTNAME: "${BAND_OFFICE_HOSTNAME:?Set BAND_OFFICE_HOSTNAME in .env}"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - band-office
+
+secrets:
+  smtp_password:
+    file: ./secrets/smtp-password.txt
+  worker_token:
+    file: ./secrets/worker-token.txt
+
+networks:
+  band-office:
+    driver: bridge

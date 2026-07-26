@@ -50,6 +50,6 @@ export function EmailCredentialControl({ environmentCredential }: { environmentC
     <div className="credential-state"><KeyRound size={18} /><div><strong>{stored ? "Secure credential stored" : "No secure credential stored"}</strong><small>{available ? "Operating-system encrypted storage" : "Secure storage unavailable"}</small></div></div>
     {available ? <div className="credential-actions"><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="SMTP password or app password" autoComplete="new-password" /><button className="button secondary" type="button" onClick={() => void save()} disabled={!password}>Store</button>{stored ? <button className="icon-button" type="button" onClick={() => void clear()} aria-label="Clear stored credential" title="Clear stored credential"><Trash2 size={16} /></button> : null}</div> : null}
     {message ? <small className="credential-message">{message}</small> : null}
-    {restartRequired ? <button className="button primary" type="button" onClick={() => void window.bandosDesktop?.restart()}><RefreshCw size={16} />Restart BandOS</button> : null}
+    {restartRequired ? <button className="button primary" type="button" onClick={() => void window.bandosDesktop?.restart()}><RefreshCw size={16} />Restart Band Office</button> : null}
   </div>;
 }

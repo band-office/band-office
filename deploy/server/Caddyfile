@@ -1,0 +1,33 @@
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+http://{$BAND_OFFICE_HOSTNAME} {
+	header -Server
+	redir https://{$BAND_OFFICE_HOSTNAME}{uri} permanent
+}
+
+{$BAND_OFFICE_HOSTNAME} {
+	encode zstd gzip
+
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
+	}
+
+	@notCalendarEmbed not path /api/calendar/embed/*
+	header @notCalendarEmbed {
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		X-Frame-Options "DENY"
+	}
+
+	reverse_proxy app:3000 {
+		health_uri /api/health
+		health_interval 30s
+		health_timeout 5s
+	}
+}

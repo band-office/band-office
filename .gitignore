@@ -1,6 +1,7 @@
 node_modules/
 .next/
 .next.*/
+.next-*/
 src/generated/
 data/*.db
 data/*.db-journal
@@ -16,6 +17,12 @@ coverage/
 playwright-report/
 test-results/
 dist-desktop/
+dist-server/
+deploy/server/backups/
+deploy/server/caddy-config/
+deploy/server/caddy-data/
+deploy/server/data/
+deploy/server/secrets/*.txt
 app-runtime/
 *.tsbuildinfo
 *.log

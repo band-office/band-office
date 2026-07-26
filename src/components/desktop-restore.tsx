@@ -17,12 +17,12 @@ export function DesktopRestore() {
   if (!available) return null;
 
   async function restore() {
-    if (!window.confirm("Restore a BandOS backup? The current database will be preserved as a recovery snapshot, then BandOS will restart.")) return;
+    if (!window.confirm("Restore a Band Office backup? The current database will be preserved as a recovery snapshot, then Band Office will restart.")) return;
     setWorking(true);
     setMessage("");
     const result = await window.bandosDesktop!.restoreBackup(passphrase);
     if (result.error) setMessage(result.error);
-    else if (result.scheduled) setMessage("Backup verified. BandOS is restarting with the restored database.");
+    else if (result.scheduled) setMessage("Backup verified. Band Office is restarting with the restored database.");
     setWorking(false);
   }
 

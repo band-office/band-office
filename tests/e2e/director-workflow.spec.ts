@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import Database from "better-sqlite3";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -8,6 +9,9 @@ const execFileAsync = promisify(execFile);
 
 test("director can set up, import, check out, return with damage, back up, and sign out", async ({ page, request }) => {
   test.setTimeout(180_000);
+  const health = await request.get("/api/health");
+  expect(health.status()).toBe(200);
+  expect(await health.json()).toEqual({ status: "ok" });
   await page.goto("/today");
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByRole("heading", { name: "Create the director account" })).toBeVisible();
@@ -63,6 +67,60 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page.getByText(/Shared mailbox settings saved/)).toBeVisible();
   await page.getByRole("button", { name: "Verify connection" }).click();
   await expect(page.getByText(/Connection verified/)).toBeVisible();
+
+  const e2eDatabase = new Database(path.resolve("data/e2e.db"));
+  const avery = e2eDatabase.prepare(`SELECT "id" FROM "Person" WHERE "email" = ?`).get("avery.supporter@example.test") as { id: string };
+  const verifier = e2eDatabase.prepare(`SELECT "id" FROM "Person" WHERE "firstName" = ? AND "lastName" = ?`).get("Release", "Verifier") as { id: string };
+  e2eDatabase.close();
+  await page.goto(`/roster/${verifier.id}`);
+  await page.getByLabel("Guardian", { exact: true }).fill("Avery Supporter");
+  await page.getByRole("option", { name: /Supporter, Avery/ }).click();
+  await page.getByLabel("Relationship").fill("Parent");
+  await page.getByLabel("Primary contact").check();
+  await page.getByRole("button", { name: "Save relationship" }).click();
+  await expect(page.getByText("Guardian relationship saved.")).toBeVisible();
+  await expect(page.getByText("Avery Supporter", { exact: true })).toBeVisible();
+  await page.screenshot({ path: "test-results/e2e-family-links-desktop.png", fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: "test-results/e2e-family-links-mobile.png", fullPage: true });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto(`/roster/${avery.id}`);
+  await page.getByRole("button", { name: "Enable portal access" }).click();
+  await expect(page.getByText(/Portal access enabled/)).toBeVisible();
+  await expect(page.getByText("PENDING")).toBeVisible();
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await page.goto("/portal/login");
+  await page.getByRole("link", { name: "Forgot or need to set your password?" }).click();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Email").fill("avery.supporter@example.test");
+  await page.getByRole("button", { name: "Email reset code" }).click();
+  await expect(page.getByText(/If an eligible portal account uses that email/)).toBeVisible();
+  await page.getByRole("link", { name: "I already have a code" }).click();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("8-digit code").fill("24681357");
+  await page.getByLabel("New password").fill("BandOS-Guardian-E2E-Password!");
+  await page.getByLabel("Confirm password").fill("BandOS-Guardian-E2E-Password!");
+  await page.getByLabel("Email").fill("avery.supporter@example.test");
+  await page.getByRole("button", { name: "Update password" }).click();
+  await expect(page.getByText("Password updated. You can sign in now.")).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Password").fill("BandOS-Guardian-E2E-Password!");
+  await page.getByLabel("Email").fill("avery.supporter@example.test");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/portal$/);
+  await expect(page.getByRole("heading", { name: "Program account" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Release Verifier" })).toBeVisible();
+  await expect(page.getByText("No property is currently assigned.")).toBeVisible();
+  await page.screenshot({ path: "test-results/e2e-guardian-portal-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await page.goto("/login");
+  await page.getByLabel("Username").fill("director-e2e");
+  await page.getByLabel("Password").fill("BandOS-E2E-Password!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/today/);
+
   await page.goto("/communications/new");
   await page.getByLabel("Subject").fill("E2E booster announcement");
   await page.getByLabel("Message").fill("This is a deterministic communication workflow test.");
@@ -116,7 +174,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   const statementDownloadPromise = page.waitForEvent("download");
   await page.getByRole("link", { name: "CSV" }).click();
   const statementDownload = await statementDownloadPromise;
-  expect(statementDownload.suggestedFilename()).toBe("bandos-financial-statement.csv");
+  expect(statementDownload.suggestedFilename()).toBe("band-office-financial-statement.csv");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/financials");
   await expect(page.locator(".mobile-nav").getByRole("link", { name: "Financials" })).toBeVisible();
@@ -178,7 +236,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   await uploadForm.locator('input[type="file"]').setInputFiles(path.resolve("tests/fixtures/library-resource.txt"));
   await uploadForm.getByRole("checkbox").check();
   await uploadForm.getByRole("button", { name: "Store file" }).click();
-  await expect(page.getByText("Local file stored in the managed BandOS library.")).toBeVisible();
+  await expect(page.getByText("Local file stored in the managed Band Office library.")).toBeVisible();
   const resourceDownloadPromise = page.waitForEvent("download");
   await page.getByRole("link", { name: "Download" }).click();
   expect((await resourceDownloadPromise).suggestedFilename()).toBe("library-resource.txt");
@@ -245,7 +303,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page.getByText("complete", { exact: true })).toBeVisible();
   const formResponseDownload = page.waitForEvent("download");
   await page.getByRole("link", { name: "Responses CSV" }).click();
-  expect((await formResponseDownload).suggestedFilename()).toBe("bandos-form-responses.csv");
+  expect((await formResponseDownload).suggestedFilename()).toBe("band-office-form-responses.csv");
   await page.getByRole("link", { name: "Review" }).click();
   const formFileDownload = page.waitForEvent("download");
   await page.getByRole("link", { name: /library-resource\.txt/ }).click();
@@ -325,7 +383,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page.getByText("1/1", { exact: true }).first()).toBeVisible();
   const tripRosterDownload = page.waitForEvent("download");
   await page.getByRole("link", { name: "Trip roster CSV" }).click();
-  expect((await tripRosterDownload).suggestedFilename()).toBe("bandos-event-trip-roster.csv");
+  expect((await tripRosterDownload).suggestedFilename()).toBe("band-office-event-trip-roster.csv");
   const eventFileDownload = page.waitForEvent("download");
   await page.getByRole("link", { name: "Download E2E itinerary file" }).click();
   expect((await eventFileDownload).suggestedFilename()).toBe("library-resource.txt");

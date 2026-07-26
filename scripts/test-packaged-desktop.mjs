@@ -13,10 +13,10 @@ const workDirectory = await mkdtemp(path.join(tmpdir(), "bandos-packaged-accepta
 async function executablePath() {
   if (process.platform === "darwin") {
     const directory = (await readdir(outputDirectory, { withFileTypes: true })).find((entry) => entry.isDirectory() && entry.name.startsWith("mac-"));
-    if (!directory) throw new Error("No unpacked macOS BandOS application was found.");
-    return path.join(outputDirectory, directory.name, "BandOS.app", "Contents", "MacOS", "BandOS");
+    if (!directory) throw new Error("No unpacked macOS Band Office application was found.");
+    return path.join(outputDirectory, directory.name, "Band Office.app", "Contents", "MacOS", "Band Office");
   }
-  if (process.platform === "win32") return path.join(outputDirectory, "win-unpacked", "BandOS.exe");
+  if (process.platform === "win32") return path.join(outputDirectory, "win-unpacked", "Band Office.exe");
   throw new Error("Packaged desktop acceptance currently supports macOS and Windows.");
 }
 
@@ -53,11 +53,12 @@ async function createHistoricalDatabase(userData) {
 }
 
 try {
+  const expectedMigrationCount = (await readdir(path.resolve("prisma/migrations"), { withFileTypes: true })).filter((entry) => entry.isDirectory()).length;
   const executable = await executablePath();
   const freshUserData = await launch(executable, "fresh-profile");
   const freshDatabase = new Database(path.join(freshUserData, "data", "bandos.db"), { readonly: true });
   assert.equal(freshDatabase.pragma("integrity_check", { simple: true }), "ok");
-  assert.equal(freshDatabase.prepare('SELECT COUNT(*) AS count FROM "_bandos_desktop_migrations"').get().count, 9);
+  assert.equal(freshDatabase.prepare('SELECT COUNT(*) AS count FROM "_bandos_desktop_migrations"').get().count, expectedMigrationCount);
   assert.equal(freshDatabase.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name IN ('FinancialBatch', 'FinancialEntry')").get().count, 2);
   assert.equal(freshDatabase.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name IN ('EmailConnection', 'EmailContactState', 'EmailTemplate', 'Announcement', 'AnnouncementAudienceTarget', 'AnnouncementRecipient', 'AnnouncementAttachment', 'DeliveryAttempt', 'CommunicationJob')").get().count, 9);
   assert.equal(freshDatabase.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name IN ('LibraryItem', 'LibraryComponentNote', 'LibraryLoan', 'PerformanceRecord', 'LibraryResource')").get().count, 5);

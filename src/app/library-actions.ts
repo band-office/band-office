@@ -203,7 +203,7 @@ export async function uploadLibraryFileAction(formData: FormData) {
     redirect(withMessage(`/library/${itemId}`, "error", message(error)));
   }
   revalidatePath(`/library/${itemId}`);
-  redirect(withMessage(`/library/${itemId}`, "success", "Local file stored in the managed BandOS library."));
+  redirect(withMessage(`/library/${itemId}`, "success", "Local file stored in the managed Band Office library."));
 }
 
 export async function removeLibraryResourceAction(formData: FormData) {

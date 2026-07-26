@@ -37,7 +37,7 @@ export async function buildCalendarFeed(db: DatabaseClient, programId: string, v
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//BandOS//Program Calendar//EN",
+    "PRODID:-//Band Office//Program Calendar//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     `X-WR-CALNAME:${icsText(program.name)}`,

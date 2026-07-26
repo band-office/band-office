@@ -1,0 +1,138 @@
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import Database from "better-sqlite3";
+
+const root = process.cwd();
+const findings = [];
+
+async function text(relativePath) {
+  return readFile(path.join(root, relativePath), "utf8");
+}
+
+const compose = await text("deploy/server/compose.yml");
+const caddy = await text("deploy/server/Caddyfile");
+const dockerfile = await text("Dockerfile");
+const dockerignore = await text(".dockerignore");
+const entrypoint = await text("scripts/docker-entrypoint.sh");
+const worker = await text("scripts/run-server-worker.mjs");
+const health = await text("src/app/api/health/route.ts");
+const authThrottle = await text("src/lib/auth-throttle.ts");
+
+function composeServiceBlock(name) {
+  const match = compose.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z][a-z0-9-]*:\\n|^secrets:|^networks:|(?![\\s\\S]))`, "m"));
+  return match?.[0] ?? "";
+}
+
+for (const required of [
+  "LICENSE",
+  "NOTICE",
+  "SERVER_DEPLOYMENT.md",
+  "PORTAL_ACTIVATION.md",
+  "SERVER_BACKUP_RESTORE.md",
+  "SERVER_UPGRADE.md",
+  "SERVER_SUPPORT_BOUNDARY.md",
+  "SERVER_ACCEPTANCE_RECORD.md",
+  "deploy/server/.env.example",
+  "deploy/server/secrets/README.md",
+]) {
+  await text(required).catch(() => findings.push(`Missing server release file: ${required}`));
+}
+
+if (!compose.includes('image: "${BAND_OFFICE_IMAGE:?')) findings.push("Compose does not require an explicit versioned Band Office image.");
+if (/^    ports:/m.test(composeServiceBlock("app"))) findings.push("The application service publishes a host port.");
+if (/^    ports:/m.test(composeServiceBlock("worker"))) findings.push("The worker service publishes a host port.");
+if (!compose.includes('file: ./secrets/worker-token.txt')) findings.push("Compose does not mount the worker token as a secret.");
+if (!compose.includes('file: ./secrets/smtp-password.txt')) findings.push("Compose does not mount the SMTP password as a secret.");
+if (!compose.includes("condition: service_healthy")) findings.push("Server services do not wait for application health.");
+if (!compose.includes('BANDOS_LOAD_DEMO: "false"')) findings.push("The production deployment does not force demo seeding off.");
+if (!compose.includes('caddy:2.11.4-alpine')) findings.push("The Caddy image is not pinned to the reviewed release.");
+if (!composeServiceBlock("worker").includes("    healthcheck:\n      disable: true")) findings.push("The non-HTTP worker inherits an invalid image health check.");
+
+for (const marker of [
+  "Strict-Transport-Security",
+  "Content-Security-Policy",
+  "X-Frame-Options",
+  "Permissions-Policy",
+  "reverse_proxy app:3000",
+  "@notCalendarEmbed",
+  "admin off",
+  "http://{$BAND_OFFICE_HOSTNAME}",
+  "header -Server",
+]) {
+  if (!caddy.includes(marker)) findings.push(`Caddyfile is missing ${marker}.`);
+}
+if (caddy.includes("\n\tlog ")) findings.push("Caddy access logging is enabled and may retain private calendar bearer URLs.");
+
+if (!dockerfile.includes('ENTRYPOINT ["./scripts/docker-entrypoint.sh"]')) findings.push("The image does not use the secret-aware entrypoint.");
+if (!dockerfile.includes("AS build") || !dockerfile.includes("AS runtime")) findings.push("The image is not a multi-stage runtime build.");
+if (!dockerfile.includes("npm prune --omit=dev --ignore-scripts")) findings.push("The runtime image does not prune development dependencies.");
+if (!dockerfile.includes("npm pkg delete devDependencies.prisma")) findings.push("The runtime image may retain the unused Prisma CLI and database-driver dependency chain.");
+if (!dockerfile.includes(".next/standalone/server.js") && !entrypoint.includes(".next/standalone/server.js")) findings.push("The runtime image does not start the Next.js standalone server.");
+for (const excluded of ["node_modules", "data", "dist-desktop", ".git"]) {
+  if (!dockerignore.split(/\r?\n/).includes(excluded)) findings.push(`.dockerignore does not exclude ${excluded}.`);
+}
+if (!entrypoint.includes("BANDOS_SMTP_PASSWORD_FILE") && !entrypoint.includes("load_secret BANDOS_SMTP_PASSWORD")) findings.push("The entrypoint does not load the SMTP secret.");
+if (!entrypoint.includes("load_secret BANDOS_WORKER_TOKEN")) findings.push("The entrypoint does not load the worker secret.");
+if (!worker.includes("/api/internal/communications/worker")) findings.push("The server worker does not call the internal communication route.");
+if (!health.includes('SELECT 1')) findings.push("The health endpoint does not verify database availability.");
+if (!authThrottle.includes("FAILURE_LIMIT = 10") || !authThrottle.includes("identifierHash")) findings.push("Internet-facing login throttling is missing or unbounded.");
+
+const composeResult = spawnSync(
+  "docker",
+  ["compose", "-f", "deploy/server/compose.yml", "config", "--quiet"],
+  {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      ACME_EMAIL: "it@example.org",
+      BAND_OFFICE_HOSTNAME: "band.example.org",
+      BAND_OFFICE_IMAGE: "ghcr.io/example/band-office:0.1.0",
+      BAND_OFFICE_TIMEZONE: "America/New_York",
+    },
+  },
+);
+if (composeResult.error?.code !== "ENOENT" && composeResult.status !== 0) {
+  findings.push(`Docker Compose rejected the server configuration: ${(composeResult.stderr || composeResult.stdout).trim()}`);
+}
+
+const migrationWorkDirectory = await mkdtemp(path.join(tmpdir(), "band-office-server-migrations-"));
+try {
+  const databasePath = path.join(migrationWorkDirectory, "bandos.db");
+  const migrationResult = spawnSync(
+    process.execPath,
+    ["scripts/deploy-sqlite-migrations.mjs"],
+    {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, DATABASE_URL: `file:${databasePath}` },
+    },
+  );
+  if (migrationResult.status !== 0) {
+    findings.push(`The server migration runner failed on a new database: ${(migrationResult.stderr || migrationResult.stdout).trim()}`);
+  } else {
+    const database = new Database(databasePath, { readonly: true, fileMustExist: true });
+    try {
+      const expectedMigrations = (await readdir(path.join(root, "prisma/migrations"), { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory()).length;
+      const appliedMigrations = database.prepare('SELECT COUNT(*) AS count FROM "_bandos_desktop_migrations"').get().count;
+      const throttleTable = database.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = 'AuthenticationThrottle'").get().count;
+      if (database.pragma("integrity_check", { simple: true }) !== "ok") findings.push("Fresh server migration database failed SQLite integrity checking.");
+      if (database.pragma("foreign_key_check").length) findings.push("Fresh server migration database failed foreign-key checking.");
+      if (appliedMigrations !== expectedMigrations) findings.push(`Fresh server migration applied ${appliedMigrations} of ${expectedMigrations} migrations.`);
+      if (throttleTable !== 1) findings.push("Fresh server migration omitted AuthenticationThrottle.");
+    } finally {
+      database.close();
+    }
+  }
+} finally {
+  await rm(migrationWorkDirectory, { recursive: true, force: true });
+}
+
+if (findings.length) {
+  console.error(findings.join("\n"));
+  process.exit(1);
+}
+console.log(`Server bundle verification passed${composeResult.error?.code === "ENOENT" ? " (Docker Compose unavailable; static checks only)" : " including Docker Compose parsing"}.`);

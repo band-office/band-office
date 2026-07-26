@@ -17,7 +17,7 @@ function tableExists(database, name) {
   return Boolean(database.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(name));
 }
 
-export async function runDesktopMigrations({ databasePath, migrationsDirectory, snapshotsDirectory }) {
+export async function runSqliteMigrations({ databasePath, migrationsDirectory, snapshotsDirectory }) {
   await mkdir(path.dirname(databasePath), { recursive: true });
   await mkdir(snapshotsDirectory, { recursive: true });
   const existed = await stat(databasePath).then((value) => value.size > 0).catch(() => false);
@@ -65,3 +65,5 @@ export async function runDesktopMigrations({ databasePath, migrationsDirectory, 
     if (database.open) database.close();
   }
 }
+
+export const runDesktopMigrations = runSqliteMigrations;

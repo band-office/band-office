@@ -18,7 +18,8 @@ let communicationWorkerTimer = null;
 const communicationWorkerToken = randomBytes(32).toString("hex");
 const applicationStartedAt = new Date().toISOString();
 
-app.setName("BandOS");
+app.setName("Band Office");
+app.setPath("userData", path.join(app.getPath("appData"), "BandOS"));
 if (process.env.BANDOS_DESKTOP_USER_DATA) app.setPath("userData", path.resolve(process.env.BANDOS_DESKTOP_USER_DATA));
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -162,7 +163,7 @@ async function createWindow(origin) {
     minWidth: 900,
     minHeight: 620,
     show: false,
-    title: "BandOS",
+    title: "Band Office",
     backgroundColor: "#f5f6f4",
     webPreferences: {
       contextIsolation: true,
@@ -228,7 +229,7 @@ async function bootstrap() {
   });
 
   ipcMain.handle("bandos:restore-backup", async (_event, payload) => {
-    const selection = await dialog.showOpenDialog(mainWindow, { properties: ["openFile"], filters: [{ name: "BandOS backups", extensions: ["bandos", "zip"] }] });
+    const selection = await dialog.showOpenDialog(mainWindow, { properties: ["openFile"], filters: [{ name: "Band Office backups", extensions: ["bandos", "zip"] }] });
     if (selection.canceled || !selection.filePaths[0]) return { canceled: true };
     try {
       const validated = await validateBackupArchive(selection.filePaths[0], typeof payload?.passphrase === "string" ? payload.passphrase : "");
@@ -290,6 +291,6 @@ app.on("activate", () => {
 });
 app.whenReady().then(bootstrap).catch(async (error) => {
   await writeLog(`Startup failed: ${error instanceof Error ? error.stack : String(error)}`);
-  dialog.showErrorBox("BandOS could not start", "The local database or application files could not be prepared. No records were changed without a recovery snapshot. See the desktop log for details.");
+  dialog.showErrorBox("Band Office could not start", "The local database or application files could not be prepared. No records were changed without a recovery snapshot. See the desktop log for details.");
   app.quit();
 });

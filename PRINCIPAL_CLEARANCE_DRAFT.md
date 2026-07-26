@@ -4,7 +4,7 @@ Subject: Request to pilot local asset-tracking tool for band inventory
 
 Hi [Principal Name],
 
-I would like to pilot a local inventory tool called BandOS for the band program's school-owned instruments, uniforms, and equipment.
+I would like to pilot a local inventory tool called Band Office for the band program's school-owned instruments, uniforms, and equipment.
 
 What it stores:
 

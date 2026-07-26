@@ -4,6 +4,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { PersonClassificationType, PersonStatus, StaffRole } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
+import {
+  authenticationAllowed,
+  recordAuthenticationResult,
+  verifyPasswordWithoutAccountTimingLeak,
+} from "@/lib/auth-throttle";
 
 const COOKIE_NAME = "bandos_session";
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
@@ -54,7 +59,7 @@ export async function setupFirstInstallation(programName: string, username: stri
       const period = initialPeriod();
       program = await tx.program.create({ data: { id: randomUUID(), name: programName.trim() } });
       await tx.operatingPeriod.create({ data: { id: randomUUID(), programId: program.id, label: period.label, startsAt: period.startsAt, periodKind: "school_year" } });
-      await tx.auditLog.create({ data: { id: randomUUID(), programId: program.id, actor: username, action: "CREATE", entityType: "Program", entityId: program.id, changeSummary: "Created local BandOS program" } });
+      await tx.auditLog.create({ data: { id: randomUUID(), programId: program.id, actor: username, action: "CREATE", entityType: "Program", entityId: program.id, changeSummary: "Created local Band Office program" } });
     }
     const person = await tx.person.create({ data: { id: randomUUID(), programId: program.id, firstName: username, lastName: "", status: PersonStatus.ACTIVE } });
     await tx.personClassification.create({ data: { personId: person.id, classification: PersonClassificationType.STAFF } });
@@ -73,8 +78,12 @@ export async function createSession(userId: string) {
 }
 
 export async function authenticate(username: string, password: string) {
-  const user = await getDb().staffUser.findFirst({ where: { username } });
-  if (!user || !(await argon2.verify(user.passwordHash, password))) return null;
+  const db = getDb();
+  if (!(await authenticationAllowed(db, "staff", username))) return null;
+  const user = await db.staffUser.findFirst({ where: { username } });
+  const authenticated = await verifyPasswordWithoutAccountTimingLeak(user?.passwordHash, password);
+  await recordAuthenticationResult(db, "staff", username, authenticated);
+  if (!user || !authenticated) return null;
   await createSession(user.id);
   return user;
 }

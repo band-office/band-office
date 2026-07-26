@@ -1,8 +1,12 @@
-# BandOS
+# Band Office
 
-BandOS is a free, open-source Charms Office/CutTime alternative for school music programs. The current release candidate is a functioning local-first program directory, group, access, inventory, assignment, student-fee ledger, outbound email console, whole-set music library, routine forms system, and events and attendance workspace.
+Band Office is a free, open-source Charms Office/CutTime alternative for school music programs. The current release candidate is a functioning local-first program directory, group, access, inventory, assignment, student-fee ledger, outbound email console, whole-set music library, routine forms system, events and attendance workspace, and read-only student/guardian portal.
 
-It does not yet replace all of CutTime. Granular guardian permissions, household accounting, payment processing, and family portals are later releases and do not appear as inactive navigation. Standard SMTP email, Music Library, director-side Forms, and Events are implemented; Google and Microsoft OAuth connections remain planned adapters.
+The product name is **Band Office**. The repository and package identity use **`band-office`**.
+
+Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
+
+It does not yet replace all of CutTime. Granular guardian permissions, household accounting, payment processing, and family form submission remain later releases and do not appear as inactive navigation. Standard SMTP email, Music Library, director-side Forms, Events, and a relationship-scoped read-only family portal are implemented; Google and Microsoft OAuth connections remain planned adapters.
 
 ## What works now
 
@@ -10,6 +14,7 @@ It does not yet replace all of CutTime. Granular guardian permissions, household
 - 30-minute inactivity sessions and protected application/export routes
 - A unified People directory for students, guardians, staff, boosters, and external contacts
 - Multi-classification people, student profiles, guardian/student links, and reusable flat groups
+- Searchable guardian/student linking with inline guardian creation; student IDs remain optional administrative identifiers
 - Director, assistant director, inventory helper, and read-only staff roles with server-enforced permissions
 - Student fee accounts with individual charges, manual payments, credits, current balances, printable statements, and immutable reversals
 - Group assessments that snapshot active student membership at posting time
@@ -17,7 +22,10 @@ It does not yet replace all of CutTime. Granular guardian permissions, household
 - Shared-mailbox SMTP configuration and verification, with no password stored in SQLite, exports, or audit history
 - Email targeting by contact type, group, grade, guardians of students, or selected people
 - Guardian deduplication across linked students, immutable audience previews, address-level contact holds, attachments, templates, schedules, retries, and visible delivery failures
-- Desktop background delivery while BandOS is open, with staff confirmation required after a missed scheduled time
+- Director-enabled student and guardian portal accounts with self-service password setup and recovery by one-time emailed code
+- Non-enumerating reset responses, 15-minute single-use codes, attempt and request limits, Argon2id password storage, and session revocation after reset
+- Persistent, identifier-hashed throttling for repeated staff and portal password failures, including unknown-account attempts
+- Desktop background delivery while Band Office is open, with staff confirmation required after a missed scheduled time
 - Announcement-history, recipient-delivery, and contact-readiness CSV reports
 - Whole-set score-and-parts catalog with audited loans, missing-component history, performance history, and overdue tracking
 - Managed local library files and approved HTTPS links with copyright acknowledgment, hashes, retention status, and controlled download
@@ -46,11 +54,11 @@ It does not yet replace all of CutTime. Granular guardian permissions, household
 
 An unsigned Apple Silicon macOS package is available in [dist-desktop](./dist-desktop):
 
-- `BandOS-0.1.0-mac-arm64.dmg`
-- `BandOS-0.1.0-mac-arm64.zip`
+- `Band-Office-0.1.0-mac-arm64.dmg`
+- `Band-Office-0.1.0-mac-arm64.zip`
 - `SHA256SUMS.txt`
 
-The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in the same BandOS application-data directory. SMTP credentials use operating-system encrypted storage under the BandOS application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
+The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
 These artifacts are for local testing. They are not Apple-signed or notarized, so macOS may block or warn on first launch. Do not present the unsigned package as the public director download.
 
@@ -68,17 +76,38 @@ Open [http://localhost:3000](http://localhost:3000). The first-run screen create
 
 To replace an empty local database with the deterministic Ridgeline demo instead, run `npm run db:init`. That command is destructive and must never be used against real program data.
 
-## Docker
+## Local Docker
 
 ```bash
 docker compose up --build
 ```
 
-Compose runs one container and mounts the SQLite database at `/data/bandos.db`. Demo data is off by default. To load Ridgeline into a new empty volume:
+The root Compose file is a local technical convenience. It runs one container, exposes port 3000, and mounts the SQLite database at `/data/bandos.db`. It is not the public family-portal deployment. Demo data is off by default. To load Ridgeline into a new empty volume:
 
 ```bash
 BANDOS_LOAD_DEMO=true docker compose up --build
 ```
+
+## District server and family portals
+
+The supported public deployment is a district-approved Linux server using the separate Band Office Server bundle. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
+
+Start with [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md). The complete operator set is:
+
+- [SERVER_ACCEPTANCE_RECORD.md](./SERVER_ACCEPTANCE_RECORD.md)
+- [PORTAL_ACTIVATION.md](./PORTAL_ACTIVATION.md)
+- [SERVER_BACKUP_RESTORE.md](./SERVER_BACKUP_RESTORE.md)
+- [SERVER_UPGRADE.md](./SERVER_UPGRADE.md)
+- [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md)
+
+Build and statically verify the distributable operator bundle:
+
+```bash
+npm run server:verify
+npm run server:bundle -- --image ghcr.io/OWNER/band-office:VERSION
+```
+
+Do not use shared hosting, cPanel file upload, home-server port forwarding, the development server, or the root local Compose file for student and guardian access.
 
 ## Backups
 
@@ -94,9 +123,15 @@ Rollover remains blocked until every assignment is resolved and a backup newer t
 
 ## Email setup
 
-Open Email, then Shared mailbox. Standard SMTP is the currently implemented connector. Desktop users store the SMTP password through operating-system encrypted storage and restart BandOS before verification. Local-server and Docker administrators set `BANDOS_SMTP_PASSWORD` in the process environment. Sender settings, templates, announcements, attachments, audience snapshots, attempts, queue state, and contact holds are included in version-8 backups; credentials are not.
+Open Email, then Shared mailbox. Standard SMTP is the currently implemented connector. Desktop users store the SMTP password through operating-system encrypted storage and restart Band Office before verification. Production-server administrators mount it from `secrets/smtp-password.txt`; the container entrypoint reads it without placing the value in Compose or SQLite. Sender settings, templates, announcements, attachments, audience snapshots, attempts, queue state, and contact holds are included in version-8 backups; credentials are not.
 
-Scheduled desktop email runs only while BandOS is open. If a scheduled time passes while it is closed, the message is held until a staff user confirms delivery. Provider acceptance records SMTP handoff, not guaranteed inbox delivery. See [EMAIL_SETUP.md](./EMAIL_SETUP.md).
+Scheduled desktop email runs only while Band Office is open. Server deployments run the authenticated internal worker continuously. If a scheduled time passes while the relevant runtime is down, the message is held until a staff user confirms delivery. Provider acceptance records SMTP handoff, not guaranteed inbox delivery. See [EMAIL_SETUP.md](./EMAIL_SETUP.md).
+
+## Student and guardian portal
+
+Directors enable portal access on an eligible student or guardian record after adding a unique email address. The user chooses **Forgot or need to set your password?** on the portal sign-in screen, receives an eight-digit code through the verified shared mailbox, and sets a password without staff intervention. Guardians see only explicitly linked students. The first portal release is read-only and shows current property, fee balances, and assigned form status.
+
+The Electron desktop app listens only on the local machine, so it cannot serve parents over the public internet. Family access requires a district-approved server deployment reachable through HTTPS. Do not expose the development server or raw Band Office port directly to the internet.
 
 ## Verification
 
@@ -105,7 +140,7 @@ npm ci
 npm run release:verify
 ```
 
-The release gate runs lint, 42 seeded unit tests, a production build, desktop migration and restore failure-path acceptance, the complete Playwright workflow, static privacy/network/package audits, a clean dependency-tree check, and the production-dependency npm advisory audit. Development and packaging dependencies remain exact-pinned and separately reviewed. See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and [UPDATE_POLICY.md](./UPDATE_POLICY.md) for the evidence record and manual update rules.
+The release gate runs lint, 45 seeded unit tests, a production build, desktop migration and restore failure-path acceptance, the complete Playwright workflow, static privacy/network/package audits, a clean dependency-tree check, and the production-dependency npm advisory audit. Development and packaging dependencies remain exact-pinned and separately reviewed. See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and [UPDATE_POLICY.md](./UPDATE_POLICY.md) for the evidence record and manual update rules.
 
 Build an unsigned desktop application for the current platform:
 
@@ -121,12 +156,12 @@ The unit suite recreates only `data/test.db`. The browser suite recreates only `
 
 ## Privacy boundary
 
-The People directory stores names, optional email and phone, classifications, student grade/ID, group membership, and explicit guardian/student links. Financial records store student-linked charges, payments, credits, references, group context, and reversals; they do not store card or bank credentials. Communication records store authored messages, attachment bytes, audience snapshots, recipient addresses, and delivery outcomes. Form records store assigned recipients, answers, ordinary acknowledgment timestamps, and approved uploads under explicit retention rules. Event records store roster snapshots, RSVP, attendance status, itineraries, equipment, volunteers, reminders, and approved files; there is no attendance-reason field. Only director and assistant-director roles can access communications, forms, and events. The schema intentionally has no address, birthdate, medical, photo, or disciplinary fields. Inventory helpers can use names, grade, student ID, groups, holdings, inventory, repairs, and fixed reports, but cannot view contact details, guardian relationships, financials, communications, forms, events, notes, or exports. Student and guardian portals do not exist in the local release.
+The People directory stores names, optional email and phone, classifications, student grade/ID, group membership, and explicit guardian/student links. Financial records store student-linked charges, payments, credits, references, group context, and reversals; they do not store card or bank credentials. Communication records store authored messages, attachment bytes, audience snapshots, recipient addresses, and delivery outcomes. Form records store assigned recipients, answers, ordinary acknowledgment timestamps, and approved uploads under explicit retention rules. Event records store roster snapshots, RSVP, attendance status, itineraries, equipment, volunteers, reminders, and approved files; there is no attendance-reason field. Only director and assistant-director roles can access communications, forms, and events. The schema intentionally has no address, birthdate, medical, photo, or disciplinary fields. Inventory helpers can use names, grade, student ID, groups, holdings, inventory, repairs, and fixed reports, but cannot view contact details, guardian relationships, financials, communications, forms, events, notes, or exports. Portal users are scoped to their own person record and explicitly linked students; director notes, contact directories, attendance, and staff surfaces are not exposed.
 
 > No medical, disciplinary, or family information. This field is exported in reports.
 
-Run BandOS on a district-managed, disk-encrypted machine. Store backups and readable exports only in district-approved locations, and clear real student-data use with school administration.
+Run Band Office on a district-managed, disk-encrypted machine. Store backups and readable exports only in district-approved locations, and clear real student-data use with school administration.
 
 ## Release status
 
-The application workflow and unsigned Apple Silicon desktop package are usable as a release candidate. The packaged app has passed clean-profile startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, DMG verification, and ZIP integrity checks. Apple signing/notarization, Windows packaging and clean-machine acceptance, a public license decision, district approval, and the SDMS real-data pilot remain gates before v0.1 should be called stable or offered as a public director download.
+The application workflow and unsigned Apple Silicon desktop package are usable as a release candidate. The packaged app has passed clean-profile startup, historical-database upgrade, recovery-snapshot, SQLite integrity, privacy-metadata, visual smoke, DMG verification, and ZIP integrity checks. The Linux ARM64 server image has also passed local Compose, HTTPS proxy, migration, restart, worker-isolation, and complete-data-directory restore acceptance. Apple signing/notarization, Windows packaging and clean-machine acceptance, public source and registry publication, packaged third-party-notice verification, public-server acceptance, district approval, and the SDMS real-data pilot remain gates before v0.1 should be called stable or offered as a public director download.

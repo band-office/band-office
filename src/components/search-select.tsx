@@ -14,6 +14,7 @@ export function SearchSelect({
   defaultValue = "",
   scanLabel,
   relatedSelect,
+  onSelectionChange,
 }: {
   name: string;
   label: string;
@@ -22,6 +23,7 @@ export function SearchSelect({
   defaultValue?: string;
   scanLabel?: string;
   relatedSelect?: { name: string; label: string; options: Array<{ value: string; label: string }>; defaultValue?: string };
+  onSelectionChange?: (value: string) => void;
 }) {
   const initial = options.find((option) => option.value === defaultValue);
   const [selected, setSelected] = useState(initial ?? null);
@@ -39,6 +41,7 @@ export function SearchSelect({
     setQuery(option.label);
     setOpen(false);
     setActiveIndex(0);
+    onSelectionChange?.(option.value);
   }
 
   return (
@@ -56,7 +59,7 @@ export function SearchSelect({
           required
           value={query}
           onFocus={() => setOpen(true)}
-          onChange={(event) => { setQuery(event.target.value); setSelected(null); setOpen(true); setActiveIndex(0); }}
+          onChange={(event) => { setQuery(event.target.value); setSelected(null); onSelectionChange?.(""); setOpen(true); setActiveIndex(0); }}
           onKeyDown={(event) => {
             if (event.key === "ArrowDown") { event.preventDefault(); setOpen(true); setActiveIndex((index) => Math.min(index + 1, Math.max(0, results.length - 1))); }
             if (event.key === "ArrowUp") { event.preventDefault(); setActiveIndex((index) => Math.max(0, index - 1)); }
@@ -64,7 +67,7 @@ export function SearchSelect({
             if (event.key === "Escape") setOpen(false);
           }}
         />
-        {query ? <button type="button" aria-label={`Clear ${label}`} onClick={() => { setQuery(""); setSelected(null); setOpen(true); }}><X size={15} /></button> : null}
+        {query ? <button type="button" aria-label={`Clear ${label}`} onClick={() => { setQuery(""); setSelected(null); onSelectionChange?.(""); setOpen(true); }}><X size={15} /></button> : null}
       </div>
       {open ? <div className="search-select-menu" role="listbox" aria-label={`${label} results`}>
         {results.length ? results.map((option, index) => <button className={index === activeIndex ? "search-option active" : "search-option"} type="button" role="option" aria-selected={selected?.value === option.value} key={option.value} onMouseDown={(event) => event.preventDefault()} onClick={() => choose(option)}><strong>{option.label}</strong>{option.meta ? <small>{option.meta}</small> : null}</button>) : <div className="search-no-results">No matching records</div>}

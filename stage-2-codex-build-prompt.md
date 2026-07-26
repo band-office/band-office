@@ -3,7 +3,7 @@
 Use this to open Stage 2, the data model prototype. Do not hand Codex the whole spec at once.
 
 ```text
-Project: BandOS, a phased open-source, self-hosted alternative to
+Project: Band Office, a phased open-source, self-hosted alternative to
 Charms Office/CutTime for school music programs. This stage builds
 only the first production module: the asset and assignment ledger.
 Single-tenant, one band program, one director user.

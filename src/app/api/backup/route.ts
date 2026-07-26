@@ -116,7 +116,7 @@ async function buildArchive() {
       zip.file(`event-files/${file.storageKey}`, bytes);
     }
     zip.file("bandos.db", await readFile(snapshotPath));
-    zip.file("manifest.json", JSON.stringify({ format: "BandOS full backup", version: 8, programId, createdAt: new Date().toISOString(), tables: Object.keys(tables), libraryFiles, formFiles, eventFiles, verification: "npm run backup:verify -- <archive>" }, null, 2));
+    zip.file("manifest.json", JSON.stringify({ format: "Band Office full backup", version: 8, programId, createdAt: new Date().toISOString(), tables: Object.keys(tables), libraryFiles, formFiles, eventFiles, verification: "npm run backup:verify -- <archive>" }, null, 2));
     return { archive: Buffer.from(await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" })), program: { id: programId } };
   } finally {
     await rm(workDirectory, { recursive: true, force: true });
@@ -130,7 +130,7 @@ async function recordBackup(payload: Buffer, filename: string, programId: string
     db.backupRecord.create({ data: { id: randomUUID(), programId, filename, sha256 } }),
     db.auditLog.create({ data: { id: randomUUID(), programId, actor, action: "EXPORT", entityType: "Backup", entityId: programId, changeSummary: "Created full backup archive" } }),
   ]);
-  return new Response(Uint8Array.from(payload).buffer, { headers: { "Content-Type": "application/octet-stream", "Content-Disposition": `attachment; filename="${filename}"`, "X-BandOS-SHA256": sha256 } });
+  return new Response(Uint8Array.from(payload).buffer, { headers: { "Content-Type": "application/octet-stream", "Content-Disposition": `attachment; filename="${filename}"`, "X-Band-Office-SHA256": sha256, "X-BandOS-SHA256": sha256 } });
 }
 
 export async function POST(request: Request) {
@@ -148,7 +148,7 @@ export async function POST(request: Request) {
   const ciphertext = Buffer.concat([cipher.update(archive), cipher.final()]);
   const header = Buffer.from(`BANDOSENC1\n${JSON.stringify({ salt: salt.toString("base64"), iv: iv.toString("base64"), tag: cipher.getAuthTag().toString("base64") })}\n`);
   const payload = Buffer.concat([header, ciphertext]);
-  return recordBackup(payload, `bandos-backup-${new Date().toISOString().slice(0, 10)}.bandos`, program.id, user.username);
+  return recordBackup(payload, `band-office-backup-${new Date().toISOString().slice(0, 10)}.bandos`, program.id, user.username);
 }
 
 export async function GET() {
@@ -156,5 +156,5 @@ export async function GET() {
   if (!user) return new Response("Authentication required", { status: 401 });
   if (!hasPermission(user, "EXPORT_DATA")) return new Response("Forbidden", { status: 403 });
   const { archive, program } = await buildArchive();
-  return recordBackup(archive, `bandos-readable-export-${new Date().toISOString().slice(0, 10)}.zip`, program.id, user.username);
+  return recordBackup(archive, `band-office-readable-export-${new Date().toISOString().slice(0, 10)}.zip`, program.id, user.username);
 }

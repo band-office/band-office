@@ -48,6 +48,6 @@ export default async function FormResponsePage({ params, searchParams }: { param
       </section>; })}</div>
       <footer className="response-actions"><button className="button secondary" name="intent" value="draft" type="submit"><Save size={16} />Save draft</button><button className="button primary" name="intent" value="submit" type="submit">Mark complete</button></footer>
     </form>
-    <p className="form-legal-boundary">Acknowledgments in BandOS are ordinary recorded responses. This screen does not create or claim a legal electronic signature.</p>
+    <p className="form-legal-boundary">Acknowledgments in Band Office are ordinary recorded responses. This screen does not create or claim a legal electronic signature.</p>
   </main>;
 }

@@ -42,7 +42,7 @@ export default async function ComposeEmailPage({ searchParams }: { searchParams:
           <fieldset className="span-2"><legend>Selected people</legend><div className="people-check-list">{people.map((person) => <label className="check-control compact" key={person.id}><input type="checkbox" name="personIds" value={person.id} /><span><strong>{person.lastName}, {person.firstName}</strong><small>{person.classifications.map((item) => item.classification.toLowerCase()).join(", ")}{person.studentProfile ? ` · grade ${person.studentProfile.grade}` : ""}</small></span></label>)}</div></fieldset>
         </div>
       </section>
-      <section className="compose-section delivery-section"><div><Field label="Schedule (optional)" hint="Desktop delivery runs only while BandOS is open."><input name="scheduledAt" type="datetime-local" /></Field></div><div className="form-actions"><Link className="button secondary" href="/communications">Cancel</Link><SubmitButton>Build audience preview</SubmitButton></div></section>
+      <section className="compose-section delivery-section"><div><Field label="Schedule (optional)" hint="Desktop delivery runs only while Band Office is open."><input name="scheduledAt" type="datetime-local" /></Field></div><div className="form-actions"><Link className="button secondary" href="/communications">Cancel</Link><SubmitButton>Build audience preview</SubmitButton></div></section>
     </form>
   </main>;
 }

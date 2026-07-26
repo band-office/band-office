@@ -24,6 +24,7 @@ import {
   checkoutAsset,
   createAsset,
   createGroup,
+  createGuardianAndLinkStudent,
   createPerson,
   createRepair,
   addPersonClassification,
@@ -60,6 +61,7 @@ import {
 } from "@/lib/communications-service";
 import { getProgramContext } from "@/lib/program-context";
 import { createStaffAccount, hasPermission, requirePermission, updateStaffRole, type Permission } from "@/lib/auth";
+import { createPortalAccount, setPortalAccountEnabled } from "@/lib/portal-auth";
 
 async function currentActor(permission: Permission) {
   const user = await requirePermission(permission);
@@ -235,6 +237,27 @@ export async function linkGuardianStudentAction(formData: FormData) {
   redirect(withMessage(returnTo, "success", "Guardian relationship saved."));
 }
 
+export async function createGuardianAndLinkStudentAction(formData: FormData) {
+  const studentId = textValue(formData, "studentId");
+  const returnTo = textValue(formData, "returnTo") || `/roster/${studentId}`;
+  try {
+    await createGuardianAndLinkStudent(getDb(), {
+      studentId,
+      firstName: textValue(formData, "firstName"),
+      lastName: textValue(formData, "lastName"),
+      email: optionalText(formData, "email"),
+      phone: optionalText(formData, "phone"),
+      relationshipLabel: optionalText(formData, "relationshipLabel"),
+      primaryContact: formData.get("primaryContact") === "on",
+      receivesCommunication: formData.get("receivesCommunication") === "on",
+    }, await currentActor("MANAGE_PEOPLE"));
+  } catch (error) {
+    redirect(withMessage(returnTo, "error", errorMessage(error)));
+  }
+  revalidatePath("/roster");
+  redirect(withMessage(returnTo, "success", "Guardian created and linked."));
+}
+
 export async function unlinkGuardianStudentAction(formData: FormData) {
   const returnTo = textValue(formData, "returnTo") || "/roster";
   try {
@@ -271,6 +294,35 @@ export async function updateStaffRoleAction(formData: FormData) {
   }
   revalidatePath("/settings");
   redirect(withMessage("/settings", "success", "Staff role updated."));
+}
+
+export async function createPortalAccountAction(formData: FormData) {
+  const personId = textValue(formData, "personId");
+  const returnTo = `/roster/${personId}`;
+  try {
+    await createPortalAccount(getDb(), personId, await currentActor("MANAGE_USERS"));
+  } catch (error) {
+    redirect(withMessage(returnTo, "error", errorMessage(error)));
+  }
+  revalidatePath(returnTo);
+  redirect(withMessage(returnTo, "success", "Portal access enabled. The student or guardian can now set a password from the portal sign-in page."));
+}
+
+export async function setPortalAccountEnabledAction(formData: FormData) {
+  const personId = textValue(formData, "personId");
+  const returnTo = `/roster/${personId}`;
+  try {
+    await setPortalAccountEnabled(
+      getDb(),
+      textValue(formData, "portalUserId"),
+      textValue(formData, "enabled") === "true",
+      await currentActor("MANAGE_USERS"),
+    );
+  } catch (error) {
+    redirect(withMessage(returnTo, "error", errorMessage(error)));
+  }
+  revalidatePath(returnTo);
+  redirect(withMessage(returnTo, "success", textValue(formData, "enabled") === "true" ? "Portal access enabled." : "Portal access disabled and existing portal sessions ended."));
 }
 
 export async function postFinancialEntryAction(formData: FormData) {
@@ -485,7 +537,7 @@ export async function testEmailConnectionAction() {
     redirect(withMessage("/communications/settings", "error", errorMessage(error)));
   }
   revalidatePath("/communications");
-  redirect(withMessage("/communications/settings", "success", "Connection verified. BandOS can authenticate with the SMTP server."));
+  redirect(withMessage("/communications/settings", "success", "Connection verified. Band Office can authenticate with the SMTP server."));
 }
 
 export async function saveEmailTemplateAction(formData: FormData) {

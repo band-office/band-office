@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import {
   ArchiveRestore,
-  BookOpenCheck,
   ClipboardCheck,
   ClipboardPlus,
   FileBarChart,
@@ -24,6 +23,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { logoutAction } from "@/app/auth-actions";
+import { BrandMark } from "@/components/brand-mark";
 import type { Permission } from "@/lib/auth";
 
 const navigation = [
@@ -71,8 +71,8 @@ export function AppShell({ children, programName, username, role, permissions }:
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-mark"><BookOpenCheck size={21} /></span>
-          <div><strong>BandOS</strong><small>{programName}</small></div>
+          <span className="brand-mark"><BrandMark size={30} reverse /></span>
+          <div><strong>Band Office</strong><small>{programName}</small></div>
         </div>
         <nav aria-label="Primary navigation">
           <div className="nav-group">{allowedNavigation.map((item) => <NavLink key={item.href} {...item} />)}</div>
@@ -87,7 +87,7 @@ export function AppShell({ children, programName, username, role, permissions }:
       </aside>
       <div className="app-main">
         <header className="mobile-bar">
-          <Link href="/today" className="mobile-brand">BandOS</Link>
+          <Link href="/today" className="mobile-brand"><BrandMark size={24} reverse /><span>Band Office</span></Link>
           <span className="mobile-program">{programName}</span>
           <form action={logoutAction}><button type="submit" aria-label="Sign out" title="Sign out"><LogOut size={16} /></button></form>
         </header>

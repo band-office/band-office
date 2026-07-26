@@ -211,9 +211,23 @@ export async function createPerson(db: DatabaseClient, input: PersonCreateInput,
 
 export async function updatePerson(db: DatabaseClient, id: string, data: PersonUpdateInput, actor: string) {
   return db.$transaction(async (tx) => {
-    const existing = await tx.person.findUniqueOrThrow({ where: { id } });
+    const existing = await tx.person.findUniqueOrThrow({ where: { id }, include: { portalUser: true } });
     const { student, ...personData } = data;
     const person = await tx.person.update({ where: { id }, data: personData });
+    if (existing.portalUser && Object.prototype.hasOwnProperty.call(personData, "email")) {
+      if (person.email?.trim()) {
+        await tx.portalUser.update({
+          where: { id: existing.portalUser.id },
+          data: { emailNormalized: person.email.trim().toLowerCase() },
+        });
+      } else {
+        await tx.portalSession.deleteMany({ where: { userId: existing.portalUser.id } });
+        await tx.portalUser.update({
+          where: { id: existing.portalUser.id },
+          data: { status: "DISABLED" },
+        });
+      }
+    }
     if (student) {
       await tx.studentProfile.upsert({
         where: { personId: id },
@@ -322,6 +336,82 @@ export async function linkGuardianStudent(db: DatabaseClient, input: { guardianI
     });
     await appendAudit(tx, { programId: student.programId, actor, action: "UPDATE", entityType: "Person", entityId: student.id, summary: "Linked guardian and student", fields: ["guardianLinks"] });
     return link;
+  });
+}
+
+export async function createGuardianAndLinkStudent(db: DatabaseClient, input: {
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  phone?: string | null;
+  relationshipLabel?: string | null;
+  primaryContact?: boolean;
+  receivesCommunication?: boolean;
+}, actor: string) {
+  return db.$transaction(async (tx) => {
+    const firstName = input.firstName.trim();
+    const lastName = input.lastName.trim();
+    const email = input.email?.trim() || null;
+    const phone = input.phone?.trim() || null;
+    if (!firstName || !lastName) throw new InventoryInvariantError("Guardian first and last name are required.");
+    if (email && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)) throw new InventoryInvariantError("Enter a valid guardian email address.");
+
+    const student = await tx.person.findUniqueOrThrow({ where: { id: input.studentId }, include: { studentProfile: true } });
+    if (!student.studentProfile) throw new InventoryInvariantError("Guardian relationships can be created only for students.");
+
+    if (email) {
+      const normalizedEmail = email.toLowerCase();
+      const possibleDuplicates = await tx.person.findMany({
+        where: { programId: student.programId, email: { not: null } },
+        select: { id: true, firstName: true, lastName: true, email: true },
+      });
+      const duplicate = possibleDuplicates.find((person) => person.email?.trim().toLowerCase() === normalizedEmail);
+      if (duplicate) throw new InventoryInvariantError(`${duplicate.firstName} ${duplicate.lastName} already uses that email. Search for and link the existing person instead.`);
+    }
+
+    const guardianId = randomUUID();
+    const guardian = await tx.person.create({
+      data: {
+        id: guardianId,
+        programId: student.programId,
+        firstName,
+        lastName,
+        email,
+        phone,
+        status: PersonStatus.ACTIVE,
+      },
+    });
+    await tx.personClassification.create({ data: { personId: guardianId, classification: PersonClassificationType.GUARDIAN } });
+    const link = await tx.guardianStudent.create({
+      data: {
+        id: randomUUID(),
+        guardianId,
+        studentId: student.id,
+        relationshipLabel: input.relationshipLabel?.trim() || null,
+        primaryContact: input.primaryContact ?? false,
+        receivesCommunication: input.receivesCommunication ?? true,
+      },
+    });
+    await appendAudit(tx, {
+      programId: student.programId,
+      actor,
+      action: "CREATE",
+      entityType: "Person",
+      entityId: guardian.id,
+      summary: "Created guardian from student relationship",
+      fields: ["firstName", "lastName", "email", "phone", "classifications"],
+    });
+    await appendAudit(tx, {
+      programId: student.programId,
+      actor,
+      action: "UPDATE",
+      entityType: "Person",
+      entityId: student.id,
+      summary: "Linked newly created guardian and student",
+      fields: ["guardianLinks"],
+    });
+    return { guardian, link };
   });
 }
 

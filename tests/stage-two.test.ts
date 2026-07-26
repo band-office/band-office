@@ -9,6 +9,7 @@ import {
   EmailAudienceRecipientKind,
   EmailAudienceTargetType,
   EmailContactStatus,
+  EmailConnectionStatus,
   EmailProviderKind,
   FinancialEntryType,
   GroupKind,
@@ -25,6 +26,7 @@ import {
   EventStatus,
   EventVisibility,
   PersonClassificationType,
+  PortalUserStatus,
   RepairStatus,
   StaffRole,
 } from "@/generated/prisma/client";
@@ -35,6 +37,7 @@ import {
   checkoutAsset,
   createAsset,
   createAssetComponent,
+  createGuardianAndLinkStudent,
   createGroup,
   createPerson,
   createRepair,
@@ -72,6 +75,8 @@ import {
   SEED_EXPECTATIONS,
 } from "@/lib/seed-data";
 import { hasPermission } from "@/lib/auth";
+import { authenticationAllowed, recordAuthenticationResult } from "@/lib/auth-throttle";
+import { createPortalAccount, PortalAuthError, requestPortalPasswordReset, resetPortalPassword } from "@/lib/portal-auth";
 import { FinancialInvariantError, postFinancialEntry, postGroupAssessment, reverseFinancialEntry } from "@/lib/financial-service";
 import { assessmentBatches, financialSummary, financialTransactions, studentBalances } from "@/lib/financial-reports";
 import { createAnnouncement, processDueCommunicationJobs, saveEmailConnection, sendAnnouncement, testEmailConnection, updateAnnouncement, updateEmailContactState } from "@/lib/communications-service";
@@ -242,6 +247,21 @@ describe("staff access matrix", () => {
     expect(hasPermission(assistant, "VIEW_EVENTS")).toBe(true);
     expect(hasPermission(assistant, "MANAGE_EVENTS")).toBe(true);
     expect(hasPermission(assistant, "RECORD_ATTENDANCE")).toBe(true);
+  });
+});
+
+describe("authentication throttling", () => {
+  it("blocks repeated failures without storing the submitted identifier and clears after success", async () => {
+    const identifier = "private.guardian@example.test";
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      await recordAuthenticationResult(db, "portal", identifier, false);
+    }
+    expect(await authenticationAllowed(db, "portal", identifier)).toBe(false);
+    const throttle = await db.authenticationThrottle.findFirstOrThrow({ where: { scope: "portal" } });
+    expect(throttle.identifierHash).not.toContain(identifier);
+
+    await recordAuthenticationResult(db, "portal", identifier, true);
+    expect(await authenticationAllowed(db, "portal", identifier)).toBe(true);
   });
 });
 
@@ -667,6 +687,117 @@ describe.sequential("audited inventory data access", () => {
     expect(await db.guardianStudent.count({ where: { id: link.id } })).toBe(0);
     await deletePerson(db, guardian.id, "test-director");
     await deletePerson(db, student.id, "test-director");
+  });
+
+  it("creates and links a guardian without requiring a student ID", async () => {
+    const student = await createPerson(db, {
+      id: "test-student-inline-guardian",
+      programId: RIDGELINE_PROGRAM_ID,
+      firstName: "Inline",
+      lastName: "Student",
+      classifications: [PersonClassificationType.STUDENT],
+      student: { grade: 6 },
+    }, "test-director");
+
+    const result = await createGuardianAndLinkStudent(db, {
+      studentId: student.id,
+      firstName: "Inline",
+      lastName: "Guardian",
+      email: "inline.guardian@example.test",
+      relationshipLabel: "Parent",
+      primaryContact: true,
+    }, "test-director");
+
+    expect(result.guardian.email).toBe("inline.guardian@example.test");
+    expect(result.link.studentId).toBe(student.id);
+    expect(result.link.primaryContact).toBe(true);
+    expect(await db.personClassification.count({ where: { personId: result.guardian.id, classification: PersonClassificationType.GUARDIAN } })).toBe(1);
+    await expect(createGuardianAndLinkStudent(db, {
+      studentId: student.id,
+      firstName: "Duplicate",
+      lastName: "Guardian",
+      email: "INLINE.GUARDIAN@example.test",
+    }, "test-director")).rejects.toThrow(/already uses that email/);
+    expect(await db.person.count({ where: { programId: RIDGELINE_PROGRAM_ID, email: { contains: "guardian@example.test" } } })).toBe(1);
+
+    await deletePerson(db, result.guardian.id, "test-director");
+    await deletePerson(db, student.id, "test-director");
+  });
+
+  it("lets portal users set and reset their own password without exposing account existence", async () => {
+    const portalUser = await createPortalAccount(db, "guardian-001", "test-director");
+    expect(portalUser.status).toBe(PortalUserStatus.PENDING);
+    await db.emailConnection.upsert({
+      where: { programId: RIDGELINE_PROGRAM_ID },
+      update: {
+        status: EmailConnectionStatus.VERIFIED,
+        fromName: "Ridgeline Band",
+        fromAddress: "band@ridgeline.example",
+        smtpHost: "smtp.ridgeline.example",
+        smtpPort: 587,
+      },
+      create: {
+        id: "portal-reset-email",
+        programId: RIDGELINE_PROGRAM_ID,
+        provider: EmailProviderKind.SMTP,
+        status: EmailConnectionStatus.VERIFIED,
+        fromName: "Ridgeline Band",
+        fromAddress: "band@ridgeline.example",
+        smtpHost: "smtp.ridgeline.example",
+        smtpPort: 587,
+      },
+    });
+
+    const deliveries: Array<{ to: string; body: string }> = [];
+    const delivery = await requestPortalPasswordReset(
+      db,
+      "GUARDIAN1@RIDGELINE.EXAMPLE",
+      async (input) => {
+        deliveries.push({ to: input.to, body: input.body });
+        return { messageId: "portal-reset-test" };
+      },
+    );
+    expect(delivery.delivery).toBe("sent");
+    expect(deliveries).toHaveLength(1);
+    expect(deliveries[0].to).toBe("guardian1@ridgeline.example");
+    const code = deliveries[0].body.match(/\b\d{8}\b/)?.[0];
+    expect(code).toMatch(/^\d{8}$/);
+
+    let unknownDeliveries = 0;
+    const unknown = await requestPortalPasswordReset(db, "unknown@ridgeline.example", async () => {
+      unknownDeliveries += 1;
+      return { messageId: "should-not-send" };
+    });
+    expect(unknown.delivery).toBe("unavailable");
+    expect(unknownDeliveries).toBe(0);
+
+    await db.portalSession.create({
+      data: {
+        id: "portal-session-before-reset",
+        userId: portalUser.id,
+        tokenHash: "portal-session-before-reset-token",
+        expiresAt: new Date(Date.now() + 60_000),
+      },
+    });
+    await expect(resetPortalPassword(db, {
+      email: "guardian1@ridgeline.example",
+      code: "00000000",
+      password: "BandOS-Guardian-New-Password!",
+    })).rejects.toBeInstanceOf(PortalAuthError);
+    await resetPortalPassword(db, {
+      email: "guardian1@ridgeline.example",
+      code: code!,
+      password: "BandOS-Guardian-New-Password!",
+    });
+    const activated = await db.portalUser.findUniqueOrThrow({ where: { id: portalUser.id } });
+    expect(activated.status).toBe(PortalUserStatus.ACTIVE);
+    expect(activated.passwordHash).not.toContain("BandOS-Guardian-New-Password!");
+    expect(await db.portalSession.count({ where: { userId: portalUser.id } })).toBe(0);
+    await expect(resetPortalPassword(db, {
+      email: "guardian1@ridgeline.example",
+      code: code!,
+      password: "BandOS-Guardian-New-Password!",
+    })).rejects.toBeInstanceOf(PortalAuthError);
   });
 
   it("stores valid group context on checkout and rejects a group the borrower has not joined", async () => {

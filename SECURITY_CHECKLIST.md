@@ -1,11 +1,15 @@
-# BandOS v0.1 Security and Release Checklist
+# Band Office v0.1 Security and Release Checklist
 
-**Status date:** July 24, 2026
+**Status date:** July 26, 2026
 **Release state:** local release candidate; not approved for public distribution
 
 ## Verified locally
 
 - [x] Local director passwords use Argon2id and are never stored in plaintext (`src/lib/auth.ts`).
+- [x] Student and guardian portal passwords use Argon2id; reset codes are hashed, expire after 15 minutes, are single-use, allow at most five guesses, and are request-limited per identifier (`src/lib/portal-auth.ts`, unit and browser tests).
+- [x] Portal recovery returns the same public response for known and unknown emails, and a successful reset invalidates prior codes and all existing portal sessions (`src/lib/portal-auth.ts`, unit tests).
+- [x] Staff and portal password checks use Argon2id work for known and unknown accounts, persist only an identifier hash in the throttle record, and impose a 15-minute block after ten failures in a 15-minute window (`src/lib/auth-throttle.ts`, unit tests).
+- [x] Portal account access is enabled or disabled by a director, limited to active student/guardian people with unique email addresses, and guardian visibility derives only from explicit guardian/student links (`src/lib/portal-auth.ts`, portal page, browser test).
 - [x] Session tokens are random, stored only as SHA-256 hashes, sent in HTTP-only strict same-site cookies, and expire after inactivity (`src/lib/auth.ts`).
 - [x] Application pages, exports, and backups require a valid local session; APIs distinguish unauthenticated `401` from authenticated-but-forbidden `403` (`src/proxy.ts`, `src/lib/auth.ts`, route tests).
 - [x] Director, assistant director, inventory helper, and read-only roles have explicit view and mutation permissions enforced by server actions, APIs, direct-route guards, and permission-aware controls. Inventory helpers can see operational student identity, groups, holdings, inventory, repairs, and fixed reports, but cannot view contact details, guardian relationships, financials, communications, forms, events, notes, or exports (`src/lib/auth.ts`, page and browser tests).
@@ -14,7 +18,12 @@
 - [x] Communication audiences are deduplicated and frozen before delivery; guardian relationship eligibility and address-level disabled, invalid, or suppressed states are resolved before a destination becomes sendable (`src/lib/communications-service.ts`, communication tests).
 - [x] Successful destinations are never resent by a failure retry; every provider attempt has a bounded result row, and audit diffs redact message, attachment, and recipient contents (`src/lib/communications-service.ts`).
 - [x] Desktop SMTP credentials use operating-system encrypted storage and enter the child server only through process memory after restart. Credentials are excluded from SQLite, exports, audit diffs, and backups (`desktop/main.mjs`, `desktop/preload.cjs`).
-- [x] Scheduled desktop email is processed by an authenticated loopback worker only while BandOS is running. Jobs missed during downtime become `OVERDUE` and require staff confirmation (`desktop/main.mjs`, worker route, communication tests).
+- [x] Scheduled desktop email is processed by an authenticated loopback worker only while Band Office is running. Jobs missed during downtime become `OVERDUE` and require staff confirmation (`desktop/main.mjs`, worker route, communication tests).
+- [x] The server bundle runs scheduled email through a separate internal worker with a mounted high-entropy secret; the worker and application publish no host ports (`deploy/server/compose.yml`, `scripts/run-server-worker.mjs`, `scripts/docker-entrypoint.sh`).
+- [x] The public server edge is Caddy-only, forces automatic HTTPS, sets HSTS and bounded browser policies, suppresses access logs that could retain private calendar bearer paths, and excludes the intentionally embeddable public calendar route from frame denial (`deploy/server/Caddyfile`).
+- [x] Server readiness checks database availability, demo seeding is forced off, and the release verifier rejects missing secrets, direct application ports, unpinned Caddy, or missing deployment runbooks (`src/app/api/health/route.ts`, `scripts/verify-server-bundle.mjs`).
+- [x] Server startup uses the same SQLite-native, idempotent migration runner and pre-migration snapshot/rollback behavior as Desktop; server verification applies every migration to a fresh database and checks integrity and foreign keys (`scripts/deploy-sqlite-migrations.mjs`, `desktop/migrations.mjs`, `scripts/verify-server-bundle.mjs`).
+- [x] The pruned Linux ARM64 runtime image excludes development, Electron, Prisma CLI, MySQL, and unused unknown-license dependencies; it contains the Apache license and notice and reports zero known production-dependency vulnerabilities. The real Compose stack passed local HTTPS, header, non-public-port, worker-secret, migration, restart, integrity, and isolated complete-data-directory restore checks (`Dockerfile`, `.dockerignore`, `LICENSE`, `NOTICE`, `SERVER_ACCEPTANCE_RECORD.md`).
 - [x] Form versions become immutable when published; campaigns snapshot student and guardian recipients; required answers, ordinary acknowledgment timestamps, response changes, waivers, reminders, and retention purges are transactionally audited (`src/lib/forms-service.ts`, forms tests).
 - [x] Form uploads reject executable and active-web extensions, use relative managed storage keys and authenticated downloads, and purge file content while retaining completion history (`src/lib/form-storage.ts`, form download route, forms tests).
 - [x] Events preserve group-derived roster snapshots; roster refresh adds only never-seen current members, manual removals retain RSVP and attendance history, and restoration requires an explicit individual add (`src/lib/events-service.ts`, event tests).
@@ -39,8 +48,13 @@
 
 ## External gates still required
 
+- [ ] Publish the Band Office server image to the canonical registry and record its multi-platform digests.
+- [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
+- [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
+- [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
 - [ ] Publish the verified local Git history to the canonical public repository and tag the accepted release commit.
-- [ ] Select the public-source license and complete third-party notice review.
+- [x] License Band Office source under Apache-2.0.
+- [ ] Verify required third-party notices in every packaged macOS, Windows, and server artifact.
 - [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
 - [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [ ] Verify the GitHub Actions Windows artifact and packaged acceptance job; local macOS work cannot satisfy this gate.

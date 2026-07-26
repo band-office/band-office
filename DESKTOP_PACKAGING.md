@@ -1,6 +1,6 @@
-# BandOS Desktop Packaging
+# Band Office Desktop Packaging
 
-BandOS uses Electron as a local desktop shell around the same standalone Next.js application used by the server edition. The shell is not a remote website wrapper: it starts a private loopback server, opens one hardened application window, and owns the local database lifecycle.
+Band Office uses Electron as a local desktop shell around the same standalone Next.js application used by the server edition. The shell is not a remote website wrapper: it starts a private loopback server, opens one hardened application window, and owns the local database lifecycle.
 
 ## Current status
 
@@ -23,6 +23,8 @@ Electron stores live records outside the application bundle:
 | Windows | `%APPDATA%\BandOS` |
 
 Within that root:
+
+The legacy `BandOS` application-data directory is intentionally retained after the public rename to Band Office. Changing it would make an existing database, recovery snapshots, and encrypted SMTP credential appear to be missing.
 
 - `data/bandos.db` is the live SQLite database.
 - `logs/desktop.log` records desktop startup, migration, server, and restore events.

@@ -8,6 +8,7 @@ await rm(path.resolve("app-runtime"), { force: true, recursive: true });
 await mkdir(destination, { recursive: true });
 await cp(source, destination, { recursive: true, verbatimSymlinks: true });
 await cp(path.resolve(".next", "static"), path.join(destination, ".next", "static"), { recursive: true });
+await cp(path.resolve("public"), path.join(destination, "public"), { recursive: true });
 await rename(path.join(destination, "node_modules"), path.join(destination, "runtime-modules"));
 
 async function materializeRuntimeAliases(directory) {

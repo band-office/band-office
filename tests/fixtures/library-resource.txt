@@ -1,1 +1,1 @@
-Synthetic BandOS music library resource for automated acceptance testing.
+Synthetic Band Office music library resource for automated acceptance testing.
