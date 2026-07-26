@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, readdir, readlink, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { runtimeAliasSegments } from "../desktop/runtime-alias.mjs";
 
 const source = path.resolve(".next", "standalone");
 const destination = path.resolve("app-runtime", "server");
@@ -17,9 +18,7 @@ async function materializeRuntimeAliases(directory) {
     const entryPath = path.join(directory, entry.name);
     if (entry.isSymbolicLink()) {
       const target = await readlink(entryPath);
-      const runtimeTarget = target.replace(/(^|\/)node_modules\//, "$1runtime-modules/");
-      if (runtimeTarget === target) throw new Error(`Unexpected standalone dependency link: ${entryPath} -> ${target}`);
-      const sourcePath = path.resolve(directory, runtimeTarget);
+      const sourcePath = path.join(destination, "runtime-modules", ...runtimeAliasSegments(target));
       await rm(entryPath);
       await cp(sourcePath, entryPath, { dereference: true, recursive: true });
     } else if (entry.isDirectory()) {

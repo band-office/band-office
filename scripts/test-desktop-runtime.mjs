@@ -9,6 +9,7 @@ import path from "node:path";
 import { validateBackupArchive } from "../desktop/backup-archive.mjs";
 import { applyPendingRestore, PENDING_EVENT_RESTORE_DIRECTORY, PENDING_FORM_RESTORE_DIRECTORY, PENDING_LIBRARY_RESTORE_DIRECTORY, PENDING_RESTORE_FILENAME } from "../desktop/data-lifecycle.mjs";
 import { runDesktopMigrations } from "../desktop/migrations.mjs";
+import { runtimeAliasSegments } from "../desktop/runtime-alias.mjs";
 
 const migrationsDirectory = path.resolve("prisma/migrations");
 const firstMigration = "20260719214000_init";
@@ -66,6 +67,11 @@ const v8ArchiveTables = [
   ["calendar_subscriptions", "CalendarSubscription"],
   ...v7ArchiveTables.slice(36),
 ];
+
+assert.deepEqual(runtimeAliasSegments("../../node_modules/better-sqlite3"), ["better-sqlite3"]);
+assert.deepEqual(runtimeAliasSegments("D:\\a\\band-office\\band-office\\node_modules\\@prisma\\client"), ["@prisma", "client"]);
+assert.throws(() => runtimeAliasSegments("D:\\a\\band-office\\outside-runtime"));
+assert.throws(() => runtimeAliasSegments("../../node_modules/../outside-runtime"));
 
 async function createInitialVersionDatabase(databasePath, programId, programName) {
   await mkdir(path.dirname(databasePath), { recursive: true });
