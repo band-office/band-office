@@ -34,6 +34,7 @@ jobs:
       - run: npm ci
       - run: npm run desktop:dist:mac
       - run: npm run test:desktop-package
+      - run: npm run release:desktop:verify
       - name: Verify disk image
         run: hdiutil verify dist-desktop/Band-Office-*-mac-*.dmg
       - name: Write checksums
@@ -58,6 +59,7 @@ jobs:
       - run: npm ci
       - run: npm run desktop:dist:win
       - run: npm run test:desktop-package
+      - run: npm run release:desktop:verify
       - name: Write checksums
         shell: pwsh
         run: |

@@ -2,6 +2,8 @@
 
 Band Office is free, open-source application software. A public family portal still requires operated infrastructure.
 
+The current Server channel is a technical preview. The project has not published a supported image or authorized real family accounts. This document defines the responsibilities a future installation must assign; it does not convert preview source into a supported service.
+
 ## District or hosting operator
 
 The operator owns:
@@ -28,7 +30,7 @@ The director owns:
 
 ## Band Office project
 
-The open-source project provides:
+For a supported Server release, the open-source project intends to provide:
 
 - application source and reviewed release artifacts;
 - deployment templates and operating documentation;

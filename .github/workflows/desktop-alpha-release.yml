@@ -1,0 +1,164 @@
+name: Band Office Desktop alpha release
+
+on:
+  push:
+    tags:
+      - "v*-alpha.*"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: git fetch --no-tags origin main:refs/remotes/origin/main
+      - run: npm ci
+      - run: npm run release:tag:verify
+      - run: npx playwright install --with-deps chromium
+      - run: npm run release:verify
+
+  signed-macos:
+    needs: quality
+    runs-on: macos-14
+    timeout-minutes: 35
+    environment: desktop-alpha-release
+    env:
+      CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Require macOS signing and notarization credentials
+        run: |
+          test -n "$CSC_LINK"
+          test -n "$CSC_KEY_PASSWORD"
+          test -n "$APPLE_ID"
+          test -n "$APPLE_APP_SPECIFIC_PASSWORD"
+          test -n "$APPLE_TEAM_ID"
+      - run: npm ci
+      - run: npm run desktop:dist:mac:signed
+      - run: npm run test:desktop-package
+      - run: npm run release:desktop:verify
+      - name: Verify signature, notarization, and disk image
+        run: |
+          app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
+          dmg="$(find dist-desktop -name 'Band-Office-*-mac-arm64.dmg' -type f | head -n 1)"
+          test -n "$app"
+          test -n "$dmg"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign -dv --verbose=4 "$app" 2>&1 | grep 'Authority=Developer ID Application'
+          spctl --assess --type execute --verbose=4 "$app"
+          xcrun stapler validate "$app"
+          xcrun stapler validate "$dmg"
+          hdiutil verify "$dmg"
+      - name: Write macOS checksums
+        run: shasum -a 256 dist-desktop/Band-Office-*-mac-arm64.dmg dist-desktop/Band-Office-*-mac-arm64.zip > dist-desktop/SHA256SUMS-macos.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-macos-alpha
+          retention-days: 30
+          path: |
+            dist-desktop/Band-Office-*-mac-arm64.dmg
+            dist-desktop/Band-Office-*-mac-arm64.zip
+            dist-desktop/SHA256SUMS-macos.txt
+
+  signed-windows:
+    needs: quality
+    runs-on: windows-latest
+    timeout-minutes: 35
+    environment: desktop-alpha-release
+    env:
+      WIN_CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+      WIN_CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Require Windows signing credentials
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_LINK)) { throw "WINDOWS_CSC_LINK is required." }
+          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_KEY_PASSWORD)) { throw "WINDOWS_CSC_KEY_PASSWORD is required." }
+      - run: npm ci
+      - run: npm run desktop:dist:win:signed
+      - run: npm run test:desktop-package
+      - run: npm run release:desktop:verify
+      - name: Verify Authenticode signatures
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "dist-desktop/Band-Office-*-win-x64.exe" | Select-Object -First 1
+          $application = Get-Item "dist-desktop/win-unpacked/Band Office.exe"
+          foreach ($file in @($installer, $application)) {
+            $signature = Get-AuthenticodeSignature $file.FullName
+            if ($signature.Status -ne "Valid") {
+              throw "Invalid Authenticode signature for $($file.FullName): $($signature.Status)"
+            }
+          }
+      - name: Write Windows checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem dist-desktop/Band-Office-*-win-x64.exe, dist-desktop/Band-Office-*-win-x64.zip |
+            Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" } |
+            Set-Content dist-desktop/SHA256SUMS-windows.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-windows-alpha
+          retention-days: 30
+          path: |
+            dist-desktop/Band-Office-*-win-x64.exe
+            dist-desktop/Band-Office-*-win-x64.zip
+            dist-desktop/SHA256SUMS-windows.txt
+
+  publish-prerelease:
+    needs:
+      - signed-macos
+      - signed-windows
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: git fetch --no-tags origin main:refs/remotes/origin/main
+      - run: npm run release:tag:verify
+      - name: Download signed platform artifacts
+        run: gh run download "$GITHUB_RUN_ID" --dir release-assets
+      - run: npm run release:manifest -- release-assets
+      - name: Publish durable Desktop alpha prerelease
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            release-assets/signed-macos-alpha/* \
+            release-assets/signed-windows-alpha/* \
+            release-assets/Band-Office-RELEASE-MANIFEST.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --prerelease \
+            --verify-tag \
+            --title "Band Office Desktop ${GITHUB_REF_NAME#v}" \
+            --notes-file .github/desktop-alpha-release-notes.md

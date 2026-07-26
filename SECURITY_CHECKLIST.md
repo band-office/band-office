@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
 **Status date:** July 26, 2026
-**Release state:** local release candidate; not approved for public distribution
+**Release state:** public source release candidate; Desktop alpha preparation; Server technical preview
 
 ## Verified locally
 
@@ -41,7 +41,7 @@
 - [x] Camera access is director-initiated and video-only; microphone, audio-capture, Bluetooth, and unrelated Electron permissions are denied or stripped (`desktop/main.mjs`, `scripts/after-pack-desktop.mjs`).
 - [x] Runtime source, local assets, entitlements, exact dependency pins, and packaged data exclusions pass `npm run audit:release` (`RELEASE_AUDIT.json`).
 - [x] A clean `npm ci` installation passes the full dependency-tree audit with no missing, invalid, or extraneous packages (`npm run audit:tree`).
-- [x] The production-dependency registry advisory audit reported zero vulnerabilities on July 24, 2026 with Next.js 16.2.11 plus patched transitive Hono server and Valibot overrides (`npm run audit:dependencies`). Development and packaging dependencies are governed separately by exact pins, the clean-tree audit, packaged-source exclusions, and manual updates.
+- [x] The production-dependency registry advisory audit reported zero vulnerabilities on July 26, 2026 with Next.js 16.2.12 (`npm run audit:dependencies`). Development and packaging dependencies are governed separately by exact pins, the clean-tree audit, packaged-source exclusions, and manual updates.
 - [x] The packaged macOS executable passes fresh startup, historical upgrade, recovery snapshot, rendered-window, SQLite integrity, foreign-key, and camera-only privacy-metadata acceptance (`npm run test:desktop-package`).
 - [x] The unsigned DMG verifies, the ZIP has no corrupt entries, and SHA-256 checksums are recorded (`dist-desktop/SHA256SUMS.txt`).
 - [x] The update policy is manual and makes backup, recovery snapshot, and rollback requirements explicit (`UPDATE_POLICY.md`).
@@ -52,19 +52,21 @@
 - [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
-- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, accepted CI commit `e789f15fd77c8db66c19fe5543569ad4dd469215`).
+- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, dependency-reviewed baseline `6c8ca5d34d1258f05253139d70c1ccee1b70635e`).
 - [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
 - [x] License Band Office source under Apache-2.0.
-- [ ] Verify required third-party notices in every packaged macOS, Windows, and server artifact.
+- [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
+- [ ] Verify required legal files in the signed Windows package and future Server release image.
+- [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
 - [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
 - [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
-- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs (run `30215288767`; macOS artifact digest `sha256:19976bf798cbb6b65a14829c0901a7772044c9c7cf846fc1d79db9515fc9ebb7`; Windows artifact digest `sha256:b8cb8b0f5d75b62185999a1bddda09580a03a9e26a6b789af7a50ab1e2d5902a`).
+- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30218588282`](https://github.com/band-office/band-office/actions/runs/30218588282), commit `6c8ca5d34d1258f05253139d70c1ccee1b70635e`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Unsigned artifacts remain test builds. Passing local automation does not authorize public distribution or real student-data use.
+Unsigned artifacts remain test builds. The Desktop alpha workflow must fail closed without platform signing credentials and must publish only signed, verified GitHub prerelease artifacts. Passing automation does not authorize real student-data use.
 
 ## Reproducible commands
 

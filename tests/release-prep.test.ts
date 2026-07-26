@@ -1,0 +1,59 @@
+import { execFile } from "node:child_process";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { promisify } from "node:util";
+import { afterEach, describe, expect, test } from "vitest";
+
+const execFileAsync = promisify(execFile);
+const temporaryDirectories: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(temporaryDirectories.splice(0).map((directory) => rm(directory, { recursive: true, force: true })));
+});
+describe("public release preparation", () => {
+  test("accepts only alpha tags matching the package version", async () => {
+    await expect(execFileAsync(process.execPath, ["scripts/verify-desktop-alpha-tag.mjs", "v0.1.0-alpha.1"])).resolves.toMatchObject({
+      stdout: expect.stringContaining("Desktop alpha tag verified"),
+    });
+    await expect(execFileAsync(process.execPath, ["scripts/verify-desktop-alpha-tag.mjs", "v0.1.1-alpha.1"])).rejects.toThrow();
+    await expect(execFileAsync(process.execPath, ["scripts/verify-desktop-alpha-tag.mjs", "v0.1.0"])).rejects.toThrow();
+  });
+
+  test("writes a source-bound manifest for both platform artifact sets", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "band-office-release-manifest-"));
+    temporaryDirectories.push(directory);
+    for (const name of [
+      "Band-Office-0.1.0-mac-arm64.dmg",
+      "Band-Office-0.1.0-mac-arm64.zip",
+      "Band-Office-0.1.0-win-x64.exe",
+      "Band-Office-0.1.0-win-x64.zip",
+    ]) await writeFile(path.join(directory, name), `synthetic ${name}`);
+
+    await execFileAsync(process.execPath, ["scripts/write-release-manifest.mjs", directory], {
+      env: { ...process.env, GITHUB_REF_NAME: "v0.1.0-alpha.1", GITHUB_SHA: "a".repeat(40) },
+    });
+
+    const manifest = JSON.parse(await readFile(path.join(directory, "Band-Office-RELEASE-MANIFEST.json"), "utf8"));
+    expect(manifest).toMatchObject({
+      schemaVersion: 1,
+      product: "Band Office Desktop",
+      channel: "alpha",
+      tag: "v0.1.0-alpha.1",
+      commit: "a".repeat(40),
+    });
+    expect(manifest.files).toHaveLength(4);
+    expect(manifest.files.every((file: { sha256: string }) => /^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
+  });
+
+  test("keeps public channels and unsupported deployment boundaries explicit", async () => {
+    const readme = await readFile("README.md", "utf8");
+    const channels = await readFile("RELEASE_CHANNELS.md", "utf8");
+    const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
+
+    expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
+    expect(readme).toContain("No public Desktop alpha or supported Server release has been issued");
+    expect(channels).toContain("Band Office Server Technical Preview");
+    expect(deployment).toContain("controlled evaluation with fictional data");
+  });
+});

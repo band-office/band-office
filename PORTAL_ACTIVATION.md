@@ -1,6 +1,9 @@
-# Student and Guardian Portal Activation
+# Student and Guardian Portal Technical Preview
 
-**Audience:** Band Office directors after IT has completed `SERVER_DEPLOYMENT.md`.
+**Audience:** district IT and Band Office directors conducting controlled preview acceptance with fictional people after completing `SERVER_DEPLOYMENT.md`.
+
+> [!WARNING]
+> Do not enable real student or guardian accounts during the Server technical preview. The controlled synthetic pilot below is an acceptance procedure, not authorization for family rollout.
 
 Portal access is enabled person by person. A student ID is not used to connect a guardian to a student and is not required for portal login. Relationships are created through searchable people records.
 
@@ -28,9 +31,9 @@ Do not give two people one shared portal account. A portal email address must be
 
 Stop and contact the server operator if the reset email does not arrive, HTTPS is invalid, or unrelated student information appears.
 
-## Family rollout
+## Family rollout after supported Server release
 
-Enable accounts only after the relationship review. Send families the public portal address through the school's approved communication channel. Do not send passwords. Each user creates or resets their own password through the emailed one-time code.
+After a supported Server release exists and district approval is complete, enable accounts only after the relationship review. Send families the public portal address through the school's approved communication channel. Do not send passwords. Each user creates or resets their own password through the emailed one-time code.
 
 When a relationship changes:
 

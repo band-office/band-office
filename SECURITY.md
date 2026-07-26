@@ -31,6 +31,6 @@ The project will acknowledge a usable report as soon as practical, reproduce it,
 
 ## Deployment boundary
 
-The Electron app is local-only. Family access requires the documented district-approved server deployment behind HTTPS. Do not expose the development server, the raw application port, or a home-server port forward to the public internet.
+The Electron app is local-only. Family access requires a future supported district-operated Server release behind HTTPS. The current Server source and operator kit are a technical preview for fictional-data evaluation. Do not expose the development server, the raw application port, or a home-server port forward to the public internet.
 
-See [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md), [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md), and [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using Band Office with real program data.
+See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md), [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md), [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md), and [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using Band Office with real program data.

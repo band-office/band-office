@@ -4,9 +4,9 @@ This roadmap describes direction, not a delivery promise. Release truth lives in
 
 ## Now: prove the release candidate
 
-- Complete reviewed release tagging and artifact notice verification.
-- Finish Windows signing and clean-machine acceptance.
-- Complete Apple signing and notarization decisions.
+- Complete the fail-closed Desktop alpha workflow and artifact notice verification.
+- Configure Windows signing and clean-machine acceptance.
+- Configure Apple signing, notarization, and Gatekeeper acceptance.
 - Publish and digest-pin the canonical server image.
 - Run clean public-server acceptance with district ownership.
 - Complete district approval and the controlled SDMS real-data pilot.

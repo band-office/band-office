@@ -1,5 +1,7 @@
 # Server Backup and Restore
 
+This runbook belongs to the Server technical preview. Use fictional data until the supported-image, public-edge, district-ownership, and approval gates pass.
+
 Band Office Server requires two backup layers:
 
 1. **Portable program archive:** a director regularly downloads the encrypted `.bandos` archive from Settings to district-approved storage.
