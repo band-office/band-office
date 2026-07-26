@@ -29,6 +29,15 @@ updates:
       - dependency-name: better-sqlite3
         update-types:
           - version-update:semver-major
+      - dependency-name: prisma
+        versions:
+          - "7.9.x"
+      - dependency-name: "@prisma/client"
+        versions:
+          - "7.9.x"
+      - dependency-name: "@prisma/adapter-better-sqlite3"
+        versions:
+          - "7.9.x"
       - dependency-name: eslint
         update-types:
           - version-update:semver-major
