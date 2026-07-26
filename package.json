@@ -45,8 +45,8 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.2.8",
-    "@prisma/adapter-better-sqlite3": "7.8.0",
-    "@prisma/client": "7.8.0",
+    "@prisma/adapter-better-sqlite3": "7.9.0",
+    "@prisma/client": "7.9.0",
     "argon2": "0.45.1",
     "better-sqlite3": "12.11.1",
     "bwip-js": "4.11.2",
@@ -73,7 +73,7 @@
     "electron-builder": "26.15.3",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.11",
-    "prisma": "7.8.0",
+    "prisma": "7.9.0",
     "sharp": "0.35.3",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
