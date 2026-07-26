@@ -52,7 +52,7 @@
 - [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
-- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged public-release baseline `42522d9eaa80b5b8d95e5cf58d4be8b15bcd0383`).
+- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged Artifact Signing release baseline `f00f861f7a314657bee8299032fa862d013b4854`).
 - [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
@@ -60,7 +60,7 @@
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
 - [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
 - [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
-- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30221302221`](https://github.com/band-office/band-office/actions/runs/30221302221), commit `42522d9eaa80b5b8d95e5cf58d4be8b15bcd0383`).
+- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30222215159`](https://github.com/band-office/band-office/actions/runs/30222215159), commit `f00f861f7a314657bee8299032fa862d013b4854`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.

@@ -12,7 +12,7 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-The merged public-release baseline at commit `42522d9eaa80b5b8d95e5cf58d4be8b15bcd0383` passed [GitHub Actions run 30221302221](https://github.com/band-office/band-office/actions/runs/30221302221):
+The merged Artifact Signing release baseline at commit `f00f861f7a314657bee8299032fa862d013b4854` passed [GitHub Actions run 30222215159](https://github.com/band-office/band-office/actions/runs/30222215159):
 
 - Linux release verification;
 - unsigned macOS packaging and packaged-application acceptance;
