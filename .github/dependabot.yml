@@ -10,6 +10,31 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    groups:
+      react-runtime:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      prisma-runtime:
+        patterns:
+          - prisma
+          - "@prisma/*"
+      next-runtime:
+        patterns:
+          - next
+          - eslint-config-next
+    ignore:
+      - dependency-name: better-sqlite3
+        update-types:
+          - version-update:semver-major
+      - dependency-name: eslint
+        update-types:
+          - version-update:semver-major
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -18,3 +43,7 @@ updates:
     labels:
       - dependencies
       - github-actions
+    groups:
+      github-actions:
+        patterns:
+          - "*"
