@@ -69,7 +69,8 @@ jobs:
           xcrun stapler validate "$dmg"
           hdiutil verify "$dmg"
       - name: Write macOS checksums
-        run: shasum -a 256 dist-desktop/Band-Office-*-mac-arm64.dmg dist-desktop/Band-Office-*-mac-arm64.zip > dist-desktop/SHA256SUMS-macos.txt
+        working-directory: dist-desktop
+        run: shasum -a 256 Band-Office-*-mac-arm64.dmg Band-Office-*-mac-arm64.zip > SHA256SUMS-macos.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: signed-macos-alpha

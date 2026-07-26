@@ -4,14 +4,14 @@ The current work is release engineering, not another feature module.
 
 ## Desktop Alpha
 
-1. Merge the public-release cleanup and fail-closed signing workflow through protected CI.
-2. Obtain an Apple Developer ID Application certificate and notarization credentials.
-3. Obtain a Windows code-signing certificate suitable for CI.
-4. Configure the protected `desktop-alpha-release` GitHub environment and required reviewer.
-5. Add the seven environment secrets listed in `DESKTOP_ALPHA_RELEASE.md`.
-6. Create the signed `v0.1.0-alpha.1` tag from accepted `main`.
-7. Verify the GitHub prerelease, checksums, signatures, notarization ticket, and legal files.
-8. Run clean-machine installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
+The public-release cleanup, fail-closed signing workflow, protected `desktop-alpha-release` environment, required reviewer, and native unsigned package acceptance are complete.
+
+1. Obtain an Apple Developer ID Application certificate and notarization credentials.
+2. Obtain a Windows code-signing certificate suitable for CI.
+3. Add the seven environment secrets listed in `DESKTOP_ALPHA_RELEASE.md`.
+4. Create the signed `v0.1.0-alpha.1` tag from accepted `main`.
+5. Verify the GitHub prerelease, checksums, signatures, notarization ticket, and legal files.
+6. Run clean-machine installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
 
 Do not publish unsigned Actions artifacts as director downloads.
 

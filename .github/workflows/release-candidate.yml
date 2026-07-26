@@ -38,7 +38,8 @@ jobs:
       - name: Verify disk image
         run: hdiutil verify dist-desktop/Band-Office-*-mac-*.dmg
       - name: Write checksums
-        run: shasum -a 256 dist-desktop/Band-Office-*-mac-*.dmg dist-desktop/Band-Office-*-mac-*.zip > dist-desktop/SHA256SUMS.txt
+        working-directory: dist-desktop
+        run: shasum -a 256 Band-Office-*-mac-*.dmg Band-Office-*-mac-*.zip > SHA256SUMS.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: unsigned-macos-test-artifacts
