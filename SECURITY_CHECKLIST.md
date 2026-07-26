@@ -52,7 +52,8 @@
 - [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
-- [ ] Publish the verified local Git history to the canonical public repository and tag the accepted release commit.
+- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, commit `41c387c76ab93af7ac301d8f5baaf85e19c52d9f`).
+- [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
 - [x] License Band Office source under Apache-2.0.
 - [ ] Verify required third-party notices in every packaged macOS, Windows, and server artifact.
 - [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
