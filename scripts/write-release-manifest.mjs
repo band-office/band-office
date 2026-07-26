@@ -28,10 +28,37 @@ async function collect(directory) {
 
 await collect(root);
 files.sort((left, right) => left.path.localeCompare(right.path));
-assert.ok(files.some((file) => file.path.endsWith(".dmg")), "Release assets are missing the macOS DMG.");
-assert.ok(files.some((file) => file.path.endsWith("-mac-arm64.zip")), "Release assets are missing the macOS ZIP.");
-assert.ok(files.some((file) => file.path.endsWith(".exe")), "Release assets are missing the Windows installer.");
-assert.ok(files.some((file) => file.path.endsWith("-win-x64.zip")), "Release assets are missing the Windows ZIP.");
+
+function requiredFile(suffix, message) {
+  const matches = files.filter((file) => file.path.endsWith(suffix));
+  assert.equal(matches.length, 1, message);
+  return matches[0];
+}
+
+const macDmg = requiredFile(".dmg", "Release assets must contain exactly one macOS DMG.");
+const macZip = requiredFile("-mac-arm64.zip", "Release assets must contain exactly one macOS ZIP.");
+const windowsInstaller = requiredFile(".exe", "Release assets must contain exactly one Windows installer.");
+const windowsZip = requiredFile("-win-x64.zip", "Release assets must contain exactly one Windows ZIP.");
+const macChecksums = requiredFile("SHA256SUMS-macos.txt", "Release assets must contain the macOS checksum file.");
+const windowsChecksums = requiredFile("SHA256SUMS-windows.txt", "Release assets must contain the Windows checksum file.");
+
+async function verifyChecksums(checksumFile, targets) {
+  const contents = await readFile(path.join(root, checksumFile.path), "utf8");
+  const checksums = new Map();
+  for (const line of contents.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const match = line.match(/^([a-f0-9]{64})\s+\*?(.+)$/i);
+    assert.ok(match, `Malformed checksum line in ${checksumFile.path}: ${line}`);
+    checksums.set(path.basename(match[2].trim()), match[1].toLowerCase());
+  }
+  for (const target of targets) {
+    const name = path.basename(target.path);
+    assert.equal(checksums.get(name), target.sha256, `${checksumFile.path} does not match ${name}.`);
+  }
+}
+
+await verifyChecksums(macChecksums, [macDmg, macZip]);
+await verifyChecksums(windowsChecksums, [windowsInstaller, windowsZip]);
 
 const manifest = {
   schemaVersion: 1,

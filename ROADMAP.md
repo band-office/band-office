@@ -4,9 +4,9 @@ This roadmap describes direction, not a delivery promise. Release truth lives in
 
 ## Now: prove the release candidate
 
-- Complete the fail-closed Desktop alpha workflow and artifact notice verification.
-- Configure Windows signing and clean-machine acceptance.
-- Configure Apple signing, notarization, and Gatekeeper acceptance.
+- Install Windows signing credentials in the protected release environment and complete clean-machine acceptance.
+- Install Apple signing and notarization credentials in the protected release environment and complete Gatekeeper acceptance.
+- Publish the first Desktop alpha only after both signed platform jobs pass.
 - Publish and digest-pin the canonical server image.
 - Run clean public-server acceptance with district ownership.
 - Complete district approval and the controlled SDMS real-data pilot.

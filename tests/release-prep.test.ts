@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -23,12 +24,31 @@ describe("public release preparation", () => {
   test("writes a source-bound manifest for both platform artifact sets", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "band-office-release-manifest-"));
     temporaryDirectories.push(directory);
-    for (const name of [
+    const artifactNames = [
       "Band-Office-0.1.0-mac-arm64.dmg",
       "Band-Office-0.1.0-mac-arm64.zip",
       "Band-Office-0.1.0-win-x64.exe",
       "Band-Office-0.1.0-win-x64.zip",
-    ]) await writeFile(path.join(directory, name), `synthetic ${name}`);
+    ];
+    const hashes = new Map<string, string>();
+    for (const name of artifactNames) {
+      const contents = `synthetic ${name}`;
+      await writeFile(path.join(directory, name), contents);
+      hashes.set(name, createHash("sha256").update(contents).digest("hex"));
+    }
+
+    await expect(execFileAsync(process.execPath, ["scripts/write-release-manifest.mjs", directory], {
+      env: { ...process.env, GITHUB_REF_NAME: "v0.1.0-alpha.1", GITHUB_SHA: "a".repeat(40) },
+    })).rejects.toThrow();
+
+    await writeFile(
+      path.join(directory, "SHA256SUMS-macos.txt"),
+      artifactNames.slice(0, 2).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
+    );
+    await writeFile(
+      path.join(directory, "SHA256SUMS-windows.txt"),
+      artifactNames.slice(2).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
+    );
 
     await execFileAsync(process.execPath, ["scripts/write-release-manifest.mjs", directory], {
       env: { ...process.env, GITHUB_REF_NAME: "v0.1.0-alpha.1", GITHUB_SHA: "a".repeat(40) },
@@ -42,7 +62,7 @@ describe("public release preparation", () => {
       tag: "v0.1.0-alpha.1",
       commit: "a".repeat(40),
     });
-    expect(manifest.files).toHaveLength(4);
+    expect(manifest.files).toHaveLength(6);
     expect(manifest.files.every((file: { sha256: string }) => /^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
   });
 

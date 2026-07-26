@@ -12,14 +12,14 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-The dependency-reviewed `main` baseline at commit `6c8ca5d34d1258f05253139d70c1ccee1b70635e` passed [GitHub Actions run 30218588282](https://github.com/band-office/band-office/actions/runs/30218588282):
+The merged public-release baseline at commit `796389db11308ba55e57393522d00402f62ec1c3` passed [GitHub Actions run 30220081390](https://github.com/band-office/band-office/actions/runs/30220081390):
 
 - Linux release verification;
 - unsigned macOS packaging and packaged-application acceptance;
 - unsigned Windows packaging and packaged-application acceptance;
 - DMG verification, checksums, and temporary CI artifact upload.
 
-The production dependency advisory audit reported zero vulnerabilities. Unsigned CI artifacts are temporary engineering evidence, not public downloads.
+The quality job included all 48 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. Unsigned CI artifacts are temporary engineering evidence, not public downloads.
 
 ## Desktop Alpha
 
