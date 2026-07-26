@@ -52,13 +52,13 @@
 - [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
-- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, commit `41c387c76ab93af7ac301d8f5baaf85e19c52d9f`).
+- [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, accepted CI commit `e789f15fd77c8db66c19fe5543569ad4dd469215`).
 - [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
 - [x] License Band Office source under Apache-2.0.
 - [ ] Verify required third-party notices in every packaged macOS, Windows, and server artifact.
 - [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
 - [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
-- [ ] Verify the GitHub Actions Windows artifact and packaged acceptance job; local macOS work cannot satisfy this gate.
+- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs (run `30215288767`; macOS artifact digest `sha256:19976bf798cbb6b65a14829c0901a7772044c9c7cf846fc1d79db9515fc9ebb7`; Windows artifact digest `sha256:b8cb8b0f5d75b62185999a1bddda09580a03a9e26a6b789af7a50ab1e2d5902a`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.

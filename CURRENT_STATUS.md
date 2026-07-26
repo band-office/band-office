@@ -11,7 +11,7 @@ The server deployment kit is implemented in the repository: secret-mounted SMTP 
 
 A local Linux ARM64 container acceptance passed on July 26. The actual stack completed migrations, HTTPS proxying, security-header checks, worker-secret enforcement, restart recovery, SQLite integrity checks, and an isolated complete-data-directory backup/restore drill. The pruned runtime dependency tree reported zero known vulnerabilities. Exact evidence is in `SERVER_ACCEPTANCE_RECORD.md`.
 
-The accepted source history was published to the public Apache-2.0 repository `band-office/band-office` on July 26 at commit `41c387c76ab93af7ac301d8f5baaf85e19c52d9f`. No stable release tag or packaged public download has been issued.
+The accepted source history was published to the public Apache-2.0 repository `band-office/band-office`. GitHub Actions release-candidate run [30215288767](https://github.com/band-office/band-office/actions/runs/30215288767) passed on July 26 against commit `e789f15fd77c8db66c19fe5543569ad4dd469215`: the full quality gate, unsigned macOS package and smoke acceptance, and unsigned Windows package and smoke acceptance all completed successfully. The retained test artifacts are `unsigned-macos-test-artifacts` (`sha256:19976bf798cbb6b65a14829c0901a7772044c9c7cf846fc1d79db9515fc9ebb7`) and `unsigned-windows-test-artifacts` (`sha256:b8cb8b0f5d75b62185999a1bddda09580a03a9e26a6b789af7a50ab1e2d5902a`). No stable release tag or packaged public download has been issued.
 
 This is local container evidence, not a public-hosting acceptance claim. Public server release remains blocked until:
 
