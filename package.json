@@ -48,7 +48,7 @@
     "@prisma/adapter-better-sqlite3": "7.8.0",
     "@prisma/client": "7.8.0",
     "argon2": "0.45.0",
-    "better-sqlite3": "12.11.1",
+    "better-sqlite3": "13.0.1",
     "bwip-js": "4.11.2",
     "jszip": "3.10.1",
     "lucide-react": "1.25.0",
