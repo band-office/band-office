@@ -81,5 +81,8 @@ describe("public release preparation", () => {
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(signedWorkflow).toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
     expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
+    expect(signedWorkflow).toContain("unsigned-macos-alpha");
+    expect(signedWorkflow).toContain("npm run desktop:dist:mac");
+    expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
   });
 });

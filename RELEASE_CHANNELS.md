@@ -24,7 +24,7 @@ Do not describe this channel as generally available, production-ready, district-
 
 The Desktop alpha begins only when a `v*-alpha.*` GitHub prerelease contains:
 
-- a signed and notarized macOS DMG and ZIP;
+- an explicitly unsigned macOS DMG and ZIP with SHA-256 checksums and Gatekeeper instructions;
 - a signed Windows installer and ZIP;
 - platform acceptance results;
 - SHA-256 checksums;
@@ -54,4 +54,4 @@ It is not approved for real family accounts. A supported Server release requires
 
 ## Promotion Boundary
 
-LinkedIn and contributor-facing posts may link to the source release candidate when they preserve its status. Broad band-director promotion should wait for the Desktop alpha to provide a normal signed download. Family-portal promotion should wait for a supported Server release.
+LinkedIn and contributor-facing posts may link to the source release candidate when they preserve its status. Broad band-director promotion should wait for the Desktop alpha and must disclose that the initial macOS package is unsigned. Family-portal promotion should wait for a supported Server release.

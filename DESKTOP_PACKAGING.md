@@ -11,7 +11,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 - Camera permission is limited to director-initiated inventory scanning; audio and all unrelated Electron permissions remain denied.
 - SMTP credentials are encrypted with Electron `safeStorage`, excluded from the database and backups, and passed only to the supervised local server process after restart.
 - Unsigned Windows NSIS and ZIP packaging plus packaged-app smoke acceptance pass in public GitHub Actions.
-- The repository includes a fail-closed signed alpha workflow, but the protected environment does not yet contain Apple or Microsoft Artifact Signing credentials. Current artifacts are test builds only.
+- The repository includes a fail-closed mixed-distribution alpha workflow. macOS is intentionally unsigned with checksums and a Gatekeeper warning; Windows still requires Microsoft Artifact Signing. Current CI artifacts are test builds only.
 
 ## Runtime layout
 
@@ -51,13 +51,13 @@ npm run desktop:dist:mac:signed
 npm run desktop:dist:win:signed
 ```
 
-Those commands set `BANDOS_SIGN_DESKTOP=1`. macOS then permits Electron Builder credential discovery. Windows requires the three Microsoft Entra authentication secrets and four Artifact Signing profile values documented in `DESKTOP_ALPHA_RELEASE.md`; the packaging script fails before building if any are missing. These commands do not make a release trustworthy by themselves. The release runner still needs platform credentials, Apple notarization configuration, timestamping, and post-build signature verification.
+Those commands set `BANDOS_SIGN_DESKTOP=1`. They remain available for a future signed macOS channel and the current signed Windows channel. Windows requires the three Microsoft Entra authentication secrets and four Artifact Signing profile values documented in `DESKTOP_ALPHA_RELEASE.md`; the packaging script fails before building if any are missing. The initial public macOS alpha uses `npm run desktop:dist:mac` and is explicitly unsigned.
 
 The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It requires the protected `desktop-alpha-release` environment, forces signing, verifies signatures after packaging, verifies the packaged legal files, and creates a GitHub prerelease only after both platform jobs pass. See [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
 ## Public release gates
 
-1. Apple Developer ID signing and notarization pass on the DMG and contained app.
+1. The unsigned macOS package passes application acceptance, DMG verification, checksum generation, and clean-machine Gatekeeper override testing.
 2. Microsoft Artifact Signing passes on both NSIS and the installed executable.
 3. Clean macOS and Windows machines complete install, first-run setup, backup, restore, and uninstall checks.
 4. An older supported database upgrades successfully, with the automatic recovery snapshot verified.

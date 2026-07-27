@@ -58,7 +58,8 @@
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
 - [ ] Verify required legal files in the signed Windows package and future Server release image.
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
-- [ ] Sign and notarize the macOS application and verify Gatekeeper acceptance on a separate clean Mac.
+- [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Mac.
+- [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
 - [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30222215159`](https://github.com/band-office/band-office/actions/runs/30222215159), commit `f00f861f7a314657bee8299032fa862d013b4854`).
 - [ ] Complete principal/district approval before loading SDMS student data.

@@ -23,8 +23,8 @@
       "detail": "Signed macOS and Windows commands force signing; macOS also forces notarization"
     },
     {
-      "claim": "Desktop alpha publication is signed and fail-closed",
-      "detail": "Protected-environment credentials, post-signing platform checks, legal verification, and prerelease-only publication are required"
+      "claim": "Desktop alpha publication is explicit and fail-closed",
+      "detail": "macOS is intentionally unsigned with checksums and a Gatekeeper warning; Windows requires Artifact Signing and post-signing verification before prerelease publication"
     },
     {
       "claim": "Desktop shell enforces the local boundary",
