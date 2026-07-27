@@ -1,6 +1,6 @@
 # Band Office Server Upgrade
 
-This runbook belongs to the Server technical preview. It requires two controlled, versioned preview or release images; no supported upgrade path exists until those images are published and the drill passes.
+This alpha runbook requires two versioned Server images for a complete upgrade and rollback drill. The first alpha can establish the installation baseline, but it cannot prove a cross-release upgrade until the next image exists.
 
 Upgrades are manual and owned by the server operator. Do not use an automatic updater or an unqualified `latest` image.
 

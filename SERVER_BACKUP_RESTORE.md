@@ -1,6 +1,6 @@
 # Server Backup and Restore
 
-This runbook belongs to the Server technical preview. Use fictional data until the supported-image, public-edge, district-ownership, and approval gates pass.
+Complete an isolated synthetic restore drill before loading student information. After activation, treat every infrastructure copy and portable archive as a student record under district policy.
 
 Band Office Server requires two backup layers:
 

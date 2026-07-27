@@ -134,6 +134,52 @@ for (const forbiddenMarker of [
 }
 evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication" });
 
+const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
+for (const marker of [
+  'tags:\n      - "v*-server-alpha.*"',
+  "git fetch --no-tags origin main:refs/remotes/origin/main",
+  "environment: server-alpha-release",
+  "platforms: linux/amd64,linux/arm64",
+  "provenance: mode=max",
+  "sbom: true",
+  "ghcr.io/band-office/band-office-server",
+  "visibility=public",
+  "uses: actions/attest@",
+  "gh attestation verify",
+  'DOCKER_CONFIG="$anonymous_config"',
+  "npm run server:container:test",
+  "npm run release:server:artifact:verify",
+  "npm run release:server:manifest",
+  "gh release create",
+  "--prerelease",
+  "--verify-tag",
+]) if (!serverWorkflow.includes(marker)) findings.push(`Server alpha workflow is missing release gate: ${marker}`);
+if (serverWorkflow.includes(":latest")) findings.push("Server alpha workflow must not publish a latest image tag.");
+
+const dockerfile = await readFile(path.join(root, "Dockerfile"), "utf8");
+for (const marker of [
+  "FROM node:24-bookworm-slim@sha256:",
+  "USER 10001:10001",
+  'org.opencontainers.image.source="https://github.com/band-office/band-office"',
+  'org.opencontainers.image.licenses="Apache-2.0"',
+]) if (!dockerfile.includes(marker)) findings.push(`Dockerfile is missing Server release marker: ${marker}`);
+
+const serverCompose = await readFile(path.join(root, "deploy/server/compose.yml"), "utf8");
+for (const marker of [
+  "caddy:2.11.4-alpine@sha256:",
+  "cap_drop:",
+  "- ALL",
+  "no-new-privileges:true",
+]) if (!serverCompose.includes(marker)) findings.push(`Server compose bundle is missing hardening marker: ${marker}`);
+
+for (const script of [
+  "release:server:tag:verify",
+  "release:server:artifact:verify",
+  "release:server:manifest",
+  "server:container:test",
+]) if (!packageJson.scripts?.[script]) findings.push(`package.json is missing Server release script ${script}.`);
+evidence.push({ claim: "Server alpha publication is protected and attributable", detail: "Multi-platform GHCR publication requires the protected environment, non-root container acceptance, vulnerability scan, public-image check, digest-pinned operator bundle, SBOM, and signed provenance" });
+
 const desktopMain = await readFile(path.join(root, "desktop/main.mjs"), "utf8");
 for (const marker of [
   'NEXT_TELEMETRY_DISABLED: "1"',

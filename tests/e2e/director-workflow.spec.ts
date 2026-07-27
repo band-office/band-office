@@ -58,6 +58,15 @@ test("director can set up, import, check out, return with damage, back up, and s
   await contactForm.getByRole("button", { name: "Add person" }).click();
   await expect(page.getByText("Person added to the directory.")).toBeVisible();
 
+  await page.locator("summary").filter({ hasText: "Add person" }).click();
+  const unrelatedStudentForm = page.locator("form").filter({ hasText: "New person" });
+  await unrelatedStudentForm.locator('input[name="firstName"]').fill("Morgan");
+  await unrelatedStudentForm.locator('input[name="lastName"]').fill("Other");
+  await unrelatedStudentForm.locator('input[name="email"]').fill("morgan.other@example.test");
+  await unrelatedStudentForm.locator('input[name="grade"]').fill("8");
+  await unrelatedStudentForm.getByRole("button", { name: "Add person" }).click();
+  await expect(page.getByText("Person added to the directory.")).toBeVisible();
+
   await page.goto("/communications/settings");
   await page.getByLabel("Sender name").fill("Ridgeline Band");
   await page.getByLabel("From address").fill("band@ridgeline.example");
@@ -111,8 +120,47 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page).toHaveURL(/\/portal$/);
   await expect(page.getByRole("heading", { name: "Program account" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Release Verifier" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Morgan Other" })).toHaveCount(0);
   await expect(page.getByText("No property is currently assigned.")).toBeVisible();
   await page.screenshot({ path: "test-results/e2e-guardian-portal-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await page.goto("/login");
+  await page.getByLabel("Username").fill("director-e2e");
+  await page.getByLabel("Password").fill("BandOS-E2E-Password!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/today/);
+
+  await page.goto(`/roster/${verifier.id}`);
+  await page.locator("summary").filter({ hasText: "Edit person" }).click();
+  const studentEditForm = page.locator("form").filter({ hasText: "Edit person" });
+  await studentEditForm.locator('input[name="email"]').fill("release.verifier@example.test");
+  await studentEditForm.getByRole("button", { name: "Save changes" }).click();
+  await expect(page.getByRole("status")).toContainText("Person record updated.");
+  await expect(page.getByText("release.verifier@example.test", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Enable portal access" }).click();
+  await expect(page.getByText(/Portal access enabled/)).toBeVisible();
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await page.goto("/portal/forgot-password");
+  await page.getByLabel("Email").fill("release.verifier@example.test");
+  await page.getByRole("button", { name: "Email reset code" }).click();
+  await expect(page.getByText(/If an eligible portal account uses that email/)).toBeVisible();
+  await page.getByRole("link", { name: "I already have a code" }).click();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("8-digit code").fill("24681357");
+  await page.getByLabel("New password").fill("BandOS-Student-E2E-Password!");
+  await page.getByLabel("Confirm password").fill("BandOS-Student-E2E-Password!");
+  await page.getByLabel("Email").fill("release.verifier@example.test");
+  await page.getByRole("button", { name: "Update password" }).click();
+  await expect(page.getByText("Password updated. You can sign in now.")).toBeVisible();
+  await page.getByLabel("Email").fill("release.verifier@example.test");
+  await page.getByLabel("Password").fill("BandOS-Student-E2E-Password!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/portal$/);
+  await expect(page.getByRole("heading", { name: "Release Verifier" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Morgan Other" })).toHaveCount(0);
+  await page.screenshot({ path: "test-results/e2e-student-portal-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "Sign out" }).click();
 
   await page.goto("/login");
@@ -153,7 +201,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   await assessmentForm.getByRole("button", { name: "Post assessment" }).click();
   await expect(page.getByText("Assessment posted to 1 student accounts.")).toBeVisible();
   await expect(page.getByText("$25.00", { exact: true }).first()).toBeVisible();
-  await page.getByRole("link", { name: "Statement" }).click();
+  await page.getByRole("row", { name: /Verifier, Release/ }).getByRole("link", { name: "Statement" }).click();
   await expect(page.getByRole("heading", { name: "Release Verifier" })).toBeVisible();
   await page.locator("summary").filter({ hasText: "Post entry" }).click();
   const entryForm = page.locator("form").filter({ hasText: "Post account entry" });

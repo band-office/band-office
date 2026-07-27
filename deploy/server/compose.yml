@@ -25,6 +25,8 @@ services:
     init: true
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1))"]
       interval: 30s
@@ -59,6 +61,8 @@ services:
       disable: true
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging:
       options:
         max-size: "10m"
@@ -67,7 +71,7 @@ services:
       - band-office
 
   caddy:
-    image: "caddy:2.11.4-alpine"
+    image: "caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648"
     environment:
       ACME_EMAIL: "${ACME_EMAIL:?Set ACME_EMAIL in .env}"
       BAND_OFFICE_HOSTNAME: "${BAND_OFFICE_HOSTNAME:?Set BAND_OFFICE_HOSTNAME in .env}"

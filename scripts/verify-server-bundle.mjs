@@ -28,7 +28,9 @@ function composeServiceBlock(name) {
 for (const required of [
   "LICENSE",
   "NOTICE",
+  "SERVER_ALPHA_RELEASE.md",
   "SERVER_DEPLOYMENT.md",
+  "SERVER_OPERATOR_HANDOFF.md",
   "PORTAL_ACTIVATION.md",
   "SERVER_BACKUP_RESTORE.md",
   "SERVER_UPGRADE.md",
@@ -47,8 +49,12 @@ if (!compose.includes('file: ./secrets/worker-token.txt')) findings.push("Compos
 if (!compose.includes('file: ./secrets/smtp-password.txt')) findings.push("Compose does not mount the SMTP password as a secret.");
 if (!compose.includes("condition: service_healthy")) findings.push("Server services do not wait for application health.");
 if (!compose.includes('BANDOS_LOAD_DEMO: "false"')) findings.push("The production deployment does not force demo seeding off.");
-if (!compose.includes('caddy:2.11.4-alpine')) findings.push("The Caddy image is not pinned to the reviewed release.");
+if (!compose.includes('caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648')) findings.push("The Caddy image is not pinned to the reviewed multi-platform digest.");
 if (!composeServiceBlock("worker").includes("    healthcheck:\n      disable: true")) findings.push("The non-HTTP worker inherits an invalid image health check.");
+for (const service of ["app", "worker"]) {
+  const block = composeServiceBlock(service);
+  if (!block.includes("    cap_drop:\n      - ALL")) findings.push(`The ${service} service does not drop Linux capabilities.`);
+}
 
 for (const marker of [
   "Strict-Transport-Security",
@@ -67,9 +73,14 @@ if (caddy.includes("\n\tlog ")) findings.push("Caddy access logging is enabled a
 
 if (!dockerfile.includes('ENTRYPOINT ["./scripts/docker-entrypoint.sh"]')) findings.push("The image does not use the secret-aware entrypoint.");
 if (!dockerfile.includes("AS build") || !dockerfile.includes("AS runtime")) findings.push("The image is not a multi-stage runtime build.");
+if (!dockerfile.includes("node:24-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d")) findings.push("The Node base image is not pinned to the reviewed multi-platform digest.");
 if (!dockerfile.includes("npm prune --omit=dev --ignore-scripts")) findings.push("The runtime image does not prune development dependencies.");
 if (!dockerfile.includes("npm pkg delete devDependencies.prisma")) findings.push("The runtime image may retain the unused Prisma CLI and database-driver dependency chain.");
 if (!dockerfile.includes(".next/standalone/server.js") && !entrypoint.includes(".next/standalone/server.js")) findings.push("The runtime image does not start the Next.js standalone server.");
+if (!dockerfile.includes("USER 10001:10001")) findings.push("The runtime image does not run as the non-root Band Office user.");
+for (const label of ["org.opencontainers.image.source", "org.opencontainers.image.licenses", "org.opencontainers.image.revision"]) {
+  if (!dockerfile.includes(label)) findings.push(`The runtime image is missing OCI label ${label}.`);
+}
 for (const excluded of ["node_modules", "data", "dist-desktop", ".git"]) {
   if (!dockerignore.split(/\r?\n/).includes(excluded)) findings.push(`.dockerignore does not exclude ${excluded}.`);
 }
