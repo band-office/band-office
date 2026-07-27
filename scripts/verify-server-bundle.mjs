@@ -76,6 +76,8 @@ if (!dockerfile.includes("AS build") || !dockerfile.includes("AS runtime")) find
 if (!dockerfile.includes("node:24-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d")) findings.push("The Node base image is not pinned to the reviewed multi-platform digest.");
 if (!dockerfile.includes("npm prune --omit=dev --ignore-scripts")) findings.push("The runtime image does not prune development dependencies.");
 if (!dockerfile.includes("npm pkg delete devDependencies.prisma")) findings.push("The runtime image may retain the unused Prisma CLI and database-driver dependency chain.");
+if (!dockerfile.includes("rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack")) findings.push("The runtime image retains the unused npm and Corepack package-manager trees.");
+if (!dockerfile.includes("rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack")) findings.push("The runtime image retains unused package-manager commands.");
 if (!dockerfile.includes(".next/standalone/server.js") && !entrypoint.includes(".next/standalone/server.js")) findings.push("The runtime image does not start the Next.js standalone server.");
 if (!dockerfile.includes("USER 10001:10001")) findings.push("The runtime image does not run as the non-root Band Office user.");
 for (const label of ["org.opencontainers.image.source", "org.opencontainers.image.licenses", "org.opencontainers.image.revision"]) {

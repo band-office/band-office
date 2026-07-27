@@ -69,6 +69,10 @@ try {
 
   const user = await docker(["exec", containerName, "id", "-u"]);
   assert.equal(user.stdout.trim(), "10001", "Server container must run as the non-root Band Office user.");
+  await assert.rejects(
+    docker(["exec", containerName, "npm", "--version"]),
+    "Server runtime must not include the unused npm CLI.",
+  );
 
   const login = await request(`${origin}/login`);
   assert.equal(login.status, 200);

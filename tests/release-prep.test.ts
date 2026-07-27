@@ -143,5 +143,6 @@ describe("public release preparation", () => {
     expect(serverWorkflow).toContain("BAND_OFFICE_IMAGE_NAME: ${{ env.IMAGE_NAME }}");
     expect(serverWorkflow).toContain('DOCKER_CONFIG="$anonymous_config"');
     expect(serverWorkflow).not.toContain(":latest");
+    expect(await readFile("Dockerfile", "utf8")).toContain("rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack");
   });
 });
