@@ -27,6 +27,10 @@
       "detail": "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication"
     },
     {
+      "claim": "Server alpha publication is protected and attributable",
+      "detail": "Multi-platform GHCR publication requires the protected environment, non-root container acceptance, vulnerability scan, public-image check, digest-pinned operator bundle, SBOM, and signed provenance"
+    },
+    {
       "claim": "Desktop shell enforces the local boundary",
       "detail": "Loopback-only requests, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path"
     },

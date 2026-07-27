@@ -2,7 +2,7 @@
 
 Band Office is free, open-source application software. A public family portal still requires operated infrastructure.
 
-The current Server channel is a technical preview. The project has not published a supported image or authorized real family accounts. This document defines the responsibilities a future installation must assign; it does not convert preview source into a supported service.
+The Server channel distributes alpha application images and operator runbooks. A district may activate real family accounts after completing its acceptance and approval process, but this does not convert open-source software into a hosted or guaranteed service.
 
 ## District or hosting operator
 
@@ -30,7 +30,7 @@ The director owns:
 
 ## Band Office project
 
-For a supported Server release, the open-source project intends to provide:
+For each Server release, the open-source project provides:
 
 - application source and reviewed release artifacts;
 - deployment templates and operating documentation;

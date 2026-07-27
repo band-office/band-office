@@ -21,6 +21,14 @@ describe("public release preparation", () => {
     await expect(execFileAsync(process.execPath, ["scripts/verify-desktop-alpha-tag.mjs", "v0.1.0"])).rejects.toThrow();
   });
 
+  test("accepts only Server alpha tags matching the package version", async () => {
+    await expect(execFileAsync(process.execPath, ["scripts/verify-server-alpha-tag.mjs", "v0.1.0-server-alpha.1"])).resolves.toMatchObject({
+      stdout: expect.stringContaining("Server alpha tag verified"),
+    });
+    await expect(execFileAsync(process.execPath, ["scripts/verify-server-alpha-tag.mjs", "v0.1.1-server-alpha.1"])).rejects.toThrow();
+    await expect(execFileAsync(process.execPath, ["scripts/verify-server-alpha-tag.mjs", "v0.1.0-alpha.1"])).rejects.toThrow();
+  });
+
   test("writes a source-bound manifest for both platform artifact sets", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "band-office-release-manifest-"));
     temporaryDirectories.push(directory);
@@ -66,12 +74,42 @@ describe("public release preparation", () => {
     expect(manifest.files.every((file: { sha256: string }) => /^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
   });
 
+  test("builds and verifies a digest-pinned Server operator bundle and manifest", async () => {
+    const digest = `sha256:${"b".repeat(64)}`;
+    await execFileAsync("npm", ["run", "server:bundle", "--", "--image", `ghcr.io/band-office/band-office-server@${digest}`]);
+    await execFileAsync("npm", ["run", "release:server:artifact:verify", "--", "dist-server"]);
+    await execFileAsync("npm", ["run", "release:server:manifest", "--", "dist-server"], {
+      env: {
+        ...process.env,
+        GITHUB_REF_NAME: "v0.1.0-server-alpha.1",
+        GITHUB_SHA: "c".repeat(40),
+        BAND_OFFICE_IMAGE_NAME: "ghcr.io/band-office/band-office-server",
+        BAND_OFFICE_IMAGE_DIGEST: digest,
+      },
+    });
+
+    const manifest = JSON.parse(await readFile("dist-server/Band-Office-Server-RELEASE-MANIFEST.json", "utf8"));
+    expect(manifest).toMatchObject({
+      schemaVersion: 1,
+      product: "Band Office Server",
+      channel: "server-alpha",
+      tag: "v0.1.0-server-alpha.1",
+      commit: "c".repeat(40),
+      image: {
+        name: "ghcr.io/band-office/band-office-server",
+        digest,
+        platforms: ["linux/amd64", "linux/arm64"],
+      },
+    });
+  });
+
   test("keeps public channels and unsupported deployment boundaries explicit", async () => {
     const readme = await readFile("README.md", "utf8");
     const channels = await readFile("RELEASE_CHANNELS.md", "utf8");
     const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
     const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
+    const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
     expect(readme).toContain("v0.1.0-alpha.1");
@@ -82,7 +120,8 @@ describe("public release preparation", () => {
     expect(channels).toContain("Band Office Server Technical Preview");
     expect(channels).toContain("Directors may use the alpha for real local program operations");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(deployment).toContain("controlled evaluation with fictional data");
+    expect(deployment).toContain("Fresh installations start empty");
+    expect(deployment).toContain("activating real family accounts");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the unsigned macOS release candidate.");
@@ -94,5 +133,15 @@ describe("public release preparation", () => {
     expect(signedWorkflow).toContain("npm run desktop:dist:mac");
     expect(signedWorkflow).toContain("npm run desktop:dist:win");
     expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
+    expect(serverWorkflow).toContain('- "v*-server-alpha.*"');
+    expect(serverWorkflow).toContain("environment: server-alpha-release");
+    expect(serverWorkflow).toContain("platforms: linux/amd64,linux/arm64");
+    expect(serverWorkflow).toContain("provenance: mode=max");
+    expect(serverWorkflow).toContain("sbom: true");
+    expect(serverWorkflow).toContain("uses: actions/attest@");
+    expect(serverWorkflow).toContain("visibility=public");
+    expect(serverWorkflow).toContain("BAND_OFFICE_IMAGE_NAME: ${{ env.IMAGE_NAME }}");
+    expect(serverWorkflow).toContain('DOCKER_CONFIG="$anonymous_config"');
+    expect(serverWorkflow).not.toContain(":latest");
   });
 });

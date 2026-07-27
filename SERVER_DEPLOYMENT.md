@@ -1,9 +1,9 @@
-# Band Office Server Technical Preview Deployment
+# Band Office Server Alpha Deployment
 
 **Audience:** district IT, school technology staff, or an approved hosting administrator.
 
 > [!WARNING]
-> Band Office Server is a technical preview for controlled evaluation with fictional data. No supported Server image has been published. Do not activate real family accounts or load real student records until every external gate in `CURRENT_STATUS.md` passes.
+> Band Office Server is district-operated alpha software, not a hosted service. Fresh installations start empty. Complete this deployment and its synthetic acceptance tests before loading student information or activating real family accounts.
 
 Band Office Server provides staff login, student and guardian portals, and scheduled email. It is not a static website and cannot be installed by uploading files to ordinary shared hosting. The intended supported deployment is one district-approved Linux server running Docker Compose behind the included Caddy HTTPS proxy.
 
@@ -32,7 +32,7 @@ Band Office should be the only application using its hostname. The included Cadd
 
 ## Information to collect
 
-- Published Band Office Server image reference from supported Server release notes; none exists during the technical preview
+- Exact Band Office Server image digest already written into the release bundle's `.env.example`
 - Public hostname
 - School IT contact email for certificate notices
 - IANA timezone such as `America/New_York`
@@ -40,9 +40,7 @@ Band Office should be the only application using its hostname. The included Cadd
 
 Do not use an unqualified `latest` image. Use the exact release tag and, after acceptance, record the image digest.
 
-## Technical Preview Install
-
-These steps are reserved for district IT evaluation after building or receiving a controlled preview image. They are not a public production quick start.
+## Install
 
 1. Point the hostname's DNS A and, when used, AAAA records to the server.
 2. Copy the extracted `Band-Office-Server-<version>` directory to an IT-controlled location such as `/opt/band-office`.
@@ -52,12 +50,13 @@ These steps are reserved for district IT evaluation after building or receiving 
    cp .env.example .env
    mkdir -p data backups caddy-data caddy-config secrets
    chmod 700 data backups caddy-data caddy-config secrets
+   sudo chown 10001:10001 data
    openssl rand -hex 32 > secrets/worker-token.txt
    touch secrets/smtp-password.txt
    chmod 600 .env secrets/worker-token.txt secrets/smtp-password.txt
    ```
 
-4. Edit `.env`. Replace every example value, especially `BAND_OFFICE_IMAGE`.
+4. Edit `.env`. Keep the digest-pinned `BAND_OFFICE_IMAGE` unchanged and replace the hostname, email, and timezone examples.
 5. If email is already approved, place only the SMTP password in `secrets/smtp-password.txt`. Do not include a username or JSON.
 6. Validate and start:
 
@@ -104,7 +103,7 @@ Verify the mailbox in Band Office before enabling portal accounts. Password setu
 - An encrypted Band Office export downloads successfully.
 - The offline server backup and restore drill in `SERVER_BACKUP_RESTORE.md` succeeds.
 
-Do not activate real family accounts until every item passes.
+After every item passes and `SERVER_OPERATOR_HANDOFF.md` is complete, the district may activate real accounts under its own approval and operating policies.
 
 ## Routine commands
 

@@ -22,8 +22,10 @@ await cp(path.join(root, "deploy/server"), bundleDirectory, { recursive: true })
 const documentation = [
   "LICENSE",
   "NOTICE",
+  "SERVER_ALPHA_RELEASE.md",
   "SERVER_DEPLOYMENT.md",
   "SERVER_ACCEPTANCE_RECORD.md",
+  "SERVER_OPERATOR_HANDOFF.md",
   "PORTAL_ACTIVATION.md",
   "SERVER_BACKUP_RESTORE.md",
   "SERVER_UPGRADE.md",
