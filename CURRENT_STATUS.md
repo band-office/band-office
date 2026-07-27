@@ -27,11 +27,11 @@ The quality job included all 48 unit tests, the production build, desktop lifecy
 
 The first Desktop alpha is public as explicitly unsigned macOS and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
-The alpha is suitable for technically comfortable evaluators using fictional data. Broader director promotion and real school use remain blocked on:
+The Desktop alpha starts with an empty database and first-run setup; no demo records are packaged. A director can use it for real local program operations within the documented Desktop boundary. Remaining release-hardening work is:
 
 1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
 2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.
-3. District approval and the SDMS real-data pilot before stable use.
+3. The SDMS real-program pilot before the release can be considered stable.
 
 See `DESKTOP_ALPHA_RELEASE.md`.
 
@@ -50,6 +50,6 @@ This is not a public-hosting acceptance claim. Server and family portal release 
 
 See `RELEASE_CHANNELS.md` and `SERVER_SUPPORT_BOUNDARY.md`.
 
-## Real Data Boundary
+## Real Data Conditions
 
-No current channel authorizes real student data by itself. A school must approve the deployment, use district-managed encrypted equipment and storage, assign backup ownership, and verify restoration before replacing an existing system.
+Desktop has no fictional-data restriction and does not automatically load the Ridgeline dataset. Before a director loads student information, the school should approve the deployment, use district-managed encrypted equipment and storage, assign backup ownership, and verify restoration. Those are operational safeguards for real school records, not a demo-mode limitation. The separate Server channel is not yet approved for real family accounts.

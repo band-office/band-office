@@ -76,8 +76,12 @@ describe("public release preparation", () => {
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
     expect(readme).toContain("v0.1.0-alpha.1");
     expect(readme).toContain("public, unsigned prerelease");
+    expect(readme).toContain("Fresh installations start empty and contain no demo records");
+    expect(readme).toContain("It can be used for real program operations");
     expect(readme).toContain("no supported image published");
     expect(channels).toContain("Band Office Server Technical Preview");
+    expect(channels).toContain("Directors may use the alpha for real local program operations");
+    expect(channels).not.toContain("**State:** not yet issued.");
     expect(deployment).toContain("controlled evaluation with fictional data");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
