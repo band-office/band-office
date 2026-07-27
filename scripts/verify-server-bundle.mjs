@@ -19,6 +19,9 @@ const entrypoint = await text("scripts/docker-entrypoint.sh");
 const worker = await text("scripts/run-server-worker.mjs");
 const health = await text("src/app/api/health/route.ts");
 const authThrottle = await text("src/lib/auth-throttle.ts");
+const deployment = await text("SERVER_DEPLOYMENT.md");
+const backupRestore = await text("SERVER_BACKUP_RESTORE.md");
+const composeAcceptance = await text("scripts/test-server-compose.sh");
 
 function composeServiceBlock(name) {
   const match = compose.match(new RegExp(`^  ${name}:\\n([\\s\\S]*?)(?=^  [a-z][a-z0-9-]*:\\n|^secrets:|^networks:|(?![\\s\\S]))`, "m"));
@@ -91,6 +94,30 @@ if (!entrypoint.includes("load_secret BANDOS_WORKER_TOKEN")) findings.push("The 
 if (!worker.includes("/api/internal/communications/worker")) findings.push("The server worker does not call the internal communication route.");
 if (!health.includes('SELECT 1')) findings.push("The health endpoint does not verify database availability.");
 if (!authThrottle.includes("FAILURE_LIMIT = 10") || !authThrottle.includes("identifierHash")) findings.push("Internet-facing login throttling is missing or unbounded.");
+
+for (const marker of [
+  "sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt",
+  "sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt",
+  "File-backed Docker Compose secrets retain their host ownership on Linux",
+]) {
+  if (!deployment.includes(marker)) findings.push(`Server deployment instructions are missing the non-root secret ownership marker: ${marker}`);
+}
+for (const marker of [
+  'sudo tar -czf "$backup" data',
+  'sudo chown "$(id -u):$(id -g)" "$backup"',
+  "sudo chown -R 10001:10001 data",
+]) {
+  if (!backupRestore.includes(marker)) findings.push(`Server backup instructions are missing the protected-data marker: ${marker}`);
+}
+for (const marker of [
+  "sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt",
+  '"${compose[@]}" up -d --wait app',
+  '"${compose[@]}" up -d worker',
+  'sudo tar -czf "$backup" data',
+  "sudo chown -R 10001:10001 data",
+]) {
+  if (!composeAcceptance.includes(marker)) findings.push(`Server Compose acceptance is missing the operator-path marker: ${marker}`);
+}
 
 const composeResult = spawnSync(
   "docker",

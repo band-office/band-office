@@ -10,5 +10,8 @@ Create these two files on the server. Do not commit, email, or place them in a s
 Restrict both files before starting Band Office:
 
 ```bash
-chmod 600 secrets/worker-token.txt secrets/smtp-password.txt
+sudo chown 10001:10001 secrets/worker-token.txt secrets/smtp-password.txt
+sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt
 ```
+
+UID `10001` is the non-root Band Office account inside the application image. Docker Compose file-backed secrets keep their host ownership on Linux. To change the SMTP password later, use `sudoedit secrets/smtp-password.txt`, then confirm both the owner and mode remain unchanged.

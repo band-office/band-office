@@ -8,6 +8,7 @@ This is the district-operated Band Office release with staff access, scheduled e
 - A digest-pinned operator ZIP with Docker Compose, Caddy HTTPS, secrets setup, and complete runbooks.
 - SHA-256 checksums and a source-bound release manifest.
 - OCI SBOM, maximum-level provenance, and GitHub-signed build provenance.
+- Ubuntu acceptance of the packaged Compose configuration, non-root secret ownership, offline backup, and restore.
 
 ## Important boundaries
 
@@ -17,6 +18,7 @@ This is the district-operated Band Office release with staff access, scheduled e
 - District IT owns the Linux server, DNS, HTTPS, firewall, SMTP relay, encrypted backups, updates, monitoring, and incident response.
 - Complete the synthetic student and guardian acceptance checklist before activating real family accounts.
 - Standard SMTP is supported. Google and Microsoft OAuth are not included in this alpha.
+- The operator bundle pins the immutable image digest. Commit-scoped registry tags are staging references, not completed releases.
 - Do not use shared hosting, cPanel upload, a home server, an unqualified `latest` image, or a publicly exposed application port.
 
 Download `Band-Office-Server-0.1.0.zip`, verify `SHA256SUMS.txt`, and start with `SERVER_DEPLOYMENT.md`. The operator bundle pins the exact image digest from this release.
