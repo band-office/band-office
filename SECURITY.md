@@ -1,12 +1,12 @@
 # Security policy
 
-Band Office handles operational school-program data. Security reports should be treated carefully even during the release-candidate phase.
+Band Office handles operational school-program data. Security reports should be treated carefully during the public-alpha phase.
 
 ## Supported versions
 
-Band Office has not issued a stable release. Security fixes currently target the latest commit on `main` and any explicitly identified release-candidate tag.
+Band Office has not issued a stable release. Security fixes currently target the latest commit on `main` and the latest identified Desktop and Server alpha tags.
 
-Unsigned test packages and untagged historical snapshots are not supported distribution channels.
+Temporary CI artifacts and untagged historical snapshots are not supported distribution channels. Use only the versioned GitHub prereleases and their published checksums.
 
 ## Reporting a vulnerability
 
@@ -31,6 +31,6 @@ The project will acknowledge a usable report as soon as practical, reproduce it,
 
 ## Deployment boundary
 
-The Electron app is local-only. Family access requires a future supported district-operated Server release behind HTTPS. The current Server source and operator kit are a technical preview for fictional-data evaluation. Do not expose the development server, the raw application port, or a home-server port forward to the public internet.
+The Electron app is local-only. Family access requires the district-operated Server alpha behind HTTPS. A district may use that alpha for real program operations only after completing the published acceptance record, assigning infrastructure and data owners, and approving the deployment. Do not expose the development server, the raw application port, or a home-server port forward to the public internet.
 
 See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md), [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md), [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md), and [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using Band Office with real program data.

@@ -2,7 +2,7 @@
 
 Band Office separates source visibility, local director distribution, and district-operated family access. A successful build in one channel does not authorize claims about another.
 
-## Source Release Candidate
+## Source
 
 **State:** available on `main`.
 
@@ -12,7 +12,7 @@ This channel includes the full source, local development path, package acceptanc
 
 Permitted public description:
 
-> Band Office is a public open-source release candidate for school music program operations.
+> Band Office is a public open-source project for school music program operations, with separate Desktop and district-operated Server alpha channels.
 
 Do not describe this channel as generally available, production-ready, district-approved, or a supported CutTime replacement.
 

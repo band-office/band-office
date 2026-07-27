@@ -35,6 +35,8 @@ The Server alpha at commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4` passed pro
 
 The immutable Server image is `ghcr.io/band-office/band-office-server@sha256:35b05d56032f68d8c04f9feb5d4b25a4c7cdcefdf0e734e54072267808f6bbaa`.
 
+Repository protection also runs pinned CodeQL `security-extended` analysis on pull requests, `main`, and a weekly schedule. The first pull-request analysis evaluated 103 JavaScript and TypeScript rules with zero results. The protected-`main` ruleset blocks analysis errors and high-or-higher CodeQL security alerts.
+
 ## Desktop Alpha
 
 The first Desktop alpha is public as explicitly unsigned macOS and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.

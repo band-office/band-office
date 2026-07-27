@@ -2,21 +2,22 @@
 
 This roadmap describes direction, not a delivery promise. Release truth lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).
 
-## Now: prove the release candidate
+## Now: harden the public alphas
 
-- Complete Microsoft Artifact Signing enrollment, install its CI credentials in the protected release environment, and complete clean-machine acceptance.
-- Install Apple signing and notarization credentials in the protected release environment and complete Gatekeeper acceptance.
-- Publish the first Desktop alpha only after both signed platform jobs pass.
-- Publish and digest-pin the canonical server image.
-- Run clean public-server acceptance with district ownership.
-- Complete district approval and the controlled SDMS real-data pilot.
-- Establish issue triage, private vulnerability reporting, and contributor onboarding.
+- Complete clean-machine Desktop install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
+- Confirm that a nondeveloper can follow the unsigned-install and recovery instructions without assistance.
+- Run the controlled SDMS real-data pilot after school approval and encrypted-device preparation.
+- Complete the first district-owned Server public-edge, SMTP, portal, upgrade, rollback, and restore acceptance record.
+- Keep CodeQL, dependency audits, container scanning, release attestations, and required pull-request checks green.
+- Turn public issues and pilot findings into bounded reliability, accessibility, and documentation work.
+- Defer paid Apple and Microsoft signing until adoption warrants the recurring cost; signing is a later distribution improvement, not a prerequisite for the issued unsigned alphas.
 
 ## Next: make adoption repeatable
 
 - Turn pilot findings into bounded reliability and usability work.
 - Tighten install, upgrade, rollback, and backup documentation from operator evidence.
 - Improve accessibility and keyboard acceptance across core workflows.
+- Establish a repeatable issue-triage and contributor-onboarding cadence.
 - Publish stable releases only after desktop and server gates are reproducible.
 - Add small integrations only where credentials, data ownership, and failure behavior are explicit.
 

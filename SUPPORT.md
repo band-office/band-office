@@ -1,11 +1,11 @@
 # Band Office support
 
-Band Office is a public source release candidate, not a supported commercial service or stable packaged download.
+Band Office is a public open-source alpha project, not a supported commercial service or stable release. Versioned Desktop and Server prereleases are available through GitHub, with best-effort community support and explicit operating boundaries.
 
 ## Start here
 
 - Installation and verification: [README](./README.md)
-- Current release gates: [CURRENT_STATUS.md](./CURRENT_STATUS.md)
+- Current alpha status and remaining gates: [CURRENT_STATUS.md](./CURRENT_STATUS.md)
 - District server deployment: [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md)
 - Email configuration: [EMAIL_SETUP.md](./EMAIL_SETUP.md)
 - Desktop packaging: [DESKTOP_PACKAGING.md](./DESKTOP_PACKAGING.md)
