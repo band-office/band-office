@@ -160,6 +160,8 @@ const dockerfile = await readFile(path.join(root, "Dockerfile"), "utf8");
 for (const marker of [
   "FROM node:24-bookworm-slim@sha256:",
   "USER 10001:10001",
+  "rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack",
+  "rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack",
   'org.opencontainers.image.source="https://github.com/band-office/band-office"',
   'org.opencontainers.image.licenses="Apache-2.0"',
 ]) if (!dockerfile.includes(marker)) findings.push(`Dockerfile is missing Server release marker: ${marker}`);
