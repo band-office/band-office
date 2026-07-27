@@ -1,6 +1,6 @@
 # Runtime secrets
 
-These instructions belong to the Server technical preview. Use synthetic credentials during fictional-data acceptance.
+These instructions belong to the district-operated Server alpha. Use synthetic credentials during acceptance and switch to district-approved credentials only after the deployment passes the published gates.
 
 Create these two files on the server. Do not commit, email, or place them in a support ticket.
 

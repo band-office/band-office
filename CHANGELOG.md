@@ -2,13 +2,19 @@
 
 All notable project changes will be recorded here once versioned releases begin.
 
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project intends to use semantic versioning after the release-candidate phase.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project intends to use semantic versioning after the alpha phase.
 
 ## Unreleased
 
 ### Changed
 
 - Clarified that Desktop alpha installations start empty, include no demo records, and support real local program operations when the school-data safeguards are met.
+- Synchronized the security, support, roadmap, release-channel, email, Server-secret, and CutTime-replacement documents with the issued Desktop and Server alpha channels.
+- Recorded paid Apple and Microsoft signing as deferred distribution improvements rather than prerequisites for the issued unsigned alphas.
+
+### Security
+
+- Added pinned CodeQL `security-extended` analysis for JavaScript and TypeScript on pull requests, `main`, and a weekly schedule.
 
 ## Server 0.1.0-server-alpha.4 — 2026-07-27
 
