@@ -1,6 +1,6 @@
 # Band Office Desktop Alpha Release
 
-The Desktop alpha workflow is fail-closed. It publishes a GitHub prerelease only after both operating-system jobs produce signed artifacts and complete post-signing verification.
+The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after macOS produces an explicitly unsigned, checksum-protected package and Windows produces a valid Microsoft-signed package. Both jobs must complete packaged-application acceptance.
 
 ## Release Identity
 
@@ -9,7 +9,7 @@ The Desktop alpha workflow is fail-closed. It publishes a GitHub prerelease only
 - GitHub release: prerelease, created only by `.github/workflows/desktop-alpha-release.yml`.
 - Updates: manual and director-initiated under `UPDATE_POLICY.md`.
 
-The tag must point to an accepted commit on `main`. The workflow fetches `main` and rejects a tag whose commit is not in that history. It also rejects a mismatched tag, dirty package metadata, missing signing credentials, unsigned output, or a failed platform acceptance step.
+The tag must point to an accepted commit on `main`. The workflow fetches `main` and rejects a tag whose commit is not in that history. It also rejects a mismatched tag, dirty package metadata, missing Windows signing credentials, an unsigned Windows output, an unexpectedly Developer ID-signed macOS output, or a failed platform acceptance step.
 
 ## Protected Environment
 
@@ -19,11 +19,6 @@ Store these secrets in that environment:
 
 | Secret | Purpose |
 | --- | --- |
-| `MACOS_CSC_LINK` | Base64-encoded Developer ID Application `.p12` |
-| `MACOS_CSC_KEY_PASSWORD` | Password for the `.p12` |
-| `APPLE_ID` | Apple account used for notarization |
-| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific notarization password |
-| `APPLE_TEAM_ID` | Apple Developer team identifier |
 | `AZURE_TENANT_ID` | Microsoft Entra tenant used by the signing service principal |
 | `AZURE_CLIENT_ID` | Application/client ID for the signing service principal |
 | `AZURE_CLIENT_SECRET` | Client secret for the signing service principal |
@@ -39,16 +34,13 @@ Store these non-secret values as environment variables:
 
 Never place certificates or passwords in the repository, workflow file, release notes, issue, or application data.
 
-## Signing Enrollment
+## Distribution Enrollment
 
-### Apple
+### macOS
 
-1. Enroll the publisher in the [Apple Developer Program](https://developer.apple.com/programs/enroll/).
-2. Create a Developer ID Application certificate and export it as a password-protected `.p12`.
-3. Create an app-specific password for the Apple account used by notarization.
-4. Record the Apple team ID.
+The initial macOS alpha is intentionally unsigned. Do not add Apple credentials to the release environment or describe the package as Apple-verified. The release notes must state that macOS requires a manual Gatekeeper override, and users must be given the published SHA-256 checksum.
 
-The account holder must complete enrollment, payment, agreements, and identity checks. Do not transmit the certificate or passwords through an issue or chat.
+Apple Developer Program enrollment, Developer ID signing, and notarization are deferred until adoption warrants the annual cost. The future signed command remains available, but it is not part of this alpha workflow.
 
 ### Microsoft
 
@@ -69,7 +61,7 @@ Use Microsoft’s [Artifact Signing quickstart](https://learn.microsoft.com/en-u
 3. Run `npm ci` and `npm run release:verify`.
 4. Update `CHANGELOG.md` and `CURRENT_STATUS.md`.
 5. Confirm the package version is the intended alpha version.
-6. Confirm the protected environment contains all eight signing secrets and four Artifact Signing variables.
+6. Confirm the protected environment contains all three Microsoft signing secrets and four Artifact Signing variables.
 7. Confirm a named reviewer is available to approve the environment deployment.
 
 ## Create The Alpha
@@ -81,18 +73,17 @@ git tag -a v0.1.0-alpha.1 -m "Band Office Desktop 0.1.0 alpha 1"
 git push origin v0.1.0-alpha.1
 ```
 
-The tag starts the signed workflow. Do not create the GitHub Release manually and do not upload unsigned artifacts as substitutes.
+The tag starts the mixed-distribution workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.
 
 ## Required Workflow Evidence
 
 ### macOS
 
-- Electron Builder finds a Developer ID Application identity.
-- The app is signed with Hardened Runtime and the approved entitlements.
-- Apple notarization completes and the ticket is stapled.
-- `codesign`, Gatekeeper assessment, and `stapler validate` pass.
+- Electron Builder packages with signing identity auto-discovery disabled.
+- The job rejects any unexpected Developer ID signature.
 - Packaged application acceptance passes.
 - The DMG verifies.
+- SHA-256 checksums are generated and the release notes disclose the unsigned status and Gatekeeper override.
 
 ### Windows
 
@@ -103,7 +94,7 @@ The tag starts the signed workflow. Do not create the GitHub Release manually an
 ### Shared
 
 - `LICENSE` and `NOTICE` are present under the packaged `resources/legal` directory.
-- Artifact checksums are generated after signing.
+- Artifact checksums are generated after packaging and, for Windows, after signing.
 - The source tag and workflow commit match.
 - The release is marked as a GitHub prerelease.
 
@@ -111,8 +102,8 @@ The tag starts the signed workflow. Do not create the GitHub Release manually an
 
 1. Download both platform packages from the GitHub Release, not Actions.
 2. Verify published checksums on separate clean machines.
-3. Complete install, first-run setup, encrypted backup, restore, upgrade, and uninstall checks.
+3. On macOS, verify the documented Privacy & Security > Open Anyway flow before completing first-run setup, encrypted backup, restore, upgrade, and uninstall checks.
 4. Record those results in `CURRENT_STATUS.md`.
 5. Keep the alpha prerelease label until the SDMS pilot and remaining release gates pass.
 
-Signing credentials are an external project-operating requirement. The repository can enforce their use, but it cannot create or approve them.
+Windows signing credentials are an external project-operating requirement. The repository can enforce their use, but it cannot create or approve them. Apple signing is a deliberately deferred distribution enhancement.

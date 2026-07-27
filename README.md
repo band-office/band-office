@@ -104,11 +104,11 @@ The repository screenshots use deterministic fictional data. More views are avai
 
 ## Desktop release candidate
 
-Unsigned macOS and Windows packages are produced and tested in GitHub Actions, but they are temporary engineering artifacts rather than public downloads. The first Desktop alpha will be published as a GitHub prerelease only after both platform jobs produce signed artifacts and the macOS package passes notarization.
+Unsigned macOS and Windows packages are produced and tested in GitHub Actions, but those temporary engineering artifacts are not public downloads. The first Desktop alpha will publish an explicitly unsigned macOS package with SHA-256 checksums and a signed Windows package. Apple Developer ID signing and notarization are deferred until adoption warrants the annual program cost.
 
 The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
-Do not redistribute unsigned CI artifacts or present them as the director download. See [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md) for the fail-closed signing and publication gate.
+Do not redistribute temporary CI artifacts or present them as the director download. Use only the versioned GitHub prerelease, verify its checksums, and follow the macOS Gatekeeper instructions in [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
 ## Clean local setup
 
@@ -212,7 +212,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The macOS and Windows package candidates pass automated build and application acceptance, and a local Linux ARM64 server image passed isolated container acceptance. Those results do not create a public product release. A reviewed alpha tag, Apple signing and notarization, Windows signing, clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The macOS and Windows package candidates pass automated build and application acceptance, and a local Linux ARM64 server image passed isolated container acceptance. Those results do not create a public product release. A reviewed alpha tag, Windows signing, clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open. The initial macOS alpha will be unsigned and require a manual Gatekeeper override; Apple signing and notarization are deferred.
 
 ## Project and community
 

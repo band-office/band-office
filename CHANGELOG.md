@@ -16,6 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Changed
 
 - Repository README presentation and contributor navigation
+- Desktop alpha distribution now publishes an explicitly unsigned macOS package with checksums and Gatekeeper instructions while deferring paid Apple signing and notarization
 
 ## Public source release candidate — 2026-07-26
 

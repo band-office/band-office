@@ -104,8 +104,6 @@ for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
   "environment: desktop-alpha-release",
-  "MACOS_CSC_LINK",
-  "APPLE_APP_SPECIFIC_PASSWORD",
   "AZURE_TENANT_ID",
   "AZURE_CLIENT_ID",
   "AZURE_CLIENT_SECRET",
@@ -113,18 +111,26 @@ for (const marker of [
   "AZURE_SIGNING_ENDPOINT",
   "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
   "AZURE_SIGNING_ACCOUNT_NAME",
-  "codesign --verify --deep --strict",
-  "xcrun stapler validate",
+  "npm run desktop:dist:mac",
+  "Unexpected Developer ID signature on the unsigned macOS release.",
+  "hdiutil verify",
   "Get-AuthenticodeSignature",
   "npm run release:desktop:verify",
   "gh release create",
   "--prerelease",
   "--verify-tag",
 ]) if (!alphaWorkflow.includes(marker)) findings.push(`Desktop alpha workflow is missing release gate: ${marker}`);
-for (const forbiddenMarker of ["WINDOWS_CSC_LINK", "WINDOWS_CSC_KEY_PASSWORD"]) {
+for (const forbiddenMarker of [
+  "WINDOWS_CSC_LINK",
+  "WINDOWS_CSC_KEY_PASSWORD",
+  "MACOS_CSC_LINK",
+  "MACOS_CSC_KEY_PASSWORD",
+  "APPLE_APP_SPECIFIC_PASSWORD",
+  "APPLE_TEAM_ID",
+]) {
   if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow still uses exportable PFX credential: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is signed and fail-closed", detail: "Protected-environment credentials, post-signing platform checks, legal verification, and prerelease-only publication are required" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS is intentionally unsigned with checksums and a Gatekeeper warning; Windows requires Artifact Signing and post-signing verification before prerelease publication" });
 
 const desktopMain = await readFile(path.join(root, "desktop/main.mjs"), "utf8");
 for (const marker of [
