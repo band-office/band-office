@@ -106,9 +106,9 @@ function startCommunicationWorker(origin) {
         method: "POST",
         headers: { authorization: `Bearer ${communicationWorkerToken}` },
       });
-      if (!response.ok) await writeLog(`[communications] Worker returned ${response.status}`);
-    } catch (error) {
-      await writeLog(`[communications] Worker request failed: ${error instanceof Error ? error.message : String(error)}`);
+      if (!response.ok) await writeLog("[communications] Worker returned a non-success status");
+    } catch {
+      await writeLog("[communications] Worker request failed");
     }
   };
   void processJobs();

@@ -15,6 +15,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Security
 
 - Added pinned CodeQL `security-extended` analysis for JavaScript and TypeScript on pull requests, `main`, and a weekly schedule.
+- Removed check-then-read races from Desktop backup validation and Server artifact verification; Desktop reads are hard-capped through one file handle and Server checks the exact bytes read.
+- Prevented HTTP-derived communication-worker details from being written to the Desktop log and added a release-audit regression check for fixed worker diagnostics.
 
 ## Server 0.1.0-server-alpha.4 — 2026-07-27
 

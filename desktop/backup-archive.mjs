@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import JSZip from "jszip";
 import Papa from "papaparse";
 import { createDecipheriv, createHash, scryptSync } from "node:crypto";
-import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdtemp, open, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -81,6 +81,21 @@ async function readBoundedEntry(zip, name, limit) {
   return Buffer.from(bytes);
 }
 
+async function readBoundedFile(file, limit, message) {
+  const chunks = [];
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  let total = 0;
+  while (true) {
+    const remaining = limit - total;
+    const { bytesRead } = await file.read(buffer, 0, Math.min(buffer.byteLength, remaining + 1), null);
+    if (bytesRead === 0) break;
+    total += bytesRead;
+    if (total > limit) throw new Error(message);
+    chunks.push(Buffer.from(buffer.subarray(0, bytesRead)));
+  }
+  return Buffer.concat(chunks, total);
+}
+
 function decrypt(source, passphrase) {
   if (source.subarray(0, MAGIC.length).toString() !== MAGIC) return source;
   if (!passphrase) throw new Error("This encrypted backup requires its passphrase.");
@@ -95,9 +110,14 @@ function decrypt(source, passphrase) {
 }
 
 export async function validateBackupArchive(archivePath, passphrase = "") {
-  const archiveStat = await stat(archivePath);
-  if (archiveStat.size > MAX_ARCHIVE_BYTES) throw new Error("The selected archive exceeds the 2 GB desktop restore limit.");
-  const zip = await JSZip.loadAsync(decrypt(await readFile(archivePath), passphrase));
+  const archive = await open(archivePath, "r");
+  let archiveBytes;
+  try {
+    archiveBytes = await readBoundedFile(archive, MAX_ARCHIVE_BYTES, "The selected archive exceeds the 2 GB desktop restore limit.");
+  } finally {
+    await archive.close();
+  }
+  const zip = await JSZip.loadAsync(decrypt(archiveBytes, passphrase));
   for (const name of ["manifest.json", "bandos.db"]) if (!zip.file(name)) throw new Error(`Backup is missing ${name}.`);
   const manifest = JSON.parse((await readBoundedEntry(zip, "manifest.json", 1024 * 1024)).toString("utf8"));
   if (!["BandOS full backup", "Band Office full backup"].includes(manifest.format) || ![2, 3, 4, 5, 6, 7, 8].includes(manifest.version) || typeof manifest.programId !== "string" || !Array.isArray(manifest.tables)) throw new Error("Backup manifest is invalid or unsupported.");

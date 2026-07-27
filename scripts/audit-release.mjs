@@ -204,8 +204,11 @@ for (const marker of [
   'contextIsolation: true',
   'nodeIntegration: false',
   'sandbox: true',
+  'writeLog("[communications] Worker returned a non-success status")',
+  'writeLog("[communications] Worker request failed")',
 ]) if (!desktopMain.includes(marker)) findings.push(`desktop/main.mjs is missing security marker: ${marker}`);
-evidence.push({ claim: "Desktop shell enforces the local boundary", detail: "Loopback-only requests, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path" });
+if (/writeLog\(`\[communications\][^`]*\$\{/.test(desktopMain)) findings.push("desktop/main.mjs writes HTTP-derived communication worker details to the desktop log");
+evidence.push({ claim: "Desktop shell enforces the local boundary", detail: "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path" });
 
 const entitlementText = await readFile(path.join(root, "desktop/entitlements.mac.plist"), "utf8");
 const entitlementKeys = [...entitlementText.matchAll(/<key>([^<]+)<\/key>/g)].map((match) => match[1]);

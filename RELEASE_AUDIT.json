@@ -32,7 +32,7 @@
     },
     {
       "claim": "Desktop shell enforces the local boundary",
-      "detail": "Loopback-only requests, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path"
+      "detail": "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path"
     },
     {
       "claim": "macOS entitlement scope is camera-only",
