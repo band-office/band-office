@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="./LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563EB.svg"></a>
-  <a href="./CURRENT_STATUS.md"><img alt="Release candidate" src="https://img.shields.io/badge/status-release%20candidate-08172B.svg"></a>
+  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
   <a href="./package.json"><img alt="Node 20.9 or newer" src="https://img.shields.io/badge/node-%3E%3D20.9-334155.svg"></a>
   <a href="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml"><img alt="Band Office release candidate workflow" src="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml/badge.svg"></a>
 </p>
@@ -10,6 +10,7 @@
 <p align="center">
   <strong><a href="#clean-local-setup">Set up locally</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
+  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1">Desktop alpha</a></strong> ·
   <strong><a href="./SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./CONTRIBUTING.md">Contribute</a></strong> ·
   <strong><a href="./ROADMAP.md">Roadmap</a></strong>
@@ -20,7 +21,7 @@ Band Office keeps the operational work of a school music program in one local-fi
 It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
 
 > [!IMPORTANT]
-> Band Office is a **public source release candidate**. No public Desktop alpha or supported Server release has been issued. Signing, clean-machine acceptance, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
+> Band Office Desktop `v0.1.0-alpha.1` is a **public, unsigned prerelease** for technically comfortable evaluators using fictional data. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Clean-machine acceptance, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
 
@@ -28,8 +29,8 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 
 | Channel | Current state | Intended user |
 | --- | --- | --- |
-| Source release candidate | Available on `main` | Contributors and technical reviewers using fictional data |
-| Band Office Desktop alpha | Not yet issued | Directors running one local program without public family access |
+| Source | Available on `main` | Contributors and technical reviewers |
+| Band Office Desktop alpha | [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), unsigned prerelease | Technically comfortable evaluators running one local program with fictional data and no public family access |
 | Band Office Server technical preview | Source and operator kit available; no supported image published | District IT evaluation with fictional data |
 
 These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server and family portals remain a district-operated technical preview until the external acceptance gates pass. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
@@ -102,13 +103,13 @@ Band Office does not yet replace every Charms or CutTime workflow. Granular guar
 
 The repository screenshots use deterministic fictional data. More views are available in [`docs/screenshots`](./docs/screenshots).
 
-## Desktop release candidate
+## Desktop alpha
 
-Unsigned macOS and Windows packages are produced and tested in GitHub Actions, but those temporary engineering artifacts are not public downloads. The first Desktop alpha will publish explicitly unsigned packages for both platforms with SHA-256 checksums and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs.
+[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. Use this alpha for controlled evaluation with fictional data; clean-machine acceptance is still open.
 
 The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
-Do not redistribute temporary CI artifacts or present them as the director download. Use only the versioned GitHub prerelease, verify its checksums, and follow the macOS Gatekeeper instructions in [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
+Do not redistribute temporary CI artifacts or present them as the director download. Use only the versioned GitHub prerelease, verify its checksums, and follow the Gatekeeper or SmartScreen instructions in [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
 ## Clean local setup
 
@@ -212,7 +213,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The macOS and Windows package candidates pass automated build and application acceptance, and a local Linux ARM64 server image passed isolated container acceptance. Those results do not create a public product release. A reviewed alpha tag, clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open. The initial Desktop alpha will be unsigned: macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The protected workflow published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) after Linux quality, macOS package, and Windows package acceptance passed. It is unsigned: macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open.
 
 ## Project and community
 

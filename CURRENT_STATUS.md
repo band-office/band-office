@@ -2,9 +2,9 @@
 
 **Status date:** July 26, 2026
 
-**Source state:** public release candidate
+**Source state:** public source with versioned Desktop alpha
 
-**Desktop state:** alpha release preparation; no public download issued
+**Desktop state:** [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) public prerelease issued; unsigned macOS Apple Silicon and Windows x64 packages
 
 **Server state:** district-operator technical preview; no supported image issued
 
@@ -12,23 +12,25 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-The merged mixed-distribution release baseline at commit `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f` passed [GitHub Actions run 30228396298](https://github.com/band-office/band-office/actions/runs/30228396298):
+The tagged Desktop alpha at commit `8db851b62256c1d100462a077dba3ac41a7ea85e` passed the protected [GitHub Actions release run 30232531767](https://github.com/band-office/band-office/actions/runs/30232531767):
 
 - Linux release verification;
 - unsigned macOS packaging and packaged-application acceptance;
 - unsigned Windows packaging and packaged-application acceptance;
-- DMG verification, checksums, and temporary CI artifact upload.
+- DMG and ZIP verification;
+- SHA-256 checksum and release-manifest generation;
+- required-reviewer approval before prerelease publication.
 
-The quality job included all 48 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. Unsigned CI artifacts are temporary engineering evidence, not public downloads.
+The quality job included all 48 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The seven published release assets match the hashes and byte sizes recorded by GitHub and `Band-Office-RELEASE-MANIFEST.json`.
 
 ## Desktop Alpha
 
-The application and cross-platform package candidates are implemented. The first alpha will intentionally publish unsigned macOS and Windows packages with SHA-256 checksums and explicit platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
+The first Desktop alpha is public as explicitly unsigned macOS and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
-The first Desktop alpha remains blocked on:
+The alpha is suitable for technically comfortable evaluators using fictional data. Broader director promotion and real school use remain blocked on:
 
-1. Successful unsigned workflow execution from an accepted alpha tag and protected publication approval.
-2. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
+1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
+2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.
 3. District approval and the SDMS real-data pilot before stable use.
 
 See `DESKTOP_ALPHA_RELEASE.md`.

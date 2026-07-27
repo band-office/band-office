@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
 **Status date:** July 26, 2026
-**Release state:** public source release candidate; Desktop alpha preparation; Server technical preview
+**Release state:** public source; unsigned Desktop `v0.1.0-alpha.1` prerelease; Server technical preview
 
 ## Verified locally
 
@@ -53,23 +53,24 @@
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
 - [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged mixed-distribution release baseline `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
-- [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
+- [x] Create the immutable `v0.1.0-alpha.1` release tag at accepted commit `8db851b62256c1d100462a077dba3ac41a7ea85e` after release-candidate acceptance.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
-- [ ] Verify required legal files in the published Windows package and future Server release image.
+- [x] Verify required legal files in both published Desktop packages (`npm run release:desktop:verify` in release run `30232531767`).
+- [ ] Verify required legal files in the future Server release image.
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
 - [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Mac.
 - [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
 - [ ] Verify the documented SmartScreen warning, published checksums, and unsigned-package warning on a separate clean Windows machine.
 - [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
-- [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30228396298`](https://github.com/band-office/band-office/actions/runs/30228396298), commit `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
+- [x] Verify the protected GitHub Actions quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30232531767`](https://github.com/band-office/band-office/actions/runs/30232531767), commit `8db851b62256c1d100462a077dba3ac41a7ea85e`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. The Desktop alpha workflow must publish only versioned, verified GitHub prerelease artifacts: explicitly unsigned macOS and Windows packages with checksums and platform warnings. Passing automation does not authorize real student-data use.
+Temporary Actions artifacts remain test builds. The only director-facing alpha downloads are the versioned, verified [`v0.1.0-alpha.1` GitHub prerelease artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1): explicitly unsigned macOS and Windows packages with checksums and platform warnings. Passing automation does not authorize real student-data use.
 
 ## Reproducible commands
 

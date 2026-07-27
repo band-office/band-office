@@ -74,7 +74,9 @@ describe("public release preparation", () => {
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("No public Desktop alpha or supported Server release has been issued");
+    expect(readme).toContain("v0.1.0-alpha.1");
+    expect(readme).toContain("public, unsigned prerelease");
+    expect(readme).toContain("no supported image published");
     expect(channels).toContain("Band Office Server Technical Preview");
     expect(deployment).toContain("controlled evaluation with fictional data");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
