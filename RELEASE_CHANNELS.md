@@ -25,7 +25,7 @@ Do not describe this channel as generally available, production-ready, district-
 The Desktop alpha begins only when a `v*-alpha.*` GitHub prerelease contains:
 
 - an explicitly unsigned macOS DMG and ZIP with SHA-256 checksums and Gatekeeper instructions;
-- a signed Windows installer and ZIP;
+- an explicitly unsigned Windows installer and ZIP with SHA-256 checksums and SmartScreen instructions;
 - platform acceptance results;
 - SHA-256 checksums;
 - the Apache license and third-party notice;

@@ -4,13 +4,12 @@ The current work is release engineering, not another feature module.
 
 ## Desktop Alpha
 
-The public-release cleanup, mixed-distribution workflow, protected `desktop-alpha-release` environment, required reviewer, and native unsigned package acceptance are complete. macOS will ship unsigned with checksums and a Gatekeeper warning; Apple signing is deferred.
+The public-release cleanup, protected `desktop-alpha-release` environment, required reviewer, and native unsigned package acceptance are complete. Both platforms will ship unsigned with checksums and platform warnings; paid Apple and Microsoft signing are deferred.
 
-1. Complete Microsoft Artifact Signing Public Trust identity validation and create the signing profile and service principal.
-2. Add the three Microsoft secrets and four Artifact Signing variables listed in `DESKTOP_ALPHA_RELEASE.md`.
-3. Create the mixed-distribution `v0.1.0-alpha.1` tag from accepted `main`.
-4. Verify the GitHub prerelease, checksums, Windows signatures, macOS warning, and legal files.
-5. Run clean-machine Gatekeeper override, installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
+1. Create the unsigned `v0.1.0-alpha.1` tag from accepted `main`.
+2. Approve publication through the protected GitHub environment.
+3. Verify the GitHub prerelease, checksums, platform warnings, and legal files.
+4. Run clean-machine Gatekeeper and SmartScreen override, installation, backup, restore, upgrade, and uninstall acceptance on macOS and Windows.
 
 Do not publish temporary Actions artifacts as director downloads.
 
