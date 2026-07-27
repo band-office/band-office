@@ -6,9 +6,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
-### Added
+### Changed
 
-No changes recorded yet.
+- Clarified that Desktop alpha installations start empty, include no demo records, and support real local program operations when the school-data safeguards are met.
 
 ## Desktop 0.1.0-alpha.1 — 2026-07-26
 

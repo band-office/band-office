@@ -2,6 +2,8 @@
 
 The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after macOS and Windows produce explicitly unsigned, checksum-protected packages and both jobs complete packaged-application acceptance.
 
+Desktop packages exclude repository databases and demo records. A fresh installation creates an empty database, opens first-run program setup, and can then be used for real local program operations. Real student information should be loaded only after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
+
 ## Release Identity
 
 - Package version: `package.json` without prerelease text, for example `0.1.0`.

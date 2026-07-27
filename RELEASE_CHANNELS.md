@@ -6,9 +6,9 @@ Band Office separates source visibility, local director distribution, and distri
 
 **State:** available on `main`.
 
-**Audience:** contributors, technical reviewers, and directors evaluating the deterministic demo with fictional data.
+**Audience:** contributors, technical reviewers, and directors building or reviewing from source.
 
-This channel includes the full source, local development path, unsigned package acceptance, and the Server operator kit. It is not a stable download and is not approved for real student data.
+This channel includes the full source, local development path, package acceptance evidence, and the Server operator kit. Source availability does not by itself create a supported deployment.
 
 Permitted public description:
 
@@ -18,11 +18,11 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** not yet issued.
+**State:** [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) issued as an unsigned public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 
-The Desktop alpha begins only when a `v*-alpha.*` GitHub prerelease contains:
+The Desktop alpha is issued only when a `v*-alpha.*` GitHub prerelease contains:
 
 - an explicitly unsigned macOS DMG and ZIP with SHA-256 checksums and Gatekeeper instructions;
 - an explicitly unsigned Windows installer and ZIP with SHA-256 checksums and SmartScreen instructions;
@@ -33,7 +33,7 @@ The Desktop alpha begins only when a `v*-alpha.*` GitHub prerelease contains:
 
 Desktop is local-only. It may use an approved SMTP mailbox while the application is running, but it cannot host family portals over the public internet.
 
-The first Desktop alpha remains pre-stable software. Real-data use still requires school approval, a district-managed encrypted computer, an encrypted backup, and a verified restore drill.
+Fresh Desktop installations start with an empty database and first-run program setup. Demo records are not included in the package. Directors may use the alpha for real local program operations, but before student information is loaded, the school should approve the deployment, provide a district-managed encrypted computer, assign backup ownership, and complete an encrypted backup and verified restore drill.
 
 ## Band Office Server Technical Preview
 
@@ -54,4 +54,4 @@ It is not approved for real family accounts. A supported Server release requires
 
 ## Promotion Boundary
 
-LinkedIn and contributor-facing posts may link to the source release candidate when they preserve its status. Broad band-director promotion should wait for the Desktop alpha and must disclose that the initial macOS package is unsigned. Family-portal promotion should wait for a supported Server release.
+LinkedIn, contributor-facing posts, and band-director communities may link to the Desktop alpha when they preserve its alpha status and disclose that both platform packages are unsigned. Do not describe it as stable, district-approved, or a supported CutTime replacement. Family-portal promotion should wait for a supported Server release.

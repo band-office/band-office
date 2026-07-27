@@ -21,7 +21,7 @@ Band Office keeps the operational work of a school music program in one local-fi
 It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
 
 > [!IMPORTANT]
-> Band Office Desktop `v0.1.0-alpha.1` is a **public, unsigned prerelease** for technically comfortable evaluators using fictional data. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Clean-machine acceptance, public-server acceptance, district approval, and the real-data pilot remain release gates. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using it with a school program.
+> Band Office Desktop `v0.1.0-alpha.1` is a **public, unsigned prerelease** for directors running one local program. Fresh installations start empty and contain no demo records. It can be used for real program operations, but a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore before student information is loaded. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before adoption.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
 
@@ -30,7 +30,7 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 | Channel | Current state | Intended user |
 | --- | --- | --- |
 | Source | Available on `main` | Contributors and technical reviewers |
-| Band Office Desktop alpha | [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), unsigned prerelease | Technically comfortable evaluators running one local program with fictional data and no public family access |
+| Band Office Desktop alpha | [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), unsigned prerelease | Directors running one local program without public family access |
 | Band Office Server technical preview | Source and operator kit available; no supported image published | District IT evaluation with fictional data |
 
 These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server and family portals remain a district-operated technical preview until the external acceptance gates pass. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
@@ -105,7 +105,7 @@ The repository screenshots use deterministic fictional data. More views are avai
 
 ## Desktop alpha
 
-[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. Use this alpha for controlled evaluation with fictional data; clean-machine acceptance is still open.
+[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. The released application starts with an empty database and first-run program setup; Ridgeline demo data is not packaged. This is functional alpha software, not a demo, although clean-machine acceptance and the first real-program pilot remain open.
 
 The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 

@@ -70,7 +70,7 @@
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. The only director-facing alpha downloads are the versioned, verified [`v0.1.0-alpha.1` GitHub prerelease artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1): explicitly unsigned macOS and Windows packages with checksums and platform warnings. Passing automation does not authorize real student-data use.
+Temporary Actions artifacts remain test builds. The only director-facing alpha downloads are the versioned, verified [`v0.1.0-alpha.1` GitHub prerelease artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1): explicitly unsigned macOS and Windows packages with checksums and platform warnings. Fresh installations start empty and can hold real program records; school approval, encrypted equipment, backup ownership, and a verified encrypted restore remain required operational safeguards before loading student information.
 
 ## Reproducible commands
 
