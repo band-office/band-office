@@ -109,6 +109,7 @@ describe("public release preparation", () => {
     const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
     const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
+    const pullRequestWorkflow = await readFile(".github/workflows/pull-request-quality.yml", "utf8");
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
@@ -124,6 +125,8 @@ describe("public release preparation", () => {
     expect(channels).not.toContain("**State:** not yet issued.");
     expect(deployment).toContain("Fresh installations start empty");
     expect(deployment).toContain("activating real family accounts");
+    expect(deployment).toContain("sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt");
+    expect(deployment).toContain("sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the unsigned macOS release candidate.");
@@ -134,18 +137,31 @@ describe("public release preparation", () => {
     expect(signedWorkflow).toContain("unsigned-windows-alpha");
     expect(signedWorkflow).toContain("npm run desktop:dist:mac");
     expect(signedWorkflow).toContain("npm run desktop:dist:win");
+    expect(signedWorkflow).toContain('- "!v*-server-alpha.*"');
     expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
     expect(serverWorkflow).toContain('- "v*-server-alpha.*"');
     expect(serverWorkflow).toContain("environment: server-alpha-release");
     expect(serverWorkflow).toContain("platforms: linux/amd64,linux/arm64");
     expect(serverWorkflow).toContain("provenance: mode=max");
     expect(serverWorkflow).toContain("sbom: true");
+    expect(serverWorkflow).toContain("npm run server:compose:test -- band-office-server:acceptance");
+    expect(serverWorkflow).toContain("${{ env.IMAGE_NAME }}:sha-${{ github.sha }}");
+    expect(serverWorkflow).not.toContain("${{ env.IMAGE_NAME }}:${{ steps.release.outputs.version }}");
     expect(serverWorkflow).toContain("uses: actions/attest@");
     expect(serverWorkflow).not.toContain("visibility=public");
     expect(serverWorkflow).not.toContain("packages/container/band-office-server");
     expect(serverWorkflow).toContain("BAND_OFFICE_IMAGE_NAME: ${{ env.IMAGE_NAME }}");
     expect(serverWorkflow).toContain('DOCKER_CONFIG="$anonymous_config"');
     expect(serverWorkflow).not.toContain(":latest");
+    expect(pullRequestWorkflow).toContain("server-compose-acceptance:");
+    expect(pullRequestWorkflow).toContain("npm run server:compose:test -- band-office-server:acceptance");
+    const backupRestore = await readFile("SERVER_BACKUP_RESTORE.md", "utf8");
+    expect(backupRestore).toContain('sudo tar -czf "$backup" data');
+    expect(backupRestore).toContain("sudo chown -R 10001:10001 data");
+    const composeAcceptance = await readFile("scripts/test-server-compose.sh", "utf8");
+    expect(composeAcceptance).toContain('"${compose[@]}" up -d --wait app');
+    expect(composeAcceptance).toContain('"${compose[@]}" up -d worker');
+    expect(composeAcceptance).toContain('sudo tar -czf "$backup" data');
     expect(await readFile("Dockerfile", "utf8")).toContain("rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack");
   });
 });

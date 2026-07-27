@@ -135,6 +135,7 @@ for (const forbiddenMarker of [
 evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication" });
 
 const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
+const pullRequestWorkflow = await readFile(path.join(root, ".github/workflows/pull-request-quality.yml"), "utf8");
 for (const marker of [
   'tags:\n      - "v*-server-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
@@ -147,6 +148,7 @@ for (const marker of [
   "gh attestation verify",
   'DOCKER_CONFIG="$anonymous_config"',
   "npm run server:container:test",
+  "npm run server:compose:test",
   "npm run release:server:artifact:verify",
   "npm run release:server:manifest",
   "gh release create",
@@ -154,8 +156,14 @@ for (const marker of [
   "--verify-tag",
 ]) if (!serverWorkflow.includes(marker)) findings.push(`Server alpha workflow is missing release gate: ${marker}`);
 if (serverWorkflow.includes(":latest")) findings.push("Server alpha workflow must not publish a latest image tag.");
+if (serverWorkflow.includes("${{ env.IMAGE_NAME }}:${{ steps.release.outputs.version }}")) {
+  findings.push("Server alpha workflow must not publish a release-looking image tag before the GitHub release succeeds.");
+}
 if (serverWorkflow.includes("visibility=public") || serverWorkflow.includes("packages/container/band-office-server")) {
   findings.push("Server alpha workflow must verify public package access, not mutate organization package visibility.");
+}
+if (!pullRequestWorkflow.includes("npm run server:compose:test -- band-office-server:acceptance")) {
+  findings.push("Pull requests do not exercise the packaged Server Compose operator path on Linux.");
 }
 
 const dockerfile = await readFile(path.join(root, "Dockerfile"), "utf8");
@@ -181,6 +189,7 @@ for (const script of [
   "release:server:artifact:verify",
   "release:server:manifest",
   "server:container:test",
+  "server:compose:test",
 ]) if (!packageJson.scripts?.[script]) findings.push(`package.json is missing Server release script ${script}.`);
 evidence.push({ claim: "Server alpha publication is protected and attributable", detail: "Multi-platform GHCR publication requires the protected environment, non-root container acceptance, vulnerability scan, public-image check, digest-pinned operator bundle, SBOM, and signed provenance" });
 

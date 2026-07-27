@@ -25,14 +25,18 @@ From the deployment directory:
 ```bash
 mkdir -p backups
 docker compose stop worker app
-tar -czf "backups/band-office-data-$(date -u +%Y%m%dT%H%M%SZ).tar.gz" data
+backup="backups/band-office-data-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
+sudo tar -czf "$backup" data
+sudo chown "$(id -u):$(id -g)" "$backup"
+chmod 600 "$backup"
+sha256sum "$backup" > "$backup.sha256"
 docker compose start app worker
 docker compose ps
 ```
 
-The application is briefly unavailable while `app` is stopped. Do not copy live SQLite, WAL, and managed files independently.
+The application is briefly unavailable while `app` is stopped. `sudo` is required because the protected `data` directory belongs to the non-root container UID `10001`. Do not copy live SQLite, WAL, and managed files independently.
 
-Record the backup filename, creation time, Band Office image reference, and the operator who created it. Move the archive to district-approved encrypted storage after the command completes.
+Verify the checksum after copying the archive to district-approved encrypted storage. Record the backup filename, checksum, creation time, Band Office image reference, and the operator who created it.
 
 ## Restore drill
 
@@ -40,7 +44,15 @@ Never test restoration against the production directory. Provision an isolated s
 
 1. Configure the same Band Office release image used when the backup was created.
 2. Keep ports blocked from public access.
-3. Extract the backup so the restored deployment contains `data/bandos.db` and all managed-file directories.
+3. Extract the backup and restore the required ownership:
+
+   ```bash
+   sudo tar -xzf backups/band-office-data-YYYYMMDDTHHMMSSZ.tar.gz
+   sudo chown -R 10001:10001 data
+   sudo chmod 700 data
+   ```
+
+   The restored deployment must contain `data/bandos.db` and all managed-file directories.
 4. Start only the application:
 
    ```bash
@@ -57,7 +69,7 @@ Never test restoration against the production directory. Provision an isolated s
 1. Preserve the failed deployment and logs; do not overwrite them.
 2. Stop the stack with `docker compose down`.
 3. Rename the failed `data` directory with a timestamp.
-4. Extract the accepted infrastructure backup into a new `data` directory.
+4. Extract the accepted infrastructure backup into a new `data` directory, then run `sudo chown -R 10001:10001 data` and `sudo chmod 700 data`.
 5. Set the Band Office image to the version recorded with that backup.
 6. Start `app`, verify database health and representative records, then start `worker` and `caddy`.
 7. Record the incident, restored backup, missing time window, and operator.

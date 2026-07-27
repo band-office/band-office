@@ -9,8 +9,9 @@ Band Office Server is the district-operated release channel for staff access, sc
 - Platforms: Linux AMD64 and Linux ARM64.
 - GitHub release: prerelease created only by `.github/workflows/server-alpha-release.yml`.
 - Operator bundle: digest-pinned Docker Compose, Caddy, secrets instructions, checksums, and runbooks.
+- Registry staging tag: commit-scoped `sha-<commit>` only. The GitHub release and immutable digest, not a version-only container tag, define a completed release.
 
-The release workflow rejects a tag that does not match `package.json`, does not point into `main`, or fails quality, container, portal, vulnerability, artifact, or protected-publication checks.
+The release workflow rejects a tag that does not match `package.json`, does not point into `main`, or fails quality, container, packaged-Compose, portal, vulnerability, artifact, or protected-publication checks.
 
 ## Published Evidence
 

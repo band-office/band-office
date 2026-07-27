@@ -40,6 +40,7 @@
     "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip --config.forceCodeSigning=true",
     "server:bundle": "node scripts/build-server-bundle.mjs",
     "server:container:test": "node scripts/test-server-container.mjs",
+    "server:compose:test": "bash scripts/test-server-compose.sh",
     "server:verify": "node scripts/verify-server-bundle.mjs",
     "db:generate": "prisma generate",
     "db:init": "npm run db:deploy && prisma db seed",

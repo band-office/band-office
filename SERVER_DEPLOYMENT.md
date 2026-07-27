@@ -38,7 +38,7 @@ Band Office should be the only application using its hostname. The included Cadd
 - IANA timezone such as `America/New_York`
 - Shared-mailbox SMTP password or application password
 
-Do not use an unqualified `latest` image. Use the exact release tag and, after acceptance, record the image digest.
+Do not use an unqualified `latest` image or substitute a version-only tag. Use the exact digest already supplied in the release bundle.
 
 ## Install
 
@@ -50,14 +50,18 @@ Do not use an unqualified `latest` image. Use the exact release tag and, after a
    cp .env.example .env
    mkdir -p data backups caddy-data caddy-config secrets
    chmod 700 data backups caddy-data caddy-config secrets
-   sudo chown 10001:10001 data
    openssl rand -hex 32 > secrets/worker-token.txt
    touch secrets/smtp-password.txt
-   chmod 600 .env secrets/worker-token.txt secrets/smtp-password.txt
+   chmod 600 .env
+   sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt
+   sudo chmod 700 data
+   sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt
    ```
 
-4. Edit `.env`. Keep the digest-pinned `BAND_OFFICE_IMAGE` unchanged and replace the hostname, email, and timezone examples.
-5. If email is already approved, place only the SMTP password in `secrets/smtp-password.txt`. Do not include a username or JSON.
+   UID `10001` is the non-root Band Office account inside the application image. File-backed Docker Compose secrets retain their host ownership on Linux, so both secret files must remain readable by that UID.
+
+4. Edit `.env`. Keep the digest-pinned `BAND_OFFICE_IMAGE` unchanged and replace the hostname, email, and timezone examples. Do not substitute a floating or version-only image tag.
+5. If email is already approved, enter only the SMTP password in `secrets/smtp-password.txt` before changing its ownership above. Do not include a username or JSON.
 6. Validate and start:
 
    ```bash
@@ -81,7 +85,7 @@ Do not use an unqualified `latest` image. Use the exact release tag and, after a
 
 The SMTP host, port, username, sender, and reply-to address are entered by a director under **Email > Shared mailbox**. The password remains only in `secrets/smtp-password.txt`.
 
-After changing that file:
+If SMTP is activated later, IT should edit the protected file with `sudoedit secrets/smtp-password.txt`. Keep its owner `10001:10001` and mode `400`. After changing it:
 
 ```bash
 docker compose restart app

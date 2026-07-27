@@ -53,6 +53,7 @@ jobs:
             BAND_OFFICE_VERSION=0.1.0
             BAND_OFFICE_REVISION=${{ github.sha }}
       - run: npm run server:container:test -- band-office-server:acceptance
+      - run: npm run server:compose:test -- band-office-server:acceptance
       - name: Block fixed high or critical container vulnerabilities
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7
         with:
@@ -105,9 +106,7 @@ jobs:
           push: true
           provenance: mode=max
           sbom: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.release.outputs.version }}
-            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          tags: ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
           build-args: |
             BAND_OFFICE_VERSION=${{ steps.release.outputs.version }}
             BAND_OFFICE_REVISION=${{ github.sha }}
