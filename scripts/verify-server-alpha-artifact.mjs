@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import JSZip from "jszip";
 
@@ -26,8 +26,8 @@ function parseChecksums(contents) {
   return rows;
 }
 
-assert.ok((await stat(archivePath)).size > 0, "Server operator archive is empty.");
 const archiveBytes = await readFile(archivePath);
+assert.ok(archiveBytes.byteLength > 0, "Server operator archive is empty.");
 const outerChecksums = parseChecksums(await readFile(outerChecksumsPath, "utf8"));
 assert.equal(outerChecksums.get(`${bundleName}.zip`), sha256(archiveBytes), "Outer checksum does not match the Server operator archive.");
 
