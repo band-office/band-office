@@ -143,7 +143,6 @@ for (const marker of [
   "provenance: mode=max",
   "sbom: true",
   "ghcr.io/band-office/band-office-server",
-  "visibility=public",
   "uses: actions/attest@",
   "gh attestation verify",
   'DOCKER_CONFIG="$anonymous_config"',
@@ -155,6 +154,9 @@ for (const marker of [
   "--verify-tag",
 ]) if (!serverWorkflow.includes(marker)) findings.push(`Server alpha workflow is missing release gate: ${marker}`);
 if (serverWorkflow.includes(":latest")) findings.push("Server alpha workflow must not publish a latest image tag.");
+if (serverWorkflow.includes("visibility=public") || serverWorkflow.includes("packages/container/band-office-server")) {
+  findings.push("Server alpha workflow must verify public package access, not mutate organization package visibility.");
+}
 
 const dockerfile = await readFile(path.join(root, "Dockerfile"), "utf8");
 for (const marker of [

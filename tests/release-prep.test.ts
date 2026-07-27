@@ -139,7 +139,8 @@ describe("public release preparation", () => {
     expect(serverWorkflow).toContain("provenance: mode=max");
     expect(serverWorkflow).toContain("sbom: true");
     expect(serverWorkflow).toContain("uses: actions/attest@");
-    expect(serverWorkflow).toContain("visibility=public");
+    expect(serverWorkflow).not.toContain("visibility=public");
+    expect(serverWorkflow).not.toContain("packages/container/band-office-server");
     expect(serverWorkflow).toContain("BAND_OFFICE_IMAGE_NAME: ${{ env.IMAGE_NAME }}");
     expect(serverWorkflow).toContain('DOCKER_CONFIG="$anonymous_config"');
     expect(serverWorkflow).not.toContain(":latest");
