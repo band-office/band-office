@@ -79,10 +79,14 @@ describe("public release preparation", () => {
     expect(deployment).toContain("controlled evaluation with fictional data");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
-    expect(signedWorkflow).toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
+    expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the unsigned macOS release candidate.");
+    expect(acceptanceWorkflow).toContain("Unexpected Authenticode signature on the unsigned Windows release candidate");
+    expect(signedWorkflow).not.toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
     expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
     expect(signedWorkflow).toContain("unsigned-macos-alpha");
+    expect(signedWorkflow).toContain("unsigned-windows-alpha");
     expect(signedWorkflow).toContain("npm run desktop:dist:mac");
+    expect(signedWorkflow).toContain("npm run desktop:dist:win");
     expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
   });
 });

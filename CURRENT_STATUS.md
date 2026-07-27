@@ -23,14 +23,13 @@ The quality job included all 48 unit tests, the production build, desktop lifecy
 
 ## Desktop Alpha
 
-The application and cross-platform package candidates are implemented. The first alpha will intentionally publish an unsigned macOS package with SHA-256 checksums and explicit Gatekeeper instructions. Apple Developer ID signing and notarization are deferred until user interest warrants the annual Apple Developer Program cost. Windows remains fail-closed on Microsoft Artifact Signing.
+The application and cross-platform package candidates are implemented. The first alpha will intentionally publish unsigned macOS and Windows packages with SHA-256 checksums and explicit platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
 The first Desktop alpha remains blocked on:
 
-1. Microsoft Artifact Signing enrollment, certificate profile, and CI credentials.
-2. Successful mixed-distribution workflow execution from an accepted alpha tag.
-3. Clean-machine install, Gatekeeper override, backup, restore, upgrade, and uninstall acceptance.
-4. District approval and the SDMS real-data pilot before stable use.
+1. Successful unsigned workflow execution from an accepted alpha tag and protected publication approval.
+2. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
+3. District approval and the SDMS real-data pilot before stable use.
 
 See `DESKTOP_ALPHA_RELEASE.md`.
 

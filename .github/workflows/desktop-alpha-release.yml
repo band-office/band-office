@@ -65,58 +65,29 @@ jobs:
             dist-desktop/Band-Office-*-mac-arm64.zip
             dist-desktop/SHA256SUMS-macos.txt
 
-  signed-windows:
+  unsigned-windows:
     needs: quality
     runs-on: windows-latest
     timeout-minutes: 35
-    environment: desktop-alpha-release
-    env:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      AZURE_SIGNING_PUBLISHER_NAME: ${{ vars.AZURE_SIGNING_PUBLISHER_NAME }}
-      AZURE_SIGNING_ENDPOINT: ${{ vars.AZURE_SIGNING_ENDPOINT }}
-      AZURE_SIGNING_CERTIFICATE_PROFILE_NAME: ${{ vars.AZURE_SIGNING_CERTIFICATE_PROFILE_NAME }}
-      AZURE_SIGNING_ACCOUNT_NAME: ${{ vars.AZURE_SIGNING_ACCOUNT_NAME }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
-      - name: Require Microsoft Artifact Signing configuration
-        shell: pwsh
-        run: |
-          $required = @(
-            "AZURE_TENANT_ID",
-            "AZURE_CLIENT_ID",
-            "AZURE_CLIENT_SECRET",
-            "AZURE_SIGNING_PUBLISHER_NAME",
-            "AZURE_SIGNING_ENDPOINT",
-            "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
-            "AZURE_SIGNING_ACCOUNT_NAME"
-          )
-          foreach ($name in $required) {
-            if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
-              throw "$name is required."
-            }
-          }
-          if (-not $env:AZURE_SIGNING_ENDPOINT.StartsWith("https://")) {
-            throw "AZURE_SIGNING_ENDPOINT must use HTTPS."
-          }
       - run: npm ci
-      - run: npm run desktop:dist:win:signed
+      - run: npm run desktop:dist:win
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
-      - name: Verify Authenticode signatures
+      - name: Verify unsigned distribution boundary
         shell: pwsh
         run: |
           $installer = Get-ChildItem "dist-desktop/Band-Office-*-win-x64.exe" | Select-Object -First 1
           $application = Get-Item "dist-desktop/win-unpacked/Band Office.exe"
           foreach ($file in @($installer, $application)) {
             $signature = Get-AuthenticodeSignature $file.FullName
-            if ($signature.Status -ne "Valid") {
-              throw "Invalid Authenticode signature for $($file.FullName): $($signature.Status)"
+            if ($signature.Status -eq "Valid") {
+              throw "Unexpected Authenticode signature on the unsigned Windows release: $($file.FullName)"
             }
           }
       - name: Write Windows checksums
@@ -132,7 +103,7 @@ jobs:
           )
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: signed-windows-alpha
+          name: unsigned-windows-alpha
           retention-days: 30
           path: |
             dist-desktop/Band-Office-*-win-x64.exe
@@ -142,8 +113,9 @@ jobs:
   publish-prerelease:
     needs:
       - unsigned-macos
-      - signed-windows
+      - unsigned-windows
     runs-on: ubuntu-latest
+    environment: desktop-alpha-release
     permissions:
       actions: read
       contents: write
@@ -165,7 +137,7 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             release-assets/unsigned-macos-alpha/* \
-            release-assets/signed-windows-alpha/* \
+            release-assets/unsigned-windows-alpha/* \
             release-assets/Band-Office-RELEASE-MANIFEST.json \
             --repo "$GITHUB_REPOSITORY" \
             --prerelease \

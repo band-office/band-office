@@ -104,15 +104,10 @@ for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
   "environment: desktop-alpha-release",
-  "AZURE_TENANT_ID",
-  "AZURE_CLIENT_ID",
-  "AZURE_CLIENT_SECRET",
-  "AZURE_SIGNING_PUBLISHER_NAME",
-  "AZURE_SIGNING_ENDPOINT",
-  "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
-  "AZURE_SIGNING_ACCOUNT_NAME",
   "npm run desktop:dist:mac",
+  "npm run desktop:dist:win",
   "Unexpected Developer ID signature on the unsigned macOS release.",
+  "Unexpected Authenticode signature on the unsigned Windows release",
   "hdiutil verify",
   "Get-AuthenticodeSignature",
   "npm run release:desktop:verify",
@@ -127,10 +122,17 @@ for (const forbiddenMarker of [
   "MACOS_CSC_KEY_PASSWORD",
   "APPLE_APP_SPECIFIC_PASSWORD",
   "APPLE_TEAM_ID",
+  "AZURE_TENANT_ID",
+  "AZURE_CLIENT_ID",
+  "AZURE_CLIENT_SECRET",
+  "AZURE_SIGNING_PUBLISHER_NAME",
+  "AZURE_SIGNING_ENDPOINT",
+  "AZURE_SIGNING_CERTIFICATE_PROFILE_NAME",
+  "AZURE_SIGNING_ACCOUNT_NAME",
 ]) {
-  if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow still uses exportable PFX credential: ${forbiddenMarker}`);
+  if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow includes deferred signing configuration: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS is intentionally unsigned with checksums and a Gatekeeper warning; Windows requires Artifact Signing and post-signing verification before prerelease publication" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication" });
 
 const desktopMain = await readFile(path.join(root, "desktop/main.mjs"), "utf8");
 for (const marker of [

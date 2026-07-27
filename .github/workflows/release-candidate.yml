@@ -35,6 +35,14 @@ jobs:
       - run: npm run desktop:dist:mac
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
+      - name: Verify unsigned distribution boundary
+        run: |
+          app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
+          test -n "$app"
+          if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'; then
+            echo "Unexpected Developer ID signature on the unsigned macOS release candidate." >&2
+            exit 1
+          fi
       - name: Verify disk image
         run: hdiutil verify dist-desktop/Band-Office-*-mac-*.dmg
       - name: Write checksums
@@ -61,6 +69,17 @@ jobs:
       - run: npm run desktop:dist:win
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
+      - name: Verify unsigned distribution boundary
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "dist-desktop/Band-Office-*-win-x64.exe" | Select-Object -First 1
+          $application = Get-Item "dist-desktop/win-unpacked/Band Office.exe"
+          foreach ($file in @($installer, $application)) {
+            $signature = Get-AuthenticodeSignature $file.FullName
+            if ($signature.Status -eq "Valid") {
+              throw "Unexpected Authenticode signature on the unsigned Windows release candidate: $($file.FullName)"
+            }
+          }
       - name: Write checksums
         shell: pwsh
         run: |

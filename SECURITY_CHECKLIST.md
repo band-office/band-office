@@ -56,18 +56,20 @@
 - [ ] Create a release tag only after the release-candidate workflow and remaining artifact gates pass.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
-- [ ] Verify required legal files in the signed Windows package and future Server release image.
+- [ ] Verify required legal files in the published Windows package and future Server release image.
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
 - [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Mac.
 - [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
-- [ ] Build, sign, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
+- [ ] Verify the documented SmartScreen warning, published checksums, and unsigned-package warning on a separate clean Windows machine.
+- [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
+- [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the GitHub Actions quality, macOS package, and Windows package acceptance jobs ([run `30228396298`](https://github.com/band-office/band-office/actions/runs/30228396298), commit `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. The Desktop alpha workflow must publish only versioned, verified GitHub prerelease artifacts: an explicitly unsigned macOS package with checksums and warnings, plus a signed Windows package. Passing automation does not authorize real student-data use.
+Temporary Actions artifacts remain test builds. The Desktop alpha workflow must publish only versioned, verified GitHub prerelease artifacts: explicitly unsigned macOS and Windows packages with checksums and platform warnings. Passing automation does not authorize real student-data use.
 
 ## Reproducible commands
 

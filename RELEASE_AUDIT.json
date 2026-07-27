@@ -24,7 +24,7 @@
     },
     {
       "claim": "Desktop alpha publication is explicit and fail-closed",
-      "detail": "macOS is intentionally unsigned with checksums and a Gatekeeper warning; Windows requires Artifact Signing and post-signing verification before prerelease publication"
+      "detail": "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication"
     },
     {
       "claim": "Desktop shell enforces the local boundary",
