@@ -15,12 +15,12 @@ Use only the versioned GitHub prerelease for evaluation. Do not publish temporar
 
 ## Server Alpha
 
-The protected Server release workflow, vulnerability gate, public multi-platform image, immutable digest, signed provenance, operator bundle, and [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) publication are complete.
+The protected Server release workflow, vulnerability gate, packaged Linux Compose acceptance, public multi-platform image, immutable digest, signed provenance, operator bundle, and [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) publication are complete.
 
 1. Deploy the released operator bundle to a clean supported Linux server with real DNS using fictional data.
 2. Complete public HTTPS, firewall, external-port, SMTP, portal recovery, scheduled-worker downtime, backup, restore, upgrade, and rollback acceptance.
 3. Record whether district IT can follow the operator handoff without repository-author assistance.
-4. Resolve release-blocking findings in a later alpha tag; never move or replace `v0.1.0-server-alpha.3`.
+4. Resolve release-blocking findings in a later alpha tag; never move or replace `v0.1.0-server-alpha.4`.
 
 Do not activate real family accounts until district ownership, public-edge, SMTP, password-recovery, upgrade, rollback, restore, and approval gates pass.
 

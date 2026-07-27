@@ -37,7 +37,7 @@ Fresh Desktop installations start with an empty database and first-run program s
 
 ## Band Office Server Alpha
 
-**State:** [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) issued as a public district-operated prerelease.
+**State:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) issued as a public district-operated prerelease.
 
 **Audience:** district IT staff evaluating or operating one approved school music program.
 
