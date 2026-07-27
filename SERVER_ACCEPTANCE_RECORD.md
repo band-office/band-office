@@ -2,15 +2,15 @@
 
 **Run date:** July 26-27, 2026
 
-**Environment:** local Docker Desktop, Linux ARM64 containers
+**Environment:** local Docker Desktop with Linux ARM64 containers, plus GitHub-hosted Ubuntu with Linux AMD64 containers
 
 **Image:** `band-office:0.1.0`
 
 **Local image digest:** `sha256:8fd772d6f57490af0df017e8332ef5012add20eb8d91797a03e192f46c341696`
 
-**Public release:** [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3)
+**Public release:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4)
 
-**Published image:** `ghcr.io/band-office/band-office-server@sha256:8c15705948833da04dd9aab23d4fa2550fd245dd9e2dd4500272f9022fb459f0`
+**Published image:** `ghcr.io/band-office/band-office-server@sha256:35b05d56032f68d8c04f9feb5d4b25a4c7cdcefdf0e734e54072267808f6bbaa`
 
 **Result:** public release and local container acceptance passed; district-hosted public deployment acceptance remains open
 
@@ -25,6 +25,7 @@
 - [x] The protected release workflow published the canonical image for `linux/amd64` and `linux/arm64`.
 - [x] The release blocked fixed high and critical container vulnerabilities.
 - [x] Anonymous registry access, GitHub build provenance, the operator-bundle attestation, and release checksums verified.
+- [x] The packaged operator Compose configuration passed on GitHub-hosted Ubuntu with UID `10001` secret ownership.
 
 The local digest identifies the original ARM64 acceptance image and must not be used as the release reference. Operators must use the published digest above.
 
@@ -65,6 +66,7 @@ This run did not test public DNS or ACME issuance. Those require a real deployme
 - [x] The restored marker was present.
 - [x] The restored database passed integrity and foreign-key checks.
 - [x] The isolated restore container was removed and the original application and worker returned to healthy operation.
+- [x] The packaged Linux operator path created a protected backup, verified its checksum, restored ownership, restarted the stack, and passed post-restore integrity checking.
 
 The synthetic drill proves the documented complete-data-directory procedure on this machine. A district still must test restoration of its own encrypted backup on its own infrastructure.
 

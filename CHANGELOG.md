@@ -10,6 +10,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Clarified that Desktop alpha installations start empty, include no demo records, and support real local program operations when the school-data safeguards are met.
 
+## Server 0.1.0-server-alpha.4 — 2026-07-27
+
+### Fixed
+
+- Corrected Linux ownership and modes for file-backed SMTP and worker secrets.
+- Corrected offline backup and restore commands for the protected UID `10001` data directory.
+- Prevented Server release tags from triggering the Desktop release workflow.
+- Replaced pre-release version-looking container tags with commit-scoped staging tags.
+
+### Verification
+
+- Added Ubuntu acceptance of the packaged Docker Compose configuration, non-root secrets, worker startup, offline backup, checksum, restore, and post-restore SQLite integrity.
+
 ## Server 0.1.0-server-alpha.3 — 2026-07-27
 
 ### Added

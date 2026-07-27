@@ -6,7 +6,7 @@
 
 **Desktop state:** [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) public prerelease issued; unsigned macOS Apple Silicon and Windows x64 packages
 
-**Server state:** [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) public district-operated prerelease issued
+**Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
 Band Office is a functioning local web and Electron application covering People, groups, inventory, assignments, repairs, financial ledgers, email communications, whole-set music library records, forms, events, attendance, reports, backup and restore, rollover, audit history, and a relationship-scoped read-only student and guardian portal with self-service password recovery.
 
@@ -23,16 +23,17 @@ The tagged Desktop alpha at commit `8db851b62256c1d100462a077dba3ac41a7ea85e` pa
 
 The quality job included all 48 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The seven published release assets match the hashes and byte sizes recorded by GitHub and `Band-Office-RELEASE-MANIFEST.json`.
 
-The Server alpha at commit `aa01b35f36831b6500c41366e4ea87b572464375` passed protected [GitHub Actions release run 30268615824](https://github.com/band-office/band-office/actions/runs/30268615824):
+The Server alpha at commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4` passed protected [GitHub Actions release run 30275406054](https://github.com/band-office/band-office/actions/runs/30275406054):
 
 - full release verification and portal workflow acceptance;
 - native container startup, migration, restart, and SQLite checks;
+- packaged Docker Compose startup with UID `10001` secret ownership, offline backup, checksum, restore, and post-restore integrity checks;
 - a blocking scan for fixed high and critical container vulnerabilities;
 - public `linux/amd64` and `linux/arm64` image publication;
 - anonymous registry access, image-index, provenance, and attestation verification;
 - digest-pinned operator-bundle verification, checksum generation, and prerelease publication.
 
-The immutable Server image is `ghcr.io/band-office/band-office-server@sha256:8c15705948833da04dd9aab23d4fa2550fd245dd9e2dd4500272f9022fb459f0`.
+The immutable Server image is `ghcr.io/band-office/band-office-server@sha256:35b05d56032f68d8c04f9feb5d4b25a4c7cdcefdf0e734e54072267808f6bbaa`.
 
 ## Desktop Alpha
 
