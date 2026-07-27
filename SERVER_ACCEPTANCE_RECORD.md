@@ -1,6 +1,6 @@
 # Band Office Server Acceptance Record
 
-**Run date:** July 26, 2026
+**Run date:** July 26-27, 2026
 
 **Environment:** local Docker Desktop, Linux ARM64 containers
 
@@ -8,7 +8,11 @@
 
 **Local image digest:** `sha256:8fd772d6f57490af0df017e8332ef5012add20eb8d91797a03e192f46c341696`
 
-**Result:** local container acceptance passed; public deployment acceptance remains open
+**Public release:** [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3)
+
+**Published image:** `ghcr.io/band-office/band-office-server@sha256:8c15705948833da04dd9aab23d4fa2550fd245dd9e2dd4500272f9022fb459f0`
+
+**Result:** public release and local container acceptance passed; district-hosted public deployment acceptance remains open
 
 ## Image
 
@@ -18,8 +22,11 @@
 - [x] Apache-2.0 package metadata, `LICENSE`, and `NOTICE` are present in the runtime image.
 - [x] `npm audit --omit=dev` reports zero known vulnerabilities in the runtime dependency tree.
 - [x] Compressed local image size is 246,948,866 bytes.
+- [x] The protected release workflow published the canonical image for `linux/amd64` and `linux/arm64`.
+- [x] The release blocked fixed high and critical container vulnerabilities.
+- [x] Anonymous registry access, GitHub build provenance, the operator-bundle attestation, and release checksums verified.
 
-The local digest identifies this one ARM64 image. It is not a published, multi-platform registry digest and must not be used as one.
+The local digest identifies the original ARM64 acceptance image and must not be used as the release reference. Operators must use the published digest above.
 
 ## Stack
 
@@ -63,7 +70,7 @@ The synthetic drill proves the documented complete-data-directory procedure on t
 
 ## Remaining External Acceptance
 
-- [ ] Publish signed or otherwise controlled release images for required architectures and record registry digests.
+- [x] Publish controlled release images for required architectures and record the registry digest.
 - [ ] Repeat the stack test on a clean, supported Linux server.
 - [ ] Verify public DNS, ACME certificate issuance, firewall behavior, and external port isolation.
 - [ ] Verify district-approved SMTP, reply routing, delivery failure, retry, scheduled downtime, and portal recovery.

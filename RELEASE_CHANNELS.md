@@ -35,23 +35,22 @@ Desktop is local-only. It may use an approved SMTP mailbox while the application
 
 Fresh Desktop installations start with an empty database and first-run program setup. Demo records are not included in the package. Directors may use the alpha for real local program operations, but before student information is loaded, the school should approve the deployment, provide a district-managed encrypted computer, assign backup ownership, and complete an encrypted backup and verified restore drill.
 
-## Band Office Server Technical Preview
+## Band Office Server Alpha
 
-**State:** source and operator kit available; no supported image published.
+**State:** [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) issued as a public district-operated prerelease.
 
-**Audience:** district IT staff evaluating the architecture with fictional data.
+**Audience:** district IT staff evaluating or operating one approved school music program.
 
-The technical preview includes Caddy HTTPS configuration, an application container, a scheduled-email worker, secret mounts, health checks, migration tooling, backup and restore instructions, and relationship-scoped student and guardian portals.
+The Server alpha includes a public multi-platform image, a digest-pinned operator bundle, Caddy HTTPS configuration, an application container, a scheduled-email worker, secret mounts, health checks, migration tooling, backup and restore instructions, and relationship-scoped student and guardian portals. Fresh installations start empty.
 
-It is not approved for real family accounts. A supported Server release requires:
+Band Office does not host or operate this channel. Before activating real family accounts, each district deployment requires:
 
-1. A canonical multi-platform image with immutable registry digests.
-2. Clean-Linux acceptance with public DNS and ACME HTTPS.
-3. District SMTP, password recovery, scheduling, retry, and downtime acceptance.
-4. Upgrade, rollback, and complete-data restore drills.
-5. Named district infrastructure, backup, mailbox, and director owners.
-6. District approval for the stored records and public access model.
+1. Clean-Linux acceptance with public DNS and ACME HTTPS.
+2. District SMTP, password recovery, scheduling, retry, and downtime acceptance.
+3. Upgrade, rollback, and complete-data restore drills.
+4. Named district infrastructure, backup, mailbox, and director owners.
+5. District approval for the stored records and public access model.
 
 ## Promotion Boundary
 
-LinkedIn, contributor-facing posts, and band-director communities may link to the Desktop alpha when they preserve its alpha status and disclose that both platform packages are unsigned. Do not describe it as stable, district-approved, or a supported CutTime replacement. Family-portal promotion should wait for a supported Server release.
+LinkedIn, contributor-facing posts, and band-director communities may link to either alpha when they preserve its alpha status. Desktop posts must disclose that both platform packages are unsigned. Server posts must say that it is district-operated, requires Linux administration and district acceptance, and is not a hosted Band Office service. Do not describe either channel as stable, district-approved, turnkey, or a supported CutTime replacement.

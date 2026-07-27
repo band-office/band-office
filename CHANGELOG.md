@@ -10,6 +10,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Clarified that Desktop alpha installations start empty, include no demo records, and support real local program operations when the school-data safeguards are met.
 
+## Server 0.1.0-server-alpha.3 — 2026-07-27
+
+### Added
+
+- First public district-operated Band Office Server prerelease
+- Public `linux/amd64` and `linux/arm64` container image with an immutable digest
+- Digest-pinned operator bundle, SHA-256 checksums, and source-bound release manifest
+- GitHub build provenance, operator-bundle attestation, and OCI software bill of materials
+- District deployment, portal activation, backup and restore, upgrade, support-boundary, and ownership handoff guides
+
+### Security
+
+- Release-blocking scan for fixed high and critical container vulnerabilities
+- Nonroot runtime with Linux capabilities dropped and no runtime npm or Corepack installation
+- Anonymous registry, multi-platform image-index, and provenance verification before prerelease publication
+
 ## Desktop 0.1.0-alpha.1 — 2026-07-26
 
 ### Added

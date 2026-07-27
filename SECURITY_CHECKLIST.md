@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
-**Status date:** July 26, 2026
-**Release state:** public source; unsigned Desktop `v0.1.0-alpha.1` prerelease; Server technical preview
+**Status date:** July 27, 2026
+**Release state:** public source; unsigned Desktop `v0.1.0-alpha.1` prerelease; district-operated Server `v0.1.0-server-alpha.3` prerelease
 
 ## Verified locally
 
@@ -48,7 +48,7 @@
 
 ## External gates still required
 
-- [ ] Publish the Band Office server image to the canonical registry and record its multi-platform digests.
+- [x] Publish the Band Office Server image for `linux/amd64` and `linux/arm64` at `ghcr.io/band-office/band-office-server@sha256:8c15705948833da04dd9aab23d4fa2550fd245dd9e2dd4500272f9022fb459f0`.
 - [ ] Pass the remaining server acceptance checklist on a clean Linux VM with real public DNS and ACME HTTPS.
 - [ ] Pass controlled server SMTP, scheduled-worker downtime, portal recovery, upgrade, and rollback tests.
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
@@ -57,7 +57,7 @@
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
 - [x] Verify required legal files in both published Desktop packages (`npm run release:desktop:verify` in release run `30232531767`).
-- [ ] Verify required legal files in the future Server release image.
+- [x] Verify `LICENSE` and `NOTICE` in the Server runtime and published operator bundle.
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
 - [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Mac.
 - [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
@@ -65,12 +65,13 @@
 - [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the protected GitHub Actions quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30232531767`](https://github.com/band-office/band-office/actions/runs/30232531767), commit `8db851b62256c1d100462a077dba3ac41a7ea85e`).
+- [x] Verify the protected Server quality, container acceptance, vulnerability scan, multi-platform image, anonymous registry access, provenance, operator bundle, checksums, manifest, and prerelease publication jobs ([run `30268615824`](https://github.com/band-office/band-office/actions/runs/30268615824), commit `aa01b35f36831b6500c41366e4ea87b572464375`).
 - [ ] Complete principal/district approval before loading SDMS student data.
 - [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. The only director-facing alpha downloads are the versioned, verified [`v0.1.0-alpha.1` GitHub prerelease artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1): explicitly unsigned macOS and Windows packages with checksums and platform warnings. Fresh installations start empty and can hold real program records; school approval, encrypted equipment, backup ownership, and a verified encrypted restore remain required operational safeguards before loading student information.
+Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.1` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), and district operators use the verified [`v0.1.0-server-alpha.3` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3). Fresh installations start empty and can hold real program records; school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore remain required safeguards. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
 
 ## Reproducible commands
 

@@ -13,11 +13,16 @@ The public-release cleanup, protected `desktop-alpha-release` environment, requi
 
 Use only the versioned GitHub prerelease for evaluation. Do not publish temporary Actions artifacts as director downloads.
 
-## Server Technical Preview
+## Server Alpha
 
-Desktop alpha work does not authorize the Server channel. The next Server action is to publish a versioned multi-platform image, record immutable digests, deploy to a clean Linux server with real DNS, and execute the remaining acceptance record using fictional data.
+The protected Server release workflow, vulnerability gate, public multi-platform image, immutable digest, signed provenance, operator bundle, and [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) publication are complete.
 
-Do not activate real family accounts until district ownership, public-edge, SMTP, password-recovery, upgrade, rollback, and restore gates pass.
+1. Deploy the released operator bundle to a clean supported Linux server with real DNS using fictional data.
+2. Complete public HTTPS, firewall, external-port, SMTP, portal recovery, scheduled-worker downtime, backup, restore, upgrade, and rollback acceptance.
+3. Record whether district IT can follow the operator handoff without repository-author assistance.
+4. Resolve release-blocking findings in a later alpha tag; never move or replace `v0.1.0-server-alpha.3`.
+
+Do not activate real family accounts until district ownership, public-edge, SMTP, password-recovery, upgrade, rollback, restore, and approval gates pass.
 
 ## Stable Release
 

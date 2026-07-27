@@ -3,6 +3,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563EB.svg"></a>
   <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
+  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3"><img alt="Server alpha" src="https://img.shields.io/badge/status-server%20alpha-2563EB.svg"></a>
   <a href="./package.json"><img alt="Node 20.9 or newer" src="https://img.shields.io/badge/node-%3E%3D20.9-334155.svg"></a>
   <a href="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml"><img alt="Band Office release candidate workflow" src="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml/badge.svg"></a>
 </p>
@@ -11,6 +12,7 @@
   <strong><a href="#clean-local-setup">Set up locally</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1">Desktop alpha</a></strong> ·
+  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3">Server alpha</a></strong> ·
   <strong><a href="./SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./CONTRIBUTING.md">Contribute</a></strong> ·
   <strong><a href="./ROADMAP.md">Roadmap</a></strong>
@@ -22,6 +24,8 @@ It is built for program ownership rather than platform lock-in. Records live in 
 
 > [!IMPORTANT]
 > Band Office Desktop `v0.1.0-alpha.1` is a **public, unsigned prerelease** for directors running one local program. Fresh installations start empty and contain no demo records. It can be used for real program operations, but a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore before student information is loaded. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before adoption.
+>
+> Band Office Server `v0.1.0-server-alpha.3` is a **public district-operated prerelease** for staff access, continuous scheduled email, and student and guardian portals. Band Office does not host it. A district must own the Linux server, DNS, HTTPS, SMTP, monitoring, backups, and restore process and complete the supplied acceptance record before activating real family accounts.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
 
@@ -31,9 +35,9 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 | --- | --- | --- |
 | Source | Available on `main` | Contributors and technical reviewers |
 | Band Office Desktop alpha | [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), unsigned prerelease | Directors running one local program without public family access |
-| Band Office Server technical preview | Source and operator kit available; no supported image published | District IT evaluation with fictional data |
+| Band Office Server alpha | [`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3), public district-operated prerelease | District IT operating one approved program |
 
-These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server and family portals remain a district-operated technical preview until the external acceptance gates pass. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
+These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server includes those portals, but every installation remains district-operated and must pass its own external acceptance gates. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
 
 ## Built around real program work
 
@@ -137,9 +141,9 @@ The root Compose file is a local technical convenience. It runs one container, e
 BANDOS_LOAD_DEMO=true docker compose up --build
 ```
 
-## Server and family portal technical preview
+## Server and family portal alpha
 
-The documented server path is an operator technical preview for evaluation with fictional data. It is not a supported school deployment. The intended future deployment is a district-approved Linux server using the separate Band Office Server bundle. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
+[`v0.1.0-server-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3) provides the public multi-platform Band Office Server image and a digest-pinned operator bundle. It is an alpha release for district IT, not a Band Office-hosted service or a claim that an individual district deployment has passed acceptance. Caddy is the only public service and provides HTTPS; the application and scheduled-email worker remain behind it. SQLite and every managed upload persist under the protected `data` directory. SMTP and worker credentials are mounted as Docker secrets.
 
 Start with [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md). The complete operator set is:
 
@@ -149,14 +153,13 @@ Start with [SERVER_DEPLOYMENT.md](./SERVER_DEPLOYMENT.md). The complete operator
 - [SERVER_UPGRADE.md](./SERVER_UPGRADE.md)
 - [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md)
 
-Build and statically verify the distributable operator bundle:
+The release page provides `Band-Office-Server-0.1.0.zip`, `SHA256SUMS.txt`, and a source-bound release manifest. The operator bundle pins this immutable image:
 
 ```bash
-npm run server:verify
-npm run server:bundle -- --image ghcr.io/OWNER/band-office:VERSION
+ghcr.io/band-office/band-office-server@sha256:8c15705948833da04dd9aab23d4fa2550fd245dd9e2dd4500272f9022fb459f0
 ```
 
-No canonical Band Office Server image has been published. Do not activate real family accounts or use shared hosting, cPanel file upload, home-server port forwarding, the development server, or the root local Compose file for student and guardian access.
+Fresh Server installations start empty and contain no demo records. A district may use the alpha for real program operations only after completing `SERVER_ACCEPTANCE_RECORD.md`, assigning the owners in `SERVER_OPERATOR_HANDOFF.md`, and approving the deployment. Do not use shared hosting, cPanel file upload, home-server port forwarding, the development server, or the root local Compose file for student and guardian access.
 
 ## Backups
 
@@ -189,7 +192,7 @@ npm ci
 npm run release:verify
 ```
 
-The release gate runs lint, 48 seeded unit tests, a production build, desktop migration and restore failure-path acceptance, the complete Playwright workflow, static privacy/network/package audits, a clean dependency-tree check, and the production-dependency npm advisory audit. Development and packaging dependencies remain exact-pinned and separately reviewed. See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and [UPDATE_POLICY.md](./UPDATE_POLICY.md) for the evidence record and manual update rules.
+The release gate runs lint, 50 seeded unit tests, a production build, desktop migration and restore failure-path acceptance, the complete Playwright workflow, static privacy/network/package audits, a clean dependency-tree check, and the production-dependency npm advisory audit. Development and packaging dependencies remain exact-pinned and separately reviewed. See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and [UPDATE_POLICY.md](./UPDATE_POLICY.md) for the evidence record and manual update rules.
 
 Build an unsigned desktop application for the current platform:
 
@@ -213,7 +216,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. The protected workflow published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) after Linux quality, macOS package, and Windows package acceptance passed. It is unsigned: macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Clean-machine acceptance, public registry publication, public-server acceptance, district approval, and the SDMS real-data pilot remain open.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) and [`v0.1.0-server-alpha.3` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.3). Desktop packages are unsigned; macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Desktop clean-machine acceptance, district-hosted public-server acceptance, district approval, and the SDMS real-data pilot remain open.
 
 ## Project and community
 

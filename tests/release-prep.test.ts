@@ -116,8 +116,10 @@ describe("public release preparation", () => {
     expect(readme).toContain("public, unsigned prerelease");
     expect(readme).toContain("Fresh installations start empty and contain no demo records");
     expect(readme).toContain("It can be used for real program operations");
-    expect(readme).toContain("no supported image published");
-    expect(channels).toContain("Band Office Server Technical Preview");
+    expect(readme).toContain("v0.1.0-server-alpha.3");
+    expect(readme).toContain("district-operated prerelease");
+    expect(channels).toContain("Band Office Server Alpha");
+    expect(channels).toContain("v0.1.0-server-alpha.3");
     expect(channels).toContain("Directors may use the alpha for real local program operations");
     expect(channels).not.toContain("**State:** not yet issued.");
     expect(deployment).toContain("Fresh installations start empty");
