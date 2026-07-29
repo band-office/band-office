@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
-**Status date:** July 27, 2026
-**Release state:** public source; unsigned Desktop `v0.1.0-alpha.1` prerelease; district-operated Server `v0.1.0-server-alpha.4` prerelease
+**Status date:** July 29, 2026
+**Release state:** public source; unsigned Desktop `v0.1.0-alpha.2` prerelease; district-operated Server `v0.1.0-server-alpha.4` prerelease
 
 ## Verified locally
 
@@ -55,6 +55,7 @@
 - [ ] Obtain district approval and a named infrastructure/backup owner before enabling real family accounts.
 - [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged mixed-distribution release baseline `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
 - [x] Create the immutable `v0.1.0-alpha.1` release tag at accepted commit `8db851b62256c1d100462a077dba3ac41a7ea85e` after release-candidate acceptance.
+- [x] Create the immutable `v0.1.0-alpha.2` release tag at accepted commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54` after the download, data-flow, fictional-demo, and first-run safety changes passed protected review.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
 - [x] Verify required legal files in both published Desktop packages (`npm run release:desktop:verify` in release run `30232531767`).
@@ -66,12 +67,13 @@
 - [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the protected GitHub Actions quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30232531767`](https://github.com/band-office/band-office/actions/runs/30232531767), commit `8db851b62256c1d100462a077dba3ac41a7ea85e`).
+- [x] Verify the protected alpha.2 quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30468638418`](https://github.com/band-office/band-office/actions/runs/30468638418), commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54`).
 - [x] Verify the protected Server quality, container and packaged-Compose acceptance, vulnerability scan, multi-platform image, anonymous registry access, provenance, operator bundle, checksums, manifest, and prerelease publication jobs ([run `30275406054`](https://github.com/band-office/band-office/actions/runs/30275406054), commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4`).
 - [ ] Verify the documented Desktop encrypted-backup restore on a separate clean machine before relying on it for school records.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.1` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), and district operators use the verified [`v0.1.0-server-alpha.4` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Fresh installations start empty and can hold real program records; school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore remain required safeguards. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
+Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.2` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2), and district operators use the verified [`v0.1.0-server-alpha.4` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Fresh Desktop installations offer an empty program or an explicitly marked fictional demo. Real program records require a non-demo installation, school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
 
 ## Reproducible commands
 

@@ -4,7 +4,7 @@
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) public prerelease issued; unsigned macOS Apple Silicon and Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) public prerelease issued; unsigned macOS Apple Silicon and Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
@@ -12,7 +12,7 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-The tagged Desktop alpha at commit `8db851b62256c1d100462a077dba3ac41a7ea85e` passed the protected [GitHub Actions release run 30232531767](https://github.com/band-office/band-office/actions/runs/30232531767):
+The tagged Desktop alpha.2 at commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54` passed the protected [GitHub Actions release run 30468638418](https://github.com/band-office/band-office/actions/runs/30468638418):
 
 - Linux release verification;
 - unsigned macOS packaging and packaged-application acceptance;
@@ -21,7 +21,9 @@ The tagged Desktop alpha at commit `8db851b62256c1d100462a077dba3ac41a7ea85e` pa
 - SHA-256 checksum and release-manifest generation;
 - required-reviewer approval before prerelease publication.
 
-The quality job included all 48 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The seven published release assets match the hashes and byte sizes recorded by GitHub and `Band-Office-RELEASE-MANIFEST.json`.
+The quality job included all 50 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. Both platform jobs then passed packaged-application acceptance, unsigned-distribution checks, and checksum generation. The seven published release assets are both installers, both ZIP packages, both checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
+
+The original Desktop alpha.1 remains immutable at commit `8db851b62256c1d100462a077dba3ac41a7ea85e` with its protected [release run 30232531767](https://github.com/band-office/band-office/actions/runs/30232531767).
 
 The Server alpha at commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4` passed protected [GitHub Actions release run 30275406054](https://github.com/band-office/band-office/actions/runs/30275406054):
 
@@ -39,9 +41,9 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The first Desktop alpha is public as explicitly unsigned macOS and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
+The current Desktop alpha is public as explicitly unsigned macOS and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
-The Desktop alpha starts with an empty database and first-run setup; no demo records are packaged. A director can use it for real local program operations within the documented Desktop boundary. Remaining release-hardening work is:
+The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 
 1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
 2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.
@@ -64,4 +66,4 @@ See `RELEASE_CHANNELS.md` and `SERVER_SUPPORT_BOUNDARY.md`.
 
 ## Real Data Conditions
 
-Neither alpha automatically loads the Ridgeline dataset. Before a director loads student information, the school should approve the deployment, use district-managed encrypted equipment and storage, assign backup ownership, and verify restoration. Server installations must also complete the public-edge, SMTP, ownership, and portal acceptance record before real family accounts are activated. Those are operational safeguards for real school records, not a demo-mode limitation.
+Desktop loads Ridgeline only when the director explicitly chooses **Fictional demo** during first-run setup; Server installations do not load it. Before a director loads student information into a non-demo installation, the school should approve the deployment, use district-managed encrypted equipment and storage, assign backup ownership, and verify restoration. Server installations must also complete the public-edge, SMTP, ownership, and portal acceptance record before real family accounts are activated.
