@@ -5,7 +5,7 @@ import sharp from "sharp";
 const outputDirectory = path.resolve("desktop/assets");
 await mkdir(outputDirectory, { recursive: true });
 
-await sharp(path.resolve("public/brand/bandos-mark.png"))
+await sharp(path.resolve("public/brand/band-office-mark.png"))
   .resize(1024, 1024, { fit: "contain" })
   .png()
   .toFile(path.join(outputDirectory, "icon.png"));

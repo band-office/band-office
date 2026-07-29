@@ -229,7 +229,7 @@ async function bootstrap() {
   });
 
   ipcMain.handle("bandos:restore-backup", async (_event, payload) => {
-    const selection = await dialog.showOpenDialog(mainWindow, { properties: ["openFile"], filters: [{ name: "Band Office backups", extensions: ["bandos", "zip"] }] });
+    const selection = await dialog.showOpenDialog(mainWindow, { properties: ["openFile"], filters: [{ name: "Band Office backups", extensions: ["bandoffice", "bandos", "zip"] }] });
     if (selection.canceled || !selection.filePaths[0]) return { canceled: true };
     try {
       const validated = await validateBackupArchive(selection.filePaths[0], typeof payload?.passphrase === "string" ? payload.passphrase : "");

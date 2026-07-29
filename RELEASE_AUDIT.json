@@ -35,6 +35,14 @@
       "detail": "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path"
     },
     {
+      "claim": "Backup naming is current without breaking restore compatibility",
+      "detail": "New encrypted archives use .bandoffice; Desktop restore retains .bandos and ZIP support"
+    },
+    {
+      "claim": "Public release gates are deployment-neutral",
+      "detail": "Current release, roadmap, and security documents contain no program-specific pilot gate"
+    },
+    {
       "claim": "macOS entitlement scope is camera-only",
       "detail": "com.apple.security.device.camera"
     },

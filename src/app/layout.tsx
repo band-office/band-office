@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   },
   description: "Open-source operations for school music programs.",
   icons: {
-    icon: "/brand/bandos-mark.png",
-    apple: "/brand/bandos-mark.png",
+    icon: "/brand/band-office-mark.png",
+    apple: "/brand/band-office-mark.png",
   },
 };
 

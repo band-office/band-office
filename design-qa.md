@@ -4,15 +4,15 @@
 
 - Reference: `/var/folders/cg/3wtt78v577d66ckcvzykyvjh0000gn/T/codex-clipboard-2ed57ed2-919f-48d2-91b2-e01028ef3164.png`
 - Reference dimensions: 1149 x 1369
-- Desktop implementation capture: `/tmp/bandos-after-brand-desktop.png`
+- Desktop implementation capture: `/tmp/band-office-after-brand-desktop.png`
 - Desktop viewport: 1440 x 1024
-- Mobile implementation capture: `/tmp/bandos-after-brand-mobile.png`
+- Mobile implementation capture: `/tmp/band-office-after-brand-mobile.png`
 - Mobile viewport: 390 x 844
 - Family-link desktop capture: `test-results/e2e-family-links-desktop.png`
 - Family-link mobile capture: `test-results/e2e-family-links-mobile.png`
-- Combined comparison: `/tmp/bandos-brand-comparison.png`
-- Production mark: `public/brand/bandos-mark.png`
-- Reverse mark for dark surfaces: `public/brand/bandos-mark-reverse.png`
+- Combined comparison: `/tmp/band-office-brand-comparison.png`
+- Production mark: `public/brand/band-office-mark.png`
+- Reverse mark for dark surfaces: `public/brand/band-office-mark-reverse.png`
 - Desktop icon: `desktop/assets/icon.png`
 
 The reference is a brand guide rather than an application mockup. QA therefore compares the approved visual tokens, typography, logo treatment, and hierarchy while preserving the existing Band Office operational layout.
@@ -59,7 +59,7 @@ No open P0, P1, or P2 findings remain.
 - In-app browser visual inspection at desktop and mobile sizes
 - macOS DMG verification and package identity inspection
 - Logo source and Next.js optimized image both return HTTP 200
-- Desktop standalone runtime contains `public/brand/bandos-mark.png`
+- Desktop standalone runtime contains `public/brand/band-office-mark.png`
 - Rendered logo images report non-zero natural dimensions
 
 final result: passed

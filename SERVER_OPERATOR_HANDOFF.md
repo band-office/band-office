@@ -24,7 +24,7 @@ Complete and retain this record before loading student information or activating
 
 - Encrypted server or volume:
 - Complete-data backup location:
-- Portable `.bandos` archive location:
+- Portable encrypted archive location (`.bandoffice` or legacy `.bandos`):
 - Backup retention policy:
 
 Do not record passwords, worker tokens, recovery codes, or other secrets in this handoff.
@@ -40,7 +40,7 @@ Do not record passwords, worker tokens, recovery codes, or other secrets in this
 - [ ] Synthetic guardian portal access is limited to explicitly linked students.
 - [ ] Disabling a portal account immediately blocks access.
 - [ ] Password setup and recovery work through the district mailbox.
-- [ ] Encrypted `.bandos` backup verification passes.
+- [ ] Encrypted portable-backup verification passes.
 - [ ] A complete-data backup restores on isolated infrastructure.
 - [ ] Upgrade and rollback procedures have been reviewed.
 

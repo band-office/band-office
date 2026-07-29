@@ -148,7 +148,7 @@ export async function POST(request: Request) {
   const ciphertext = Buffer.concat([cipher.update(archive), cipher.final()]);
   const header = Buffer.from(`BANDOSENC1\n${JSON.stringify({ salt: salt.toString("base64"), iv: iv.toString("base64"), tag: cipher.getAuthTag().toString("base64") })}\n`);
   const payload = Buffer.concat([header, ciphertext]);
-  return recordBackup(payload, `band-office-backup-${new Date().toISOString().slice(0, 10)}.bandos`, program.id, user.username);
+  return recordBackup(payload, `band-office-backup-${new Date().toISOString().slice(0, 10)}.bandoffice`, program.id, user.username);
 }
 
 export async function GET() {

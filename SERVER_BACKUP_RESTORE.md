@@ -4,7 +4,7 @@ Complete an isolated synthetic restore drill before loading student information.
 
 Band Office Server requires two backup layers:
 
-1. **Portable program archive:** a director regularly downloads the encrypted `.bandos` archive from Settings to district-approved storage.
+1. **Portable program archive:** a director regularly downloads the encrypted archive from Settings to district-approved storage. Current source uses `.bandoffice`; the published `v0.1.0-server-alpha.4` build and older archives use `.bandos`. Both remain accepted.
 2. **Infrastructure recovery copy:** IT backs up the complete server `data` directory while the application and worker are stopped.
 
 The infrastructure copy is the server's direct disaster-recovery path. It contains the SQLite database and managed library, form, and event files. Copying only `bandos.db` is incomplete.
@@ -13,7 +13,7 @@ The infrastructure copy is the server's direct disaster-recovery path. It contai
 
 - Nightly or according to district policy: protected infrastructure backup of the server volume
 - Before every Band Office upgrade: offline copy using the procedure below
-- At operating-period rollover: encrypted `.bandos` archive plus infrastructure copy
+- At operating-period rollover: encrypted `.bandoffice` archive plus infrastructure copy
 - At least quarterly: restore drill on an isolated server
 
 Keep backups encrypted at rest and restrict them as student records. Do not place them in personal cloud storage.
@@ -74,4 +74,4 @@ Never test restoration against the production directory. Provision an isolated s
 6. Start `app`, verify database health and representative records, then start `worker` and `caddy`.
 7. Record the incident, restored backup, missing time window, and operator.
 
-An encrypted `.bandos` archive remains the open-format portability copy. Direct server restoration from that archive is not automated in v0.1; do not claim otherwise. Production disaster recovery uses the tested complete-data-directory procedure above.
+An encrypted `.bandoffice` archive remains the portable program copy. Direct server restoration from that archive is not automated in v0.1; do not claim otherwise. Production disaster recovery uses the tested complete-data-directory procedure above.

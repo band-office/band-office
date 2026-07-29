@@ -67,8 +67,7 @@
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the protected GitHub Actions quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30232531767`](https://github.com/band-office/band-office/actions/runs/30232531767), commit `8db851b62256c1d100462a077dba3ac41a7ea85e`).
 - [x] Verify the protected Server quality, container and packaged-Compose acceptance, vulnerability scan, multi-platform image, anonymous registry access, provenance, operator bundle, checksums, manifest, and prerelease publication jobs ([run `30275406054`](https://github.com/band-office/band-office/actions/runs/30275406054), commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4`).
-- [ ] Complete principal/district approval before loading SDMS student data.
-- [ ] Complete the SDMS real-data checkout pilot and verify a restore from its encrypted backup.
+- [ ] Verify the documented Desktop encrypted-backup restore on a separate clean machine before relying on it for school records.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 

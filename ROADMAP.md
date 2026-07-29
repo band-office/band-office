@@ -6,7 +6,6 @@ This roadmap describes direction, not a delivery promise. Release truth lives in
 
 - Complete clean-machine Desktop install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
 - Confirm that a nondeveloper can follow the unsigned-install and recovery instructions without assistance.
-- Run the controlled SDMS real-data pilot after school approval and encrypted-device preparation.
 - Complete the first district-owned Server public-edge, SMTP, portal, upgrade, rollback, and restore acceptance record.
 - Keep CodeQL, dependency audits, container scanning, release attestations, and required pull-request checks green.
 - Turn public issues and pilot findings into bounded reliability, accessibility, and documentation work.
