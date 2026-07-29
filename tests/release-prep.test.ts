@@ -29,12 +29,14 @@ describe("public release preparation", () => {
     await expect(execFileAsync(process.execPath, ["scripts/verify-server-alpha-tag.mjs", "v0.1.0-alpha.1"])).rejects.toThrow();
   });
 
-  test("writes a source-bound manifest for both platform artifact sets", async () => {
+  test("writes a source-bound manifest for all Desktop artifact sets", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "band-office-release-manifest-"));
     temporaryDirectories.push(directory);
     const artifactNames = [
       "Band-Office-0.1.0-mac-arm64.dmg",
       "Band-Office-0.1.0-mac-arm64.zip",
+      "Band-Office-0.1.0-mac-x64.dmg",
+      "Band-Office-0.1.0-mac-x64.zip",
       "Band-Office-0.1.0-win-x64.exe",
       "Band-Office-0.1.0-win-x64.zip",
     ];
@@ -50,12 +52,16 @@ describe("public release preparation", () => {
     })).rejects.toThrow();
 
     await writeFile(
-      path.join(directory, "SHA256SUMS-macos.txt"),
+      path.join(directory, "SHA256SUMS-macos-arm64.txt"),
       artifactNames.slice(0, 2).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
     );
     await writeFile(
+      path.join(directory, "SHA256SUMS-macos-x64.txt"),
+      artifactNames.slice(2, 4).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
+    );
+    await writeFile(
       path.join(directory, "SHA256SUMS-windows.txt"),
-      artifactNames.slice(2).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
+      artifactNames.slice(4).map((name) => `${hashes.get(name)}  ${name}`).join("\n"),
     );
 
     await execFileAsync(process.execPath, ["scripts/write-release-manifest.mjs", directory], {
@@ -70,7 +76,7 @@ describe("public release preparation", () => {
       tag: "v0.1.0-alpha.1",
       commit: "a".repeat(40),
     });
-    expect(manifest.files).toHaveLength(6);
+    expect(manifest.files).toHaveLength(9);
     expect(manifest.files.every((file: { sha256: string }) => /^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
   });
 
@@ -134,9 +140,12 @@ describe("public release preparation", () => {
     expect(acceptanceWorkflow).toContain("Unexpected Authenticode signature on the unsigned Windows release candidate");
     expect(signedWorkflow).not.toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
     expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
-    expect(signedWorkflow).toContain("unsigned-macos-alpha");
+    expect(signedWorkflow).toContain("unsigned-macos-${{ matrix.arch }}-alpha");
     expect(signedWorkflow).toContain("unsigned-windows-alpha");
-    expect(signedWorkflow).toContain("npm run desktop:dist:mac");
+    expect(signedWorkflow).toContain("desktop:dist:mac:arm64");
+    expect(signedWorkflow).toContain("desktop:dist:mac:x64");
+    expect(signedWorkflow).toContain("macos-15-intel");
+    expect(signedWorkflow).toContain('lipo -archs "$app/Contents/MacOS/Band Office"');
     expect(signedWorkflow).toContain("npm run desktop:dist:win");
     expect(signedWorkflow).toContain('- "!v*-server-alpha.*"');
     expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");

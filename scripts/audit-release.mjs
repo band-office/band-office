@@ -104,7 +104,10 @@ for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
   "environment: desktop-alpha-release",
-  "npm run desktop:dist:mac",
+  "desktop:dist:mac:arm64",
+  "desktop:dist:mac:x64",
+  "macos-15-intel",
+  'lipo -archs "$app/Contents/MacOS/Band Office"',
   "npm run desktop:dist:win",
   "Unexpected Developer ID signature on the unsigned macOS release.",
   "Unexpected Authenticode signature on the unsigned Windows release",
@@ -132,7 +135,7 @@ for (const forbiddenMarker of [
 ]) {
   if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow includes deferred signing configuration: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon macOS, Intel macOS, and Windows are intentionally unsigned with native package acceptance, architecture checks, checksums, and platform warnings; the protected environment gates prerelease publication" });
 
 const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
 const pullRequestWorkflow = await readFile(path.join(root, ".github/workflows/pull-request-quality.yml"), "utf8");

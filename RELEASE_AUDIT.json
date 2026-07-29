@@ -24,7 +24,7 @@
     },
     {
       "claim": "Desktop alpha publication is explicit and fail-closed",
-      "detail": "macOS and Windows are intentionally unsigned with checksums and platform warnings; the protected environment gates prerelease publication"
+      "detail": "Apple Silicon macOS, Intel macOS, and Windows are intentionally unsigned with native package acceptance, architecture checks, checksums, and platform warnings; the protected environment gates prerelease publication"
     },
     {
       "claim": "Server alpha publication is protected and attributable",

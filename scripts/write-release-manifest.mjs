@@ -35,11 +35,14 @@ function requiredFile(suffix, message) {
   return matches[0];
 }
 
-const macDmg = requiredFile(".dmg", "Release assets must contain exactly one macOS DMG.");
-const macZip = requiredFile("-mac-arm64.zip", "Release assets must contain exactly one macOS ZIP.");
+const macArmDmg = requiredFile("-mac-arm64.dmg", "Release assets must contain exactly one Apple Silicon macOS DMG.");
+const macArmZip = requiredFile("-mac-arm64.zip", "Release assets must contain exactly one Apple Silicon macOS ZIP.");
+const macIntelDmg = requiredFile("-mac-x64.dmg", "Release assets must contain exactly one Intel macOS DMG.");
+const macIntelZip = requiredFile("-mac-x64.zip", "Release assets must contain exactly one Intel macOS ZIP.");
 const windowsInstaller = requiredFile(".exe", "Release assets must contain exactly one Windows installer.");
 const windowsZip = requiredFile("-win-x64.zip", "Release assets must contain exactly one Windows ZIP.");
-const macChecksums = requiredFile("SHA256SUMS-macos.txt", "Release assets must contain the macOS checksum file.");
+const macArmChecksums = requiredFile("SHA256SUMS-macos-arm64.txt", "Release assets must contain the Apple Silicon macOS checksum file.");
+const macIntelChecksums = requiredFile("SHA256SUMS-macos-x64.txt", "Release assets must contain the Intel macOS checksum file.");
 const windowsChecksums = requiredFile("SHA256SUMS-windows.txt", "Release assets must contain the Windows checksum file.");
 
 async function verifyChecksums(checksumFile, targets) {
@@ -57,7 +60,8 @@ async function verifyChecksums(checksumFile, targets) {
   }
 }
 
-await verifyChecksums(macChecksums, [macDmg, macZip]);
+await verifyChecksums(macArmChecksums, [macArmDmg, macArmZip]);
+await verifyChecksums(macIntelChecksums, [macIntelDmg, macIntelZip]);
 await verifyChecksums(windowsChecksums, [windowsInstaller, windowsZip]);
 
 const manifest = {

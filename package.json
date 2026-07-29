@@ -35,6 +35,8 @@
     "desktop:icon": "node scripts/generate-desktop-icon.mjs",
     "desktop:pack": "node scripts/package-desktop.mjs --dir",
     "desktop:dist:mac": "node scripts/package-desktop.mjs --mac dmg zip",
+    "desktop:dist:mac:arm64": "node scripts/package-desktop.mjs --mac dmg zip --arm64",
+    "desktop:dist:mac:x64": "node scripts/package-desktop.mjs --mac dmg zip --x64",
     "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --config.forceCodeSigning=true --config.mac.notarize=true",
     "desktop:dist:win": "node scripts/package-desktop.mjs --win nsis zip",
     "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip --config.forceCodeSigning=true",
