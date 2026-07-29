@@ -73,6 +73,8 @@ h1, h2, h3 { letter-spacing: 0; }
 .connection-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
 .app-main { min-height: 100vh; margin-left: 236px; }
 .mobile-bar, .mobile-nav { display: none; }
+.demo-banner { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 32px; padding: 6px 18px; color: #6f4f0c; background: #fff8df; border-bottom: 1px solid #ead99a; font-size: 10px; }
+.demo-banner strong { font-size: 10px; }
 
 .content { width: min(1380px, 100%); margin: 0 auto; padding: 30px 34px 56px; }
 .narrow-content { width: min(940px, 100%); }
@@ -825,9 +827,17 @@ textarea { resize: vertical; }
 .auth-brand > div { display: grid; gap: 2px; }
 .auth-brand strong { font-size: 18px; }
 .auth-brand small { color: var(--muted); font-size: 10px; }
+.auth-mode { display: grid; grid-template-columns: 1fr 1fr; margin: -10px 0 24px; padding: 3px; background: var(--surface-muted); border-radius: 6px; }
+.auth-mode a { display: grid; min-height: 36px; padding: 8px; place-items: center; color: var(--muted); border-radius: 4px; font-size: 11px; font-weight: 750; }
+.auth-mode a[aria-current="page"] { color: var(--brand-dark); background: white; box-shadow: 0 1px 3px rgba(15, 23, 42, .12); }
 .auth-copy .large-icon { margin-bottom: 14px; }
 .auth-copy h1 { margin: 0; font-size: 23px; }
 .auth-copy p { margin: 6px 0 20px; color: var(--muted); font-size: 12px; }
+.auth-safety { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 9px; margin: 0 0 20px; padding: 12px; color: #6f4f0c; background: #fff8df; border: 1px solid #ead99a; border-radius: 6px; }
+.auth-safety svg { margin-top: 1px; }
+.auth-safety p { display: grid; gap: 3px; margin: 0; }
+.auth-safety strong { font-size: 11px; }
+.auth-safety span { font-size: 10px; line-height: 1.45; }
 .auth-form { display: grid; gap: 13px; }
 .auth-form .button { margin-top: 5px; }
 .auth-footnote { margin: 18px 0 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
@@ -967,6 +977,8 @@ textarea { resize: vertical; }
   .mobile-nav::-webkit-scrollbar { display: none; }
   .mobile-nav .nav-link { display: grid; flex: 0 0 64px; justify-items: center; gap: 2px; min-height: 48px; padding: 4px 1px; font-size: 8px; }
   .mobile-nav .nav-link.active { background: #1e3a8a; }
+  .demo-banner { flex-wrap: wrap; gap: 4px 6px; padding: 7px 12px; text-align: center; }
+  .demo-banner span { flex-basis: 100%; }
   .content { padding: 20px 13px 40px; }
   .portal-topbar { min-height: 58px; padding: 0 13px; }
   .portal-brand small { max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

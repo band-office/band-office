@@ -21,6 +21,7 @@ import {
   LibraryBig,
   Files,
   CalendarDays,
+  FlaskConical,
 } from "lucide-react";
 import { logoutAction } from "@/app/auth-actions";
 import { BrandMark } from "@/components/brand-mark";
@@ -64,7 +65,7 @@ function NavLink({ href, label, icon: Icon }: { href: string; label: string; ico
   );
 }
 
-export function AppShell({ children, programName, username, role, permissions }: { children: React.ReactNode; programName: string; username: string; role: string; permissions: Permission[] }) {
+export function AppShell({ children, programName, username, role, permissions, isDemo = false }: { children: React.ReactNode; programName: string; username: string; role: string; permissions: Permission[]; isDemo?: boolean }) {
   const allowedNavigation = navigation.filter((item) => !item.permissions || item.permissions.some((permission) => permissions.includes(permission)));
   const allowedAdministration = administration.filter((item) => item.permissions.some((permission) => permissions.includes(permission)));
   return (
@@ -91,6 +92,7 @@ export function AppShell({ children, programName, username, role, permissions }:
           <span className="mobile-program">{programName}</span>
           <form action={logoutAction}><button type="submit" aria-label="Sign out" title="Sign out"><LogOut size={16} /></button></form>
         </header>
+        {isDemo ? <div className="demo-banner"><FlaskConical size={15} /><strong>Fictional demo</strong><span>Do not add real student information.</span></div> : null}
         <div className="mobile-nav" aria-label="Mobile navigation">
           {allowedNavigation.map((item) => <NavLink key={item.href} {...item} />)}
         </div>

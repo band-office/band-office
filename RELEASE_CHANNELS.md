@@ -18,7 +18,7 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) issued as an unsigned public prerelease.
+**State:** [`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) issued as an unsigned public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 
@@ -33,7 +33,7 @@ The Desktop alpha is issued only when a `v*-alpha.*` GitHub prerelease contains:
 
 Desktop is local-only. It may use an approved SMTP mailbox while the application is running, but it cannot host family portals over the public internet.
 
-Fresh Desktop installations start with an empty database and first-run program setup. Demo records are not included in the package. Directors may use the alpha for real local program operations, but before student information is loaded, the school should approve the deployment, provide a district-managed encrypted computer, assign backup ownership, and complete an encrypted backup and verified restore drill.
+Fresh Desktop installations create a private database and offer an empty program or the deterministic fictional Ridgeline demo during first-run setup. Directors should begin with the demo and must not add real student information to that installation. Before student information is loaded into a non-demo installation, the school should approve the deployment, provide a district-managed encrypted computer, assign backup ownership, and complete an encrypted backup and verified restore drill.
 
 ## Band Office Server Alpha
 

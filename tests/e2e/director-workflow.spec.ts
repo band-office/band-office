@@ -15,6 +15,12 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.goto("/today");
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByRole("heading", { name: "Create the director account" })).toBeVisible();
+  await expect(page.getByText("Alpha data boundary")).toBeVisible();
+  await expect(page.getByText(/Evaluate with fictional data first/)).toBeVisible();
+  await page.getByRole("link", { name: "Fictional demo" }).click();
+  await expect(page.getByRole("heading", { name: "Explore the fictional demo" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Load fictional demo" })).toBeVisible();
+  await page.getByRole("link", { name: "My program" }).click();
   await page.getByLabel("Program name").fill("Ridgeline Middle School Band");
   await page.getByLabel("Username").fill("director-e2e");
   await page.getByLabel("Password", { exact: true }).fill("BandOffice-E2E-Password!");

@@ -113,15 +113,16 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.1");
+    expect(readme).toContain("v0.1.0-alpha.2");
     expect(readme).toContain("public, unsigned prerelease");
-    expect(readme).toContain("Fresh installations start empty and contain no demo records");
-    expect(readme).toContain("It can be used for real program operations");
+    expect(readme).toContain("Start with the fictional Ridgeline demo");
+    expect(readme).toContain("verify an encrypted backup and restore");
     expect(readme).toContain("v0.1.0-server-alpha.4");
     expect(readme).toContain("district-operated prerelease");
     expect(channels).toContain("Band Office Server Alpha");
     expect(channels).toContain("v0.1.0-server-alpha.4");
-    expect(channels).toContain("Directors may use the alpha for real local program operations");
+    expect(channels).toContain("Directors should begin with the demo");
+    expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
     expect(deployment).toContain("Fresh installations start empty");
     expect(deployment).toContain("activating real family accounts");

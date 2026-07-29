@@ -31,8 +31,9 @@ import {
   PersonStatus,
   RepairStatus,
 } from "@/generated/prisma/client";
+import { RIDGELINE_PROGRAM_ID } from "@/lib/demo";
 
-export const RIDGELINE_PROGRAM_ID = "program-ridgeline";
+export { RIDGELINE_PROGRAM_ID };
 export const CURRENT_PERIOD_ID = "period-2026-2027";
 export const PRIOR_PERIOD_ID = "period-2025-2026";
 export const REPORT_AS_OF = new Date("2026-07-19T12:00:00.000Z");
