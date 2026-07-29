@@ -2,7 +2,7 @@
 
 The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after macOS and Windows produce explicitly unsigned, checksum-protected packages and both jobs complete packaged-application acceptance.
 
-Desktop packages exclude repository databases and demo records. A fresh installation creates an empty database, opens first-run program setup, and can then be used for real local program operations. Real student information should be loaded only after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
+Desktop packages exclude repository databases. A fresh installation creates its own database and offers an empty program or the deterministic fictional Ridgeline demo during first-run setup. Real student information should be loaded only into a non-demo installation after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
 
 ## Release Identity
 
@@ -46,8 +46,8 @@ Microsoft Artifact Signing is deferred until adoption warrants the monthly cost.
 ```bash
 git switch main
 git pull --ff-only
-git tag -a v0.1.0-alpha.1 -m "Band Office Desktop 0.1.0 alpha 1"
-git push origin v0.1.0-alpha.1
+git tag -a v0.1.0-alpha.2 -m "Band Office Desktop 0.1.0 alpha 2"
+git push origin v0.1.0-alpha.2
 ```
 
 The tag starts the mixed-distribution workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.

@@ -2,16 +2,17 @@
 
 <p align="center">
   <a href="./LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563EB.svg"></a>
-  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
+  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
   <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4"><img alt="Server alpha" src="https://img.shields.io/badge/status-server%20alpha-2563EB.svg"></a>
   <a href="./package.json"><img alt="Node 20.9 or newer" src="https://img.shields.io/badge/node-%3E%3D20.9-334155.svg"></a>
   <a href="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml"><img alt="Band Office release candidate workflow" src="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml/badge.svg"></a>
 </p>
 
 <p align="center">
-  <strong><a href="#clean-local-setup">Set up locally</a></strong> ·
+  <strong><a href="./DOWNLOAD.md">Download Desktop</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
-  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1">Desktop alpha</a></strong> ·
+  <strong><a href="./DATA_FLOW.md">Where your data goes</a></strong> ·
+  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2">Desktop alpha</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4">Server alpha</a></strong> ·
   <strong><a href="./SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./CONTRIBUTING.md">Contribute</a></strong> ·
@@ -23,7 +24,7 @@ Band Office keeps the operational work of a school music program in one local-fi
 It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
 
 > [!IMPORTANT]
-> Band Office Desktop `v0.1.0-alpha.1` is a **public, unsigned prerelease** for directors running one local program. Fresh installations start empty and contain no demo records. It can be used for real program operations, but a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore before student information is loaded. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Read [CURRENT_STATUS.md](./CURRENT_STATUS.md) before adoption.
+> Band Office Desktop `v0.1.0-alpha.2` is a **public, unsigned prerelease** for directors running one local program. Start with the fictional Ridgeline demo. Before loading student information, a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore. macOS requires a manual Gatekeeper override and Windows may show a Microsoft Defender SmartScreen warning. Read the [download instructions](./DOWNLOAD.md), [data-flow explanation](./DATA_FLOW.md), and [CURRENT_STATUS.md](./CURRENT_STATUS.md) before adoption.
 >
 > Band Office Server `v0.1.0-server-alpha.4` is a **public district-operated prerelease** for staff access, continuous scheduled email, and student and guardian portals. Band Office does not host it. A district must own the Linux server, DNS, HTTPS, SMTP, monitoring, backups, and restore process and complete the supplied acceptance record before activating real family accounts.
 
@@ -34,7 +35,7 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 | Channel | Current state | Intended user |
 | --- | --- | --- |
 | Source | Available on `main` | Contributors and technical reviewers |
-| Band Office Desktop alpha | [`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1), unsigned prerelease | Directors running one local program without public family access |
+| Band Office Desktop alpha | [`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2), unsigned prerelease | Directors running one local program without public family access |
 | Band Office Server alpha | [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4), public district-operated prerelease | District IT operating one approved program |
 
 These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server includes those portals, but every installation remains district-operated and must pass its own external acceptance gates. See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md).
@@ -109,9 +110,9 @@ The repository screenshots use deterministic fictional data. More views are avai
 
 ## Desktop alpha
 
-[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. The released application starts with an empty database and first-run program setup; Ridgeline demo data is not packaged. This is functional alpha software, not a demo, although clean-machine lifecycle acceptance remains open.
+[`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. First-run setup offers an empty program or the deterministic fictional Ridgeline demo. This is functional alpha software, although clean-machine lifecycle acceptance remains open.
 
-The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. Other compatibility-sensitive identifiers are documented in [COMPATIBILITY.md](./COMPATIBILITY.md). SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
+The desktop app requires no terminal, Node.js, or Docker. A first-run choice creates an empty program or loads the deterministic fictional Ridgeline demo. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. Other compatibility-sensitive identifiers are documented in [COMPATIBILITY.md](./COMPATIBILITY.md). SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
 Do not redistribute temporary CI artifacts or present them as the director download. Use only the versioned GitHub prerelease, verify its checksums, and follow the Gatekeeper or SmartScreen instructions in [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
@@ -125,7 +126,7 @@ npm run db:deploy
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The first-run screen creates the program, opening school-year period, and director account. Use a password with at least 12 characters.
+Open [http://localhost:3000](http://localhost:3000). The first-run screen offers an empty program or the fictional Ridgeline demo, then creates the director account. Use a password with at least 12 characters.
 
 To replace an empty local database with the deterministic Ridgeline demo instead, run `npm run db:init`. That command is destructive and must never be used against real program data.
 
@@ -163,7 +164,7 @@ Fresh Server installations start empty and contain no demo records. A district m
 
 ## Backups
 
-Current source and future packaged builds create encrypted `.bandoffice` archives by default and offer an explicitly marked readable ZIP export for district-approved encrypted storage. The published Desktop `v0.1.0-alpha.1` and Server `v0.1.0-server-alpha.4` builds still create the legacy `.bandos` filename. Both extensions remain supported for restore and verification. The passphrase is never stored and cannot be recovered.
+Current source and Desktop `v0.1.0-alpha.2` create encrypted `.bandoffice` archives by default and offer an explicitly marked readable ZIP export for district-approved encrypted storage. The published Server `v0.1.0-server-alpha.4` still creates the legacy `.bandos` filename. Both extensions remain supported for restore and verification. The passphrase is never stored and cannot be recovered.
 
 Verify that an archive decrypts, contains every required file, passes SQLite integrity checking, and matches CSV row counts:
 
@@ -208,7 +209,7 @@ The unit suite recreates only `data/test.db`. The browser suite recreates only `
 
 ## Privacy boundary
 
-The People directory stores names, optional email and phone, classifications, student grade/ID, group membership, and explicit guardian/student links. Financial records store student-linked charges, payments, credits, references, group context, and reversals; they do not store card or bank credentials. Communication records store authored messages, attachment bytes, audience snapshots, recipient addresses, and delivery outcomes. Form records store assigned recipients, answers, ordinary acknowledgment timestamps, and approved uploads under explicit retention rules. Event records store roster snapshots, RSVP, attendance status, itineraries, equipment, volunteers, reminders, and approved files; there is no attendance-reason field. Only director and assistant-director roles can access communications, forms, and events. The schema intentionally has no address, birthdate, medical, photo, or disciplinary fields. Inventory helpers can use names, grade, student ID, groups, holdings, inventory, repairs, and fixed reports, but cannot view contact details, guardian relationships, financials, communications, forms, events, notes, or exports. Portal users are scoped to their own person record and explicitly linked students; director notes, contact directories, attendance, and staff surfaces are not exposed.
+The People directory stores names, optional email and phone, classifications, student grade/ID, group membership, and explicit guardian/student links. Financial records store student-linked charges, payments, credits, references, group context, and reversals; they do not store card or bank credentials. Communication records store authored messages, attachment bytes, audience snapshots, recipient addresses, and delivery outcomes. Form records store assigned recipients, answers, ordinary acknowledgment timestamps, and approved uploads under explicit retention rules. Event records store roster snapshots, RSVP, attendance status, itineraries, equipment, volunteers, reminders, and approved files; there is no attendance-reason field. Only director and assistant-director roles can access communications, forms, and events. The schema intentionally has no address, birthdate, medical, photo, or disciplinary fields. Inventory helpers can use names, grade, student ID, groups, holdings, inventory, repairs, and fixed reports, but cannot view contact details, guardian relationships, financials, communications, forms, events, notes, or exports. Portal users are scoped to their own person record and explicitly linked students; director notes, contact directories, attendance, and staff surfaces are not exposed. See [Where Your Data Goes](./DATA_FLOW.md) for the Desktop, email, and Server network boundaries.
 
 > No medical, disciplinary, or family information. This field is exported in reports.
 
@@ -216,7 +217,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Desktop packages are unsigned; macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Remaining release work is clean-machine Desktop lifecycle acceptance and district-hosted public-server acceptance. Each real deployment still requires its own school or district approval, encrypted storage, named backup ownership, and verified restoration.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.2` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Desktop packages are unsigned; macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Remaining release work is clean-machine Desktop lifecycle acceptance and district-hosted public-server acceptance. Each real deployment still requires its own school or district approval, encrypted storage, named backup ownership, and verified restoration.
 
 ## Project and community
 

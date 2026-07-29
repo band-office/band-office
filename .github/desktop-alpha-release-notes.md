@@ -10,7 +10,8 @@ This is a functional prerelease of the local-only Band Office Desktop applicatio
 ## Important boundaries
 
 - Desktop runs one program on one local computer.
-- Fresh installations start empty and contain no demo records.
+- First-run setup offers an empty program or the deterministic fictional Ridgeline demo.
+- Do not add real student information to the demo installation.
 - Directors can use the alpha for real local program operations.
 - Desktop does not expose student or guardian portals to the public internet.
 - Server and family portals remain a separate district-operator technical preview.
@@ -19,4 +20,4 @@ This is a functional prerelease of the local-only Band Office Desktop applicatio
 - Verify the published SHA-256 checksum before opening a macOS package. The unsigned macOS build is not verified or notarized by Apple.
 - Verify the published SHA-256 checksum before opening a Windows package. The unsigned Windows build is not verified by Microsoft.
 
-This alpha is not yet stable or a supported CutTime replacement. Read `CURRENT_STATUS.md`, `RELEASE_CHANNELS.md`, and `UPDATE_POLICY.md` before adoption.
+This alpha is not yet stable or a supported CutTime replacement. Read `DOWNLOAD.md`, `DATA_FLOW.md`, `CURRENT_STATUS.md`, `RELEASE_CHANNELS.md`, and `UPDATE_POLICY.md` before adoption.

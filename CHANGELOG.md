@@ -6,9 +6,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.2 — 2026-07-29
+
+### Added
+
+- Added a first-run fictional Ridgeline demo that requires the director to create a local account, cannot be selected after an account exists, and remains visibly marked throughout the application.
+- Added a director-facing Desktop download page with direct macOS and Windows installers, unsigned-package instructions, and checksum links.
+- Added a plain-language data-flow document separating local Desktop storage, explicit email delivery, and district-operated Server hosting.
+
 ### Changed
 
-- Clarified that Desktop alpha installations start empty, include no demo records, and support real local program operations when the school-data safeguards are met.
+- Made the alpha real-data boundary visible during first-run setup and directed evaluators to begin with fictional data.
 - Synchronized the security, support, roadmap, release-channel, email, Server-secret, and CutTime-replacement documents with the issued Desktop and Server alpha channels.
 - Recorded paid Apple and Microsoft signing as deferred distribution improvements rather than prerequisites for the issued unsigned alphas.
 
