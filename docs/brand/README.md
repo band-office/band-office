@@ -18,8 +18,8 @@ Use “Band Office” in prose. Use `band-office` only where a repository, packa
 
 The approved mark is a dark navy rounded square containing the white stylized B. Use the existing source files without redrawing, stretching, rotating, outlining, recoloring, or adding effects.
 
-- Primary mark: [`public/brand/bandos-mark.png`](../../public/brand/bandos-mark.png)
-- Reverse mark: [`public/brand/bandos-mark-reverse.png`](../../public/brand/bandos-mark-reverse.png)
+- Primary mark: [`public/brand/band-office-mark.png`](../../public/brand/band-office-mark.png)
+- Reverse mark: [`public/brand/band-office-mark-reverse.png`](../../public/brand/band-office-mark-reverse.png)
 - GitHub avatar: [`github/avatar-1024.png`](./github/avatar-1024.png)
 
 The reverse mark is only for dark application surfaces where the primary navy tile would lose its edge. GitHub avatars and general project identification should use the primary mark.

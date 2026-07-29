@@ -7,7 +7,7 @@ import Papa from "papaparse";
 import { createDecipheriv, scryptSync } from "node:crypto";
 
 const archivePath = process.argv[2];
-if (!archivePath) throw new Error("Usage: npm run backup:verify -- /path/to/bandos-backup.zip");
+if (!archivePath) throw new Error("Usage: npm run backup:verify -- /path/to/band-office-backup.bandoffice");
 
 const source = readFileSync(archivePath);
 let zipBytes = source;

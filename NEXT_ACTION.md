@@ -26,4 +26,4 @@ Do not activate real family accounts until district ownership, public-edge, SMTP
 
 ## Stable Release
 
-The first stable release remains gated on district approval, the SDMS real-data pilot, verified encrypted-backup restoration, and controlled live-mailbox acceptance.
+The first stable Desktop release remains gated on reproducible clean-machine lifecycle acceptance and verified encrypted-backup restoration. Server stability separately requires controlled public-edge, live-mailbox, portal-recovery, upgrade, rollback, and complete-data restore acceptance on district-owned infrastructure.

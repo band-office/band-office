@@ -1,6 +1,6 @@
 # Band Office Current Status
 
-**Status date:** July 27, 2026
+**Status date:** July 29, 2026
 
 **Source state:** public source with versioned Desktop and Server alphas
 
@@ -45,7 +45,6 @@ The Desktop alpha starts with an empty database and first-run setup; no demo rec
 
 1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
 2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.
-3. The SDMS real-program pilot before the release can be considered stable.
 
 See `DESKTOP_ALPHA_RELEASE.md`.
 

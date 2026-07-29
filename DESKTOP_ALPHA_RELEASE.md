@@ -84,6 +84,6 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 4. On Windows, verify the SmartScreen warning and user-controlled override on a clean, non-managed test machine.
 5. Complete first-run setup, encrypted backup, restore, upgrade, and uninstall checks on both platforms.
 6. Record those results in `CURRENT_STATUS.md`.
-7. Keep the alpha prerelease label until the SDMS pilot and remaining release gates pass.
+7. Keep the alpha prerelease label until the remaining release gates pass reproducibly.
 
 Apple and Microsoft signing are deliberately deferred distribution enhancements. Neither is required to evaluate the alpha.

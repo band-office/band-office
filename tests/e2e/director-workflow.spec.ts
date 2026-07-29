@@ -17,8 +17,8 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page.getByRole("heading", { name: "Create the director account" })).toBeVisible();
   await page.getByLabel("Program name").fill("Ridgeline Middle School Band");
   await page.getByLabel("Username").fill("director-e2e");
-  await page.getByLabel("Password", { exact: true }).fill("BandOS-E2E-Password!");
-  await page.getByLabel("Confirm password").fill("BandOS-E2E-Password!");
+  await page.getByLabel("Password", { exact: true }).fill("BandOffice-E2E-Password!");
+  await page.getByLabel("Confirm password").fill("BandOffice-E2E-Password!");
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(/\/today/);
 
@@ -108,13 +108,13 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.getByRole("link", { name: "I already have a code" }).click();
   await page.waitForLoadState("networkidle");
   await page.getByLabel("8-digit code").fill("24681357");
-  await page.getByLabel("New password").fill("BandOS-Guardian-E2E-Password!");
-  await page.getByLabel("Confirm password").fill("BandOS-Guardian-E2E-Password!");
+  await page.getByLabel("New password").fill("BandOffice-Guardian-E2E-Password!");
+  await page.getByLabel("Confirm password").fill("BandOffice-Guardian-E2E-Password!");
   await page.getByLabel("Email").fill("avery.supporter@example.test");
   await page.getByRole("button", { name: "Update password" }).click();
   await expect(page.getByText("Password updated. You can sign in now.")).toBeVisible();
   await page.waitForLoadState("networkidle");
-  await page.getByLabel("Password").fill("BandOS-Guardian-E2E-Password!");
+  await page.getByLabel("Password").fill("BandOffice-Guardian-E2E-Password!");
   await page.getByLabel("Email").fill("avery.supporter@example.test");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/portal$/);
@@ -127,7 +127,7 @@ test("director can set up, import, check out, return with damage, back up, and s
 
   await page.goto("/login");
   await page.getByLabel("Username").fill("director-e2e");
-  await page.getByLabel("Password").fill("BandOS-E2E-Password!");
+  await page.getByLabel("Password").fill("BandOffice-E2E-Password!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/today/);
 
@@ -149,13 +149,13 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.getByRole("link", { name: "I already have a code" }).click();
   await page.waitForLoadState("networkidle");
   await page.getByLabel("8-digit code").fill("24681357");
-  await page.getByLabel("New password").fill("BandOS-Student-E2E-Password!");
-  await page.getByLabel("Confirm password").fill("BandOS-Student-E2E-Password!");
+  await page.getByLabel("New password").fill("BandOffice-Student-E2E-Password!");
+  await page.getByLabel("Confirm password").fill("BandOffice-Student-E2E-Password!");
   await page.getByLabel("Email").fill("release.verifier@example.test");
   await page.getByRole("button", { name: "Update password" }).click();
   await expect(page.getByText("Password updated. You can sign in now.")).toBeVisible();
   await page.getByLabel("Email").fill("release.verifier@example.test");
-  await page.getByLabel("Password").fill("BandOS-Student-E2E-Password!");
+  await page.getByLabel("Password").fill("BandOffice-Student-E2E-Password!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/portal$/);
   await expect(page.getByRole("heading", { name: "Release Verifier" })).toBeVisible();
@@ -165,7 +165,7 @@ test("director can set up, import, check out, return with damage, back up, and s
 
   await page.goto("/login");
   await page.getByLabel("Username").fill("director-e2e");
-  await page.getByLabel("Password").fill("BandOS-E2E-Password!");
+  await page.getByLabel("Password").fill("BandOffice-E2E-Password!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/today/);
 
@@ -561,20 +561,21 @@ test("director can set up, import, check out, return with damage, back up, and s
   const helperAccountForm = page.locator("form").filter({ hasText: "Create staff account" });
   await helperAccountForm.getByLabel("Staff person").selectOption({ label: "Helper, Inventory" });
   await helperAccountForm.getByLabel("Username").fill("inventory-helper-e2e");
-  await helperAccountForm.getByLabel("Temporary password").fill("BandOS-Helper-Password!");
+  await helperAccountForm.getByLabel("Temporary password").fill("BandOffice-Helper-Password!");
   await helperAccountForm.getByLabel("Role").selectOption("INVENTORY_HELPER");
   await helperAccountForm.getByRole("button", { name: "Create staff account" }).click();
   await expect(page.getByText("Staff account created.")).toBeVisible();
-  await page.getByLabel("Backup passphrase").fill("BandOS-E2E-Backup-Key!");
+  await page.getByLabel("Backup passphrase").fill("BandOffice-E2E-Backup-Key!");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Encrypted backup" }).click();
   const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^band-office-backup-\d{4}-\d{2}-\d{2}\.bandoffice$/);
   const backupPath = await download.path();
   expect(backupPath).toBeTruthy();
   expect((await readFile(backupPath!)).subarray(0, 10).toString()).toBe("BANDOSENC1");
-  const savedBackupPath = path.resolve("test-results/e2e-backup.bandos");
+  const savedBackupPath = path.resolve("test-results/e2e-backup.bandoffice");
   await download.saveAs(savedBackupPath);
-  const verification = await execFileAsync(process.execPath, ["scripts/verify-backup.mjs", savedBackupPath, "BandOS-E2E-Backup-Key!"]);
+  const verification = await execFileAsync(process.execPath, ["scripts/verify-backup.mjs", savedBackupPath, "BandOffice-E2E-Backup-Key!"]);
   expect(verification.stdout).toContain("SQLite integrity and foreign keys ok, 51 CSV table counts match");
 
   await page.screenshot({ path: "test-results/e2e-settings-desktop.png", fullPage: true });
@@ -591,7 +592,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   expect(response.status()).toBe(401);
 
   await page.getByLabel("Username").fill("inventory-helper-e2e");
-  await page.getByLabel("Password").fill("BandOS-Helper-Password!");
+  await page.getByLabel("Password").fill("BandOffice-Helper-Password!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/today/);
   await expect(page.getByRole("heading", { name: "Upcoming events" })).toHaveCount(0);

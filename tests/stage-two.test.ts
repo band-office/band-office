@@ -782,21 +782,21 @@ describe.sequential("audited inventory data access", () => {
     await expect(resetPortalPassword(db, {
       email: "guardian1@ridgeline.example",
       code: "00000000",
-      password: "BandOS-Guardian-New-Password!",
+      password: "BandOffice-Guardian-New-Password!",
     })).rejects.toBeInstanceOf(PortalAuthError);
     await resetPortalPassword(db, {
       email: "guardian1@ridgeline.example",
       code: code!,
-      password: "BandOS-Guardian-New-Password!",
+      password: "BandOffice-Guardian-New-Password!",
     });
     const activated = await db.portalUser.findUniqueOrThrow({ where: { id: portalUser.id } });
     expect(activated.status).toBe(PortalUserStatus.ACTIVE);
-    expect(activated.passwordHash).not.toContain("BandOS-Guardian-New-Password!");
+    expect(activated.passwordHash).not.toContain("BandOffice-Guardian-New-Password!");
     expect(await db.portalSession.count({ where: { userId: portalUser.id } })).toBe(0);
     await expect(resetPortalPassword(db, {
       email: "guardian1@ridgeline.example",
       code: code!,
-      password: "BandOS-Guardian-New-Password!",
+      password: "BandOffice-Guardian-New-Password!",
     })).rejects.toBeInstanceOf(PortalAuthError);
   });
 

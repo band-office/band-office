@@ -109,9 +109,9 @@ The repository screenshots use deterministic fictional data. More views are avai
 
 ## Desktop alpha
 
-[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. The released application starts with an empty database and first-run program setup; Ridgeline demo data is not packaged. This is functional alpha software, not a demo, although clean-machine acceptance and the first real-program pilot remain open.
+[`v0.1.0-alpha.1`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) provides explicitly unsigned macOS Apple Silicon and Windows x64 packages, SHA-256 checksums, a release manifest, and platform-warning instructions. Paid Apple and Microsoft signing are deferred until adoption warrants their recurring costs. The released application starts with an empty database and first-run program setup; Ridgeline demo data is not packaged. This is functional alpha software, not a demo, although clean-machine lifecycle acceptance remains open.
 
-The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
+The desktop app requires no terminal, Node.js, or Docker. It creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration or pre-restore recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. Other compatibility-sensitive identifiers are documented in [COMPATIBILITY.md](./COMPATIBILITY.md). SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
 Do not redistribute temporary CI artifacts or present them as the director download. Use only the versioned GitHub prerelease, verify its checksums, and follow the Gatekeeper or SmartScreen instructions in [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
 
@@ -163,12 +163,12 @@ Fresh Server installations start empty and contain no demo records. A district m
 
 ## Backups
 
-Settings offers an encrypted `.bandos` archive by default and an explicitly marked readable ZIP export for district-approved encrypted storage. The passphrase is never stored and cannot be recovered.
+Current source and future packaged builds create encrypted `.bandoffice` archives by default and offer an explicitly marked readable ZIP export for district-approved encrypted storage. The published Desktop `v0.1.0-alpha.1` and Server `v0.1.0-server-alpha.4` builds still create the legacy `.bandos` filename. Both extensions remain supported for restore and verification. The passphrase is never stored and cannot be recovered.
 
 Verify that an archive decrypts, contains every required file, passes SQLite integrity checking, and matches CSV row counts:
 
 ```bash
-npm run backup:verify -- /path/to/backup.bandos "your backup passphrase"
+npm run backup:verify -- /path/to/backup.bandoffice "your backup passphrase"
 ```
 
 Rollover remains blocked until every assignment is resolved and a backup newer than the latest record mutation exists.
@@ -216,7 +216,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Desktop packages are unsigned; macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Desktop clean-machine acceptance, district-hosted public-server acceptance, district approval, and the SDMS real-data pilot remain open.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.1` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.1) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Desktop packages are unsigned; macOS requires a manual Gatekeeper override, and Windows may show a Microsoft Defender SmartScreen warning. Remaining release work is clean-machine Desktop lifecycle acceptance and district-hosted public-server acceptance. Each real deployment still requires its own school or district approval, encrypted storage, named backup ownership, and verified restoration.
 
 ## Project and community
 

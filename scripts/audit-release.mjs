@@ -210,6 +210,17 @@ for (const marker of [
 if (/writeLog\(`\[communications\][^`]*\$\{/.test(desktopMain)) findings.push("desktop/main.mjs writes HTTP-derived communication worker details to the desktop log");
 evidence.push({ claim: "Desktop shell enforces the local boundary", detail: "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path" });
 
+const backupRoute = await readFile(path.join(root, "src/app/api/backup/route.ts"), "utf8");
+if (!backupRoute.includes(".bandoffice")) findings.push("Encrypted backups do not use the current .bandoffice extension.");
+if (!desktopMain.includes('extensions: ["bandoffice", "bandos", "zip"]')) findings.push("Desktop restore does not accept current .bandoffice, legacy .bandos, and readable .zip archives.");
+evidence.push({ claim: "Backup naming is current without breaking restore compatibility", detail: "New encrypted archives use .bandoffice; Desktop restore retains .bandos and ZIP support" });
+
+for (const documentationFile of ["README.md", "CURRENT_STATUS.md", "DESKTOP_ALPHA_RELEASE.md", "NEXT_ACTION.md", "ROADMAP.md", "SECURITY_CHECKLIST.md"]) {
+  const content = await readFile(path.join(root, documentationFile), "utf8");
+  if (/real-data pilot|real-program pilot|school-specific pilot/i.test(content)) findings.push(`${documentationFile} contains a program-specific release gate.`);
+}
+evidence.push({ claim: "Public release gates are deployment-neutral", detail: "Current release, roadmap, and security documents contain no program-specific pilot gate" });
+
 const entitlementText = await readFile(path.join(root, "desktop/entitlements.mac.plist"), "utf8");
 const entitlementKeys = [...entitlementText.matchAll(/<key>([^<]+)<\/key>/g)].map((match) => match[1]);
 if (entitlementKeys.length !== 1 || entitlementKeys[0] !== "com.apple.security.device.camera") findings.push(`Unexpected macOS entitlements: ${entitlementKeys.join(", ") || "none"}`);

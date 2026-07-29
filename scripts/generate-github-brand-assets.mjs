@@ -4,7 +4,7 @@ import sharp from "sharp";
 
 const root = process.cwd();
 const outputDirectory = path.join(root, "docs", "brand", "github");
-const markPath = path.join(root, "public", "brand", "bandos-mark.png");
+const markPath = path.join(root, "public", "brand", "band-office-mark.png");
 
 await mkdir(outputDirectory, { recursive: true });
 
