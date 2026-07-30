@@ -80,6 +80,10 @@ evidence.push({ claim: "Styles and fonts are local", detail: "No external CSS im
 const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
 if (packageJson.build?.appId !== "org.bandoffice.desktop") findings.push(`Unexpected Desktop application identifier: ${packageJson.build?.appId ?? "missing"}`);
 evidence.push({ claim: "Desktop application identity uses Band Office naming", detail: packageJson.build?.appId ?? "missing" });
+
+const nextConfig = await readFile(path.join(root, "next.config.ts"), "utf8");
+if (!/images:\s*\{\s*unoptimized:\s*true,\s*\}/s.test(nextConfig)) findings.push("Next.js image optimization must remain disabled so Desktop cannot write an image cache into its signed app bundle.");
+evidence.push({ claim: "Desktop runtime keeps the signed app bundle read-only", detail: "Next.js image optimization is disabled; static brand images do not create runtime files under app resources" });
 for (const group of ["dependencies", "devDependencies", "overrides"]) {
   for (const [name, version] of Object.entries(packageJson[group] ?? {})) if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) findings.push(`package.json ${group}.${name} is not pinned exactly: ${version}`);
 }

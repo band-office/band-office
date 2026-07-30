@@ -46,8 +46,8 @@ Microsoft Artifact Signing is deferred until adoption warrants the monthly cost.
 ```bash
 git switch main
 git pull --ff-only
-git tag -a v0.1.0-alpha.4 -m "Band Office Desktop 0.1.0 alpha 4"
-git push origin v0.1.0-alpha.4
+git tag -a v0.1.0-alpha.5 -m "Band Office Desktop 0.1.0 alpha 5"
+git push origin v0.1.0-alpha.5
 ```
 
 The tag starts the mixed-distribution workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.

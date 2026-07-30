@@ -4,7 +4,7 @@
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.4) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.5`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.5) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
@@ -12,7 +12,7 @@ Band Office is a functioning local web and Electron application covering People,
 
 ## Accepted Evidence
 
-Desktop alpha.4 supersedes the alpha.3 Mac packages. A tester exposed that alpha.3 contained only an executable-level placeholder signature rather than a sealed application-bundle signature, which could cause macOS to report that the app was damaged. Alpha.4 requires a valid ad hoc bundle seal, strict recursive `codesign` verification, the `org.bandoffice.desktop` application identifier, and DMG verification before publication. Alpha.3 remains available as immutable release history but should not be installed on macOS.
+Desktop alpha.5 supersedes the alpha.3 Mac packages. A tester exposed that alpha.3 contained only an executable-level placeholder signature rather than a sealed application-bundle signature, which could cause macOS to report that the app was damaged. The alpha.4 tag did not produce a release because the strengthened gate caught a runtime image-cache write inside the sealed bundle. Alpha.5 disables that write and requires a valid ad hoc bundle seal, strict recursive `codesign` verification after packaged-app acceptance, the `org.bandoffice.desktop` application identifier, and DMG verification before publication. Alpha.3 remains available as immutable release history but should not be installed on macOS.
 
 The tagged Desktop alpha.3 at commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3` passed the protected [GitHub Actions release run 30550782069](https://github.com/band-office/band-office/actions/runs/30550782069):
 

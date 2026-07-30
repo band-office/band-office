@@ -15,6 +15,10 @@
       "detail": "org.bandoffice.desktop"
     },
     {
+      "claim": "Desktop runtime keeps the signed app bundle read-only",
+      "detail": "Next.js image optimization is disabled; static brand images do not create runtime files under app resources"
+    },
+    {
       "claim": "Direct dependency versions are reproducible",
       "detail": "All production and build dependencies are exact versions with package-lock.json; npm publication remains disabled"
     },
