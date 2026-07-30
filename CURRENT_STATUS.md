@@ -14,11 +14,12 @@ Band Office is a functioning local web and Electron application covering People,
 
 Desktop alpha.5 supersedes the alpha.3 Mac packages. A tester exposed that alpha.3 contained only an executable-level placeholder signature rather than a sealed application-bundle signature, which could cause macOS to report that the app was damaged. The alpha.4 tag did not produce a release because the strengthened gate caught a runtime image-cache write inside the sealed bundle. Alpha.5 disables that write and requires a valid ad hoc bundle seal, strict recursive `codesign` verification after packaged-app acceptance, the `org.bandoffice.desktop` application identifier, and DMG verification before publication. Alpha.3 remains available as immutable release history but should not be installed on macOS.
 
-The tagged Desktop alpha.3 at commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3` passed the protected [GitHub Actions release run 30550782069](https://github.com/band-office/band-office/actions/runs/30550782069):
+The tagged Desktop alpha.5 at commit `8524ee2bc8d277d042ca3230759501bbe95edf9c` passed the protected [GitHub Actions release run 30584349679](https://github.com/band-office/band-office/actions/runs/30584349679):
 
 - Linux release verification;
 - native Apple Silicon and Intel macOS packaging and packaged-application acceptance;
 - executable-architecture checks matching each Mac download label;
+- strict recursive macOS bundle-seal verification after packaged-application acceptance;
 - unsigned Windows packaging and packaged-application acceptance;
 - DMG and ZIP verification;
 - architecture-specific SHA-256 checksum and release-manifest generation;
@@ -26,7 +27,7 @@ The tagged Desktop alpha.3 at commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3` 
 
 The quality job included all 50 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The three native platform jobs then passed packaged-application acceptance, unsigned-distribution checks, and checksum generation. The ten published release assets are three installers, three ZIP packages, three checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
 
-The same Intel release path first passed the complete pre-merge [release-candidate run 30549734479](https://github.com/band-office/band-office/actions/runs/30549734479) at commit `fd1d7564958a594db8f36148b7cd33c20d28accc`. Earlier Desktop alpha.1 and alpha.2 releases remain immutable.
+Earlier Desktop alpha.1 through alpha.3 releases remain immutable. Alpha.4 is an immutable tag without a published release because its strengthened integrity gate failed closed.
 
 The Server alpha at commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4` passed protected [GitHub Actions release run 30275406054](https://github.com/band-office/band-office/actions/runs/30275406054):
 
