@@ -50,7 +50,18 @@ try {
   await run(process.execPath, [electronRebuildCli, "-v", electronVersion, "-f", "-w", "argon2", "-w", "better-sqlite3"]);
   nativeModulesRebuilt = true;
   const builderEnvironment = { ...process.env };
-  if (process.env.BANDOS_SIGN_DESKTOP !== "1") builderEnvironment.CSC_IDENTITY_AUTO_DISCOVERY = "false";
+  if (process.env.BANDOS_SIGN_DESKTOP !== "1") {
+    builderEnvironment.CSC_IDENTITY_AUTO_DISCOVERY = "false";
+    if (requestedTargets.includes("--mac")) {
+      requestedTargets.push(
+        "--config.mac.identity=-",
+        "--config.mac.sign=desktop/sign-mac-adhoc.mjs",
+        "--config.mac.preAutoEntitlements=false",
+        "--config.mac.entitlements=desktop/entitlements.mac.adhoc.plist",
+        "--config.mac.entitlementsInherit=desktop/entitlements.mac.inherit.adhoc.plist",
+      );
+    }
+  }
   await run(process.execPath, [builderCli, ...requestedTargets, "--publish", "never", "--config.npmRebuild=false"], builderEnvironment);
 } finally {
   if (nativeModulesRebuilt) await run(process.execPath, [npmCli, "rebuild", "argon2", "better-sqlite3"]);

@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.4 — 2026-07-30
+
+### Fixed
+
+- Replaced the incomplete macOS executable-only signature with a valid ad hoc app-bundle integrity seal for both Apple Silicon and Intel packages.
+- Changed the installed application identifier from the legacy `org.bandos.desktop` value to `org.bandoffice.desktop` while retaining the existing data directory for upgrade compatibility.
+- Added strict recursive code-signature verification to release-candidate and publication workflows so an unsealed Mac bundle cannot be released again.
+- Updated Mac installation guidance to use the documented Privacy & Security override without Terminal commands.
+
 ## Desktop 0.1.0-alpha.3 — 2026-07-30
 
 ### Added

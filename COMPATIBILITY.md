@@ -11,8 +11,9 @@ Band Office was originally named BandOS. Current product text, downloads, brand 
 - Existing Docker volume names
 - Asset QR payload prefix: `bandos:asset:`
 - Encrypted-backup format marker: `BANDOSENC1`
-- Desktop application identifier: `org.bandos.desktop`
 
 These values are implementation contracts, not the current product name. New encrypted backups use the `.bandoffice` extension. Restore and verification continue to accept legacy `.bandos` files and older BandOS backup manifests.
+
+The macOS and Windows application identifier changed to `org.bandoffice.desktop` with Desktop alpha.4. Desktop updates are manual, and the data directory remains unchanged, so this corrects the installed application identity without moving or hiding an existing program database.
 
 Do not rename a retained identifier without an explicit migration, backward-compatibility tests, and a recovery plan for existing installations.

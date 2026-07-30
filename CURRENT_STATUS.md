@@ -4,13 +4,15 @@
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.3) public prerelease issued; unsigned Apple Silicon macOS, Intel macOS, and Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.4) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
 Band Office is a functioning local web and Electron application covering People, groups, inventory, assignments, repairs, financial ledgers, email communications, whole-set music library records, forms, events, attendance, reports, backup and restore, rollover, audit history, and a relationship-scoped read-only student and guardian portal with self-service password recovery.
 
 ## Accepted Evidence
+
+Desktop alpha.4 supersedes the alpha.3 Mac packages. A tester exposed that alpha.3 contained only an executable-level placeholder signature rather than a sealed application-bundle signature, which could cause macOS to report that the app was damaged. Alpha.4 requires a valid ad hoc bundle seal, strict recursive `codesign` verification, the `org.bandoffice.desktop` application identifier, and DMG verification before publication. Alpha.3 remains available as immutable release history but should not be installed on macOS.
 
 The tagged Desktop alpha.3 at commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3` passed the protected [GitHub Actions release run 30550782069](https://github.com/band-office/band-office/actions/runs/30550782069):
 
@@ -42,7 +44,7 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The current Desktop alpha is public as separate explicitly unsigned Apple Silicon macOS, Intel macOS, and Windows packages with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
+The current Desktop alpha is public as separate ad hoc integrity-sealed Apple Silicon and Intel macOS packages and an unsigned Windows package, with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
 The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 

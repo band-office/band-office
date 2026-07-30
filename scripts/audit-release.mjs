@@ -78,6 +78,8 @@ if (/@import\s+(?:url\()?\s*["']?(?:https?:)?\/\//i.test(css) || /url\(\s*["']?(
 evidence.push({ claim: "Styles and fonts are local", detail: "No external CSS imports or asset URLs" });
 
 const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+if (packageJson.build?.appId !== "org.bandoffice.desktop") findings.push(`Unexpected Desktop application identifier: ${packageJson.build?.appId ?? "missing"}`);
+evidence.push({ claim: "Desktop application identity uses Band Office naming", detail: packageJson.build?.appId ?? "missing" });
 for (const group of ["dependencies", "devDependencies", "overrides"]) {
   for (const [name, version] of Object.entries(packageJson[group] ?? {})) if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version)) findings.push(`package.json ${group}.${name} is not pinned exactly: ${version}`);
 }
@@ -108,8 +110,10 @@ for (const marker of [
   "desktop:dist:mac:x64",
   "macos-15-intel",
   'lipo -archs "$app/Contents/MacOS/Band Office"',
+  "codesign --verify --deep --strict",
+  "Signature=adhoc",
   "npm run desktop:dist:win",
-  "Unexpected Developer ID signature on the unsigned macOS release.",
+  "Unexpected Developer ID signature on the ad hoc macOS release.",
   "Unexpected Authenticode signature on the unsigned Windows release",
   "hdiutil verify",
   "Get-AuthenticodeSignature",
@@ -135,7 +139,7 @@ for (const forbiddenMarker of [
 ]) {
   if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow includes deferred signing configuration: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon macOS, Intel macOS, and Windows are intentionally unsigned with native package acceptance, architecture checks, checksums, and platform warnings; the protected environment gates prerelease publication" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon and Intel macOS bundles require valid ad hoc integrity seals; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication" });
 
 const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
 const pullRequestWorkflow = await readFile(path.join(root, ".github/workflows/pull-request-quality.yml"), "utf8");
@@ -228,6 +232,20 @@ const entitlementText = await readFile(path.join(root, "desktop/entitlements.mac
 const entitlementKeys = [...entitlementText.matchAll(/<key>([^<]+)<\/key>/g)].map((match) => match[1]);
 if (entitlementKeys.length !== 1 || entitlementKeys[0] !== "com.apple.security.device.camera") findings.push(`Unexpected macOS entitlements: ${entitlementKeys.join(", ") || "none"}`);
 evidence.push({ claim: "macOS entitlement scope is camera-only", detail: entitlementKeys.join(", ") });
+
+const adHocEntitlementText = await readFile(path.join(root, "desktop/entitlements.mac.adhoc.plist"), "utf8");
+for (const requiredEntitlement of [
+  "com.apple.security.cs.allow-jit",
+  "com.apple.security.cs.disable-library-validation",
+  "com.apple.security.device.camera",
+]) if (!adHocEntitlementText.includes(`<key>${requiredEntitlement}</key>`)) findings.push(`Ad hoc macOS entitlements are missing ${requiredEntitlement}`);
+const adHocPackaging = await readFile(path.join(root, "scripts/package-desktop.mjs"), "utf8");
+for (const marker of [
+  "--config.mac.identity=-",
+  "--config.mac.sign=desktop/sign-mac-adhoc.mjs",
+  "--config.mac.preAutoEntitlements=false",
+]) if (!adHocPackaging.includes(marker)) findings.push(`Ad hoc macOS packaging is missing ${marker}`);
+evidence.push({ claim: "macOS alpha bundles are integrity sealed", detail: "Ad hoc signing uses explicit hardened-runtime entitlements and a pre-sign metadata cleanup" });
 
 const runtimeRoot = path.join(root, "app-runtime/server");
 if (!(await stat(runtimeRoot).then(() => true).catch(() => false))) findings.push("app-runtime/server is missing; run npm run build and npm run desktop:prepare before the release audit");
