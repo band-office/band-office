@@ -29,7 +29,20 @@ jobs:
 
   unsigned-macos:
     needs: quality
-    runs-on: macos-14
+    name: unsigned-macos-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-14
+            executable_arch: arm64
+            package_script: desktop:dist:mac:arm64
+          - arch: x64
+            runner: macos-15-intel
+            executable_arch: x86_64
+            package_script: desktop:dist:mac:x64
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -40,15 +53,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run desktop:dist:mac
+      - run: npm run ${{ matrix.package_script }}
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
-      - name: Verify unsigned distribution boundary and disk image
+      - name: Verify architecture, unsigned distribution boundary, and disk image
         run: |
           app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
-          dmg="$(find dist-desktop -name 'Band-Office-*-mac-arm64.dmg' -type f | head -n 1)"
+          dmg="$(find dist-desktop -name 'Band-Office-*-mac-${{ matrix.arch }}.dmg' -type f | head -n 1)"
           test -n "$app"
           test -n "$dmg"
+          test "$(lipo -archs "$app/Contents/MacOS/Band Office")" = "${{ matrix.executable_arch }}"
           if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'; then
             echo "Unexpected Developer ID signature on the unsigned macOS release." >&2
             exit 1
@@ -56,15 +70,15 @@ jobs:
           hdiutil verify "$dmg"
       - name: Write macOS checksums
         working-directory: dist-desktop
-        run: shasum -a 256 Band-Office-*-mac-arm64.dmg Band-Office-*-mac-arm64.zip > SHA256SUMS-macos.txt
+        run: shasum -a 256 Band-Office-*-mac-${{ matrix.arch }}.dmg Band-Office-*-mac-${{ matrix.arch }}.zip > SHA256SUMS-macos-${{ matrix.arch }}.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: unsigned-macos-alpha
+          name: unsigned-macos-${{ matrix.arch }}-alpha
           retention-days: 30
           path: |
-            dist-desktop/Band-Office-*-mac-arm64.dmg
-            dist-desktop/Band-Office-*-mac-arm64.zip
-            dist-desktop/SHA256SUMS-macos.txt
+            dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.dmg
+            dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.zip
+            dist-desktop/SHA256SUMS-macos-${{ matrix.arch }}.txt
 
   unsigned-windows:
     needs: quality
@@ -137,7 +151,7 @@ jobs:
       - name: Publish durable Desktop alpha prerelease
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            release-assets/unsigned-macos-alpha/* \
+            release-assets/unsigned-macos-*-alpha/* \
             release-assets/unsigned-windows-alpha/* \
             release-assets/Band-Office-RELEASE-MANIFEST.json \
             --repo "$GITHUB_REPOSITORY" \

@@ -56,6 +56,7 @@
 - [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged mixed-distribution release baseline `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
 - [x] Create the immutable `v0.1.0-alpha.1` release tag at accepted commit `8db851b62256c1d100462a077dba3ac41a7ea85e` after release-candidate acceptance.
 - [x] Create the immutable `v0.1.0-alpha.2` release tag at accepted commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54` after the download, data-flow, fictional-demo, and first-run safety changes passed protected review.
+- [ ] Publish and verify the Intel x64 macOS package through the native `macos-15-intel` acceptance job in `v0.1.0-alpha.3`.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
 - [x] Verify required legal files in both published Desktop packages (`npm run release:desktop:verify` in release run `30232531767`).
@@ -80,7 +81,8 @@ Temporary Actions artifacts remain test builds. Director-facing downloads are th
 ```bash
 npm ci
 npm run release:verify
-npm run desktop:dist:mac
+npm run desktop:dist:mac:arm64 # on Apple Silicon macOS
+npm run desktop:dist:mac:x64   # on Intel macOS
 npm run test:desktop-package
 ```
 

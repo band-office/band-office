@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+### Added
+
+- Added a separately packaged and tested Intel x64 macOS Desktop distribution.
+
+### Changed
+
+- Split macOS release checksums by architecture and require both Mac packages before Desktop alpha publication.
+
 ## Desktop 0.1.0-alpha.2 — 2026-07-29
 
 ### Added

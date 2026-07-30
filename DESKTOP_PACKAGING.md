@@ -4,7 +4,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 
 ## Current status
 
-- Apple Silicon macOS `.app`, DMG, and ZIP build successfully.
+- Apple Silicon macOS `.app`, DMG, and ZIP build successfully. Intel x64 packages are built and tested separately on a native GitHub-hosted Intel runner.
 - Fresh and historical profiles create or upgrade the database, apply all migrations, render successfully, and preserve existing records.
 - Pre-migration recovery snapshots, SQLite integrity and foreign-key checks, DMG verification, ZIP integrity, and SHA-256 checksums pass locally.
 - Native `argon2` and `better-sqlite3` modules are rebuilt explicitly for the installed Electron version.
@@ -39,6 +39,8 @@ The packaged application contains migrations and the standalone server, but no `
 ```bash
 npm run desktop:pack       # unpacked application for the current OS
 npm run desktop:dist:mac   # unsigned macOS DMG and ZIP
+npm run desktop:dist:mac:arm64 # explicit Apple Silicon package
+npm run desktop:dist:mac:x64   # explicit Intel package; run on Intel macOS
 npm run desktop:dist:win   # unsigned Windows NSIS and ZIP, run on Windows
 ```
 
@@ -57,7 +59,7 @@ The only authorized public Desktop publication path is `.github/workflows/deskto
 
 ## Public release gates
 
-1. The unsigned macOS package passes application acceptance, DMG verification, checksum generation, and clean-machine Gatekeeper override testing.
+1. Both unsigned macOS architectures pass native application acceptance, executable-architecture checks, DMG verification, checksum generation, and clean-machine Gatekeeper override testing.
 2. The unsigned Windows package passes application acceptance, checksum generation, and clean-machine SmartScreen override testing.
 3. Clean macOS and Windows machines complete install, first-run setup, backup, restore, and uninstall checks.
 4. An older supported database upgrades successfully, with the automatic recovery snapshot verified.

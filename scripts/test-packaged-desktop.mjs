@@ -12,7 +12,9 @@ const workDirectory = await mkdtemp(path.join(tmpdir(), "bandos-packaged-accepta
 
 async function executablePath() {
   if (process.platform === "darwin") {
-    const directory = (await readdir(outputDirectory, { withFileTypes: true })).find((entry) => entry.isDirectory() && entry.name.startsWith("mac-"));
+    const directory = (await readdir(outputDirectory, { withFileTypes: true })).find(
+      (entry) => entry.isDirectory() && (entry.name === "mac" || entry.name.startsWith("mac-")),
+    );
     if (!directory) throw new Error("No unpacked macOS Band Office application was found.");
     return path.join(outputDirectory, directory.name, "Band Office.app", "Contents", "MacOS", "Band Office");
   }

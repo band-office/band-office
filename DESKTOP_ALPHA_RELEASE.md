@@ -1,6 +1,6 @@
 # Band Office Desktop Alpha Release
 
-The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after macOS and Windows produce explicitly unsigned, checksum-protected packages and both jobs complete packaged-application acceptance.
+The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after Apple Silicon macOS, Intel macOS, and Windows produce explicitly unsigned, checksum-protected packages and all three native jobs complete packaged-application acceptance.
 
 Desktop packages exclude repository databases. A fresh installation creates its own database and offers an empty program or the deterministic fictional Ridgeline demo during first-run setup. Real student information should be loaded only into a non-demo installation after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
 
@@ -21,7 +21,7 @@ Create a GitHub environment named `desktop-alpha-release`. Limit deployment to p
 
 ### macOS
 
-The initial macOS alpha is intentionally unsigned. Do not add Apple credentials to the release environment or describe the package as Apple-verified. The release notes must state that macOS requires a manual Gatekeeper override, and users must be given the published SHA-256 checksum.
+The macOS alpha is intentionally unsigned and ships separate Apple Silicon and Intel x64 packages. Each architecture is built and launched on a native GitHub-hosted runner. Do not add Apple credentials to the release environment or describe either package as Apple-verified. The release notes must state that macOS requires a manual Gatekeeper override, and users must be given the architecture-specific published SHA-256 checksum.
 
 Apple Developer Program enrollment, Developer ID signing, and notarization are deferred until adoption warrants the annual cost. The future signed command remains available, but it is not part of this alpha workflow.
 
@@ -46,8 +46,8 @@ Microsoft Artifact Signing is deferred until adoption warrants the monthly cost.
 ```bash
 git switch main
 git pull --ff-only
-git tag -a v0.1.0-alpha.2 -m "Band Office Desktop 0.1.0 alpha 2"
-git push origin v0.1.0-alpha.2
+git tag -a v0.1.0-alpha.3 -m "Band Office Desktop 0.1.0 alpha 3"
+git push origin v0.1.0-alpha.3
 ```
 
 The tag starts the mixed-distribution workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.
@@ -57,6 +57,8 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 ### macOS
 
 - Electron Builder packages with signing identity auto-discovery disabled.
+- Apple Silicon and Intel x64 packages are built and launched on matching native runners.
+- The packaged executable architecture matches the download label.
 - The job rejects any unexpected Developer ID signature.
 - Packaged application acceptance passes.
 - The DMG verifies.

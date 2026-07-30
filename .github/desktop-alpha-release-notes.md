@@ -4,8 +4,12 @@ This is a functional prerelease of the local-only Band Office Desktop applicatio
 
 ## Supported packages
 
-- macOS Apple Silicon: unsigned DMG and ZIP. macOS will require a manual Gatekeeper override through Privacy & Security.
+- macOS Apple Silicon: unsigned DMG and ZIP.
+- macOS Intel x64: unsigned DMG and ZIP.
 - Windows x64: unsigned NSIS installer and ZIP. Windows may show a Microsoft Defender SmartScreen warning.
+
+Both macOS packages require a manual Gatekeeper override through Privacy & Security.
+Both require macOS 12 Monterey or later.
 
 ## Important boundaries
 
