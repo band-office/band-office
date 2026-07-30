@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
-**Status date:** July 29, 2026
-**Release state:** public source; unsigned Desktop `v0.1.0-alpha.2` prerelease; district-operated Server `v0.1.0-server-alpha.4` prerelease
+**Status date:** July 30, 2026
+**Release state:** public source; unsigned Desktop `v0.1.0-alpha.3` prerelease; district-operated Server `v0.1.0-server-alpha.4` prerelease
 
 ## Verified locally
 
@@ -44,7 +44,7 @@
 - [x] A clean `npm ci` installation passes the full dependency-tree audit with no missing, invalid, or extraneous packages (`npm run audit:tree`).
 - [x] The production-dependency registry advisory audit reported zero vulnerabilities on July 26, 2026 with Next.js 16.2.12 (`npm run audit:dependencies`). Development and packaging dependencies are governed separately by exact pins, the clean-tree audit, packaged-source exclusions, and manual updates.
 - [x] The packaged macOS executable passes fresh startup, historical upgrade, recovery snapshot, rendered-window, SQLite integrity, foreign-key, and camera-only privacy-metadata acceptance (`npm run test:desktop-package`).
-- [x] The unsigned DMG verifies, the ZIP has no corrupt entries, and SHA-256 checksums are recorded (`dist-desktop/SHA256SUMS.txt`).
+- [x] Both unsigned Mac DMGs verify, the ZIPs have no corrupt entries, and architecture-specific SHA-256 checksums are recorded by the protected release workflow.
 - [x] The update policy is manual and makes backup, recovery snapshot, and rollback requirements explicit (`UPDATE_POLICY.md`).
 
 ## External gates still required
@@ -56,25 +56,28 @@
 - [x] Publish the verified local Git history to the canonical public repository (`band-office/band-office`, merged mixed-distribution release baseline `a0036b0a1ecb3129f769cb124e072b0ff6b2f89f`).
 - [x] Create the immutable `v0.1.0-alpha.1` release tag at accepted commit `8db851b62256c1d100462a077dba3ac41a7ea85e` after release-candidate acceptance.
 - [x] Create the immutable `v0.1.0-alpha.2` release tag at accepted commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54` after the download, data-flow, fictional-demo, and first-run safety changes passed protected review.
-- [ ] Publish and verify the Intel x64 macOS package through the native `macos-15-intel` acceptance job in `v0.1.0-alpha.3`.
+- [x] Create the immutable `v0.1.0-alpha.3` release tag at accepted commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3`.
+- [x] Publish and verify the Intel x64 macOS package through the native `macos-15-intel` acceptance job in `v0.1.0-alpha.3`.
 - [x] License Band Office source under Apache-2.0.
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
-- [x] Verify required legal files in both published Desktop packages (`npm run release:desktop:verify` in release run `30232531767`).
+- [x] Verify required legal files in all three native Desktop package jobs (`npm run release:desktop:verify` in release run `30550782069`).
 - [x] Verify `LICENSE` and `NOTICE` in the Server runtime and published operator bundle.
 - [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
-- [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Mac.
+- [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Apple Silicon Mac.
+- [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Intel Mac.
 - [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
 - [ ] Verify the documented SmartScreen warning, published checksums, and unsigned-package warning on a separate clean Windows machine.
 - [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.
 - [x] Verify the protected GitHub Actions quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30232531767`](https://github.com/band-office/band-office/actions/runs/30232531767), commit `8db851b62256c1d100462a077dba3ac41a7ea85e`).
 - [x] Verify the protected alpha.2 quality, unsigned macOS package, unsigned Windows package, checksums, manifest, and prerelease publication jobs ([run `30468638418`](https://github.com/band-office/band-office/actions/runs/30468638418), commit `0f5ebd7c39e0acfa17033c5268ef23d3e0065c54`).
+- [x] Verify the protected alpha.3 quality, native Apple Silicon and Intel macOS packages, Windows package, executable architectures, checksums, nine-file manifest, required-reviewer approval, and ten-asset prerelease publication ([run `30550782069`](https://github.com/band-office/band-office/actions/runs/30550782069), commit `f45cbfdb958018ba11d20cd8f3b1211f30531df3`).
 - [x] Verify the protected Server quality, container and packaged-Compose acceptance, vulnerability scan, multi-platform image, anonymous registry access, provenance, operator bundle, checksums, manifest, and prerelease publication jobs ([run `30275406054`](https://github.com/band-office/band-office/actions/runs/30275406054), commit `be4e539bbe0e32794d8fbebed0e67c687a10aaa4`).
 - [ ] Verify the documented Desktop encrypted-backup restore on a separate clean machine before relying on it for school records.
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.2` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2), and district operators use the verified [`v0.1.0-server-alpha.4` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Fresh Desktop installations offer an empty program or an explicitly marked fictional demo. Real program records require a non-demo installation, school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
+Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.3` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.3), and district operators use the verified [`v0.1.0-server-alpha.4` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Fresh Desktop installations offer an empty program or an explicitly marked fictional demo. Real program records require a non-demo installation, school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
 
 ## Reproducible commands
 

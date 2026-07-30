@@ -112,6 +112,7 @@ describe("public release preparation", () => {
   test("keeps public channels and unsupported deployment boundaries explicit", async () => {
     const readme = await readFile("README.md", "utf8");
     const channels = await readFile("RELEASE_CHANNELS.md", "utf8");
+    const download = await readFile("DOWNLOAD.md", "utf8");
     const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
     const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
@@ -119,7 +120,7 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.2");
+    expect(readme).toContain("v0.1.0-alpha.3");
     expect(readme).toContain("public, unsigned prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
@@ -130,6 +131,13 @@ describe("public release preparation", () => {
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
+    expect(download).toContain("v0.1.0-alpha.3");
+    expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
+    expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");
+    expect(download).toContain("Band-Office-0.1.0-win-x64.exe");
+    expect(download).toContain("SHA256SUMS-macos-arm64.txt");
+    expect(download).toContain("SHA256SUMS-macos-x64.txt");
+    expect(download).toContain("macOS 12 Monterey or later");
     expect(deployment).toContain("Fresh installations start empty");
     expect(deployment).toContain("activating real family accounts");
     expect(deployment).toContain("sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt");

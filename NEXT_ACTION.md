@@ -4,12 +4,13 @@ The current work is release engineering, not another feature module.
 
 ## Desktop Alpha
 
-The public-release cleanup, protected `desktop-alpha-release` environment, required reviewer, native unsigned package acceptance, and [`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) publication are complete. Both platforms ship unsigned with checksums and platform warnings; paid Apple and Microsoft signing are deferred.
+The public-release cleanup, protected `desktop-alpha-release` environment, required reviewer, native unsigned package acceptance, and [`v0.1.0-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.3) publication are complete. Apple Silicon macOS, Intel macOS, and Windows x64 ship unsigned with checksums and platform warnings; paid Apple and Microsoft signing are deferred.
 
 1. Run clean-machine Gatekeeper override, installation, backup, restore, upgrade, and uninstall acceptance on macOS Apple Silicon.
-2. Run the equivalent clean-machine SmartScreen and lifecycle acceptance on Windows x64.
-3. Record whether a nondeveloper can follow the unsigned-install and checksum instructions without assistance.
-4. Resolve any release-blocking findings in a later alpha tag; never move or replace a published alpha tag.
+2. Run the same clean-machine lifecycle acceptance on Intel macOS.
+3. Run the equivalent clean-machine SmartScreen and lifecycle acceptance on Windows x64.
+4. Record whether a nondeveloper can choose the correct package and follow the unsigned-install and checksum instructions without assistance.
+5. Resolve any release-blocking findings in a later alpha tag; never move or replace a published alpha tag.
 
 Use only the versioned GitHub prerelease for evaluation. Do not publish temporary Actions artifacts as director downloads.
 

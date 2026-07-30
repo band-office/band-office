@@ -80,11 +80,11 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 
 ## After Publication
 
-1. Download both platform packages from the GitHub Release, not Actions.
+1. Download the Apple Silicon macOS, Intel macOS, and Windows packages from the GitHub Release, not Actions.
 2. Verify published checksums on separate clean machines.
 3. On macOS, verify the documented Privacy & Security > Open Anyway flow.
 4. On Windows, verify the SmartScreen warning and user-controlled override on a clean, non-managed test machine.
-5. Complete first-run setup, encrypted backup, restore, upgrade, and uninstall checks on both platforms.
+5. Complete first-run setup, encrypted backup, restore, upgrade, and uninstall checks on all three platform/architecture targets.
 6. Record those results in `CURRENT_STATUS.md`.
 7. Keep the alpha prerelease label until the remaining release gates pass reproducibly.
 
