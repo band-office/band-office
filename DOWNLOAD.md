@@ -7,10 +7,9 @@ Band Office Desktop is the local version for one director and one program. It st
 
 ## Choose your computer
 
-| macOS Apple Silicon | Windows x64 |
-| --- | --- |
-| **[Download the Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.2/Band-Office-0.1.0-mac-arm64.dmg)** | **[Download the Windows installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.2/Band-Office-0.1.0-win-x64.exe)** |
-| For Macs with Apple silicon, including M1, M2, M3, and M4. | For 64-bit Windows computers. |
+- **[Apple Silicon Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/Band-Office-0.1.0-mac-arm64.dmg)** for Macs with an M-series chip.
+- **[Intel Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/Band-Office-0.1.0-mac-x64.dmg)** for Macs that list an Intel processor.
+- **[Windows x64 installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/Band-Office-0.1.0-win-x64.exe)** for 64-bit Windows computers.
 
 ### Install on a Mac
 
@@ -18,7 +17,12 @@ Band Office Desktop is the local version for one director and one program. It st
 2. Because the app is not Apple-signed, Control-click Band Office, choose **Open**, then confirm **Open**.
 3. Create a local director account. Choose **Fictional demo** on the first screen to explore without student information.
 
-Verify the download with [`SHA256SUMS-macos.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.2/SHA256SUMS-macos.txt).
+Band Office Desktop requires macOS 12 Monterey or later. To identify your Mac, open **Apple menu > About This Mac**. A **Chip** entry such as M1, M2, M3, or M4 means Apple Silicon. A **Processor** entry containing Intel means Intel Mac.
+
+Verify the download with the matching checksum file:
+
+- [Apple Silicon checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/SHA256SUMS-macos-arm64.txt)
+- [Intel Mac checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/SHA256SUMS-macos-x64.txt)
 
 ### Install on Windows
 
@@ -26,7 +30,7 @@ Verify the download with [`SHA256SUMS-macos.txt`](https://github.com/band-office
 2. If Microsoft Defender SmartScreen appears, choose **More info**, verify that the app is Band Office, then choose **Run anyway**.
 3. Create a local director account. Choose **Fictional demo** on the first screen to explore without student information.
 
-Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.2/SHA256SUMS-windows.txt).
+Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.3/SHA256SUMS-windows.txt).
 
 School-managed computers may block unsigned applications. Do not bypass district controls. Ask district IT to review the [source](https://github.com/band-office/band-office), release checksums, and [current release status](./CURRENT_STATUS.md).
 

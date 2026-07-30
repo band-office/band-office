@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.3 — 2026-07-30
+
 ### Added
 
 - Added a separately packaged and tested Intel x64 macOS Desktop distribution.

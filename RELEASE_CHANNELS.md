@@ -18,13 +18,13 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** [`v0.1.0-alpha.2`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.2) issued as an unsigned public prerelease.
+**State:** [`v0.1.0-alpha.3`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.3) issued as an unsigned public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 
 The Desktop alpha is issued only when a `v*-alpha.*` GitHub prerelease contains:
 
-- an explicitly unsigned macOS DMG and ZIP with SHA-256 checksums and Gatekeeper instructions;
+- separate explicitly unsigned Apple Silicon and Intel macOS DMGs and ZIPs with architecture-specific SHA-256 checksums and Gatekeeper instructions;
 - an explicitly unsigned Windows installer and ZIP with SHA-256 checksums and SmartScreen instructions;
 - platform acceptance results;
 - SHA-256 checksums;
