@@ -16,7 +16,7 @@ async function findDirectory(parent, predicate) {
 
 let resourcesDirectory;
 if (process.platform === "darwin") {
-  const unpacked = await findDirectory(outputDirectory, (name) => name.startsWith("mac-"));
+  const unpacked = await findDirectory(outputDirectory, (name) => name === "mac" || name.startsWith("mac-"));
   assert.ok(unpacked, "No unpacked macOS application directory was found.");
   resourcesDirectory = path.join(unpacked, "Band Office.app", "Contents", "Resources");
 } else if (process.platform === "win32") {
