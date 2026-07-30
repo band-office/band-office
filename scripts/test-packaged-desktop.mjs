@@ -7,7 +7,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const outputDirectory = path.resolve("dist-desktop");
+const outputDirectory = path.resolve(process.argv[2] ?? "dist-desktop");
 const workDirectory = await mkdtemp(path.join(tmpdir(), "bandos-packaged-acceptance-"));
 
 async function executablePath() {

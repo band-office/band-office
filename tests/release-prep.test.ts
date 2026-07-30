@@ -120,8 +120,8 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.3");
-    expect(readme).toContain("public, unsigned prerelease");
+    expect(readme).toContain("v0.1.0-alpha.4");
+    expect(readme).toContain("public prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
     expect(readme).toContain("v0.1.0-server-alpha.4");
@@ -131,7 +131,7 @@ describe("public release preparation", () => {
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(download).toContain("v0.1.0-alpha.3");
+    expect(download).toContain("v0.1.0-alpha.4");
     expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
     expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");
     expect(download).toContain("Band-Office-0.1.0-win-x64.exe");
@@ -144,11 +144,13 @@ describe("public release preparation", () => {
     expect(deployment).toContain("sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt");
     expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
-    expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the unsigned macOS release candidate.");
+    expect(acceptanceWorkflow).toContain("codesign --verify --deep --strict");
+    expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the ad hoc macOS release candidate.");
     expect(acceptanceWorkflow).toContain("Unexpected Authenticode signature on the unsigned Windows release candidate");
     expect(signedWorkflow).not.toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
     expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
-    expect(signedWorkflow).toContain("unsigned-macos-${{ matrix.arch }}-alpha");
+    expect(signedWorkflow).toContain("codesign --verify --deep --strict");
+    expect(signedWorkflow).toContain("adhoc-macos-${{ matrix.arch }}-alpha");
     expect(signedWorkflow).toContain("unsigned-windows-alpha");
     expect(signedWorkflow).toContain("desktop:dist:mac:arm64");
     expect(signedWorkflow).toContain("desktop:dist:mac:x64");

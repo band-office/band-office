@@ -23,8 +23,11 @@ async function nativeFiles(directory, base = directory) {
 }
 
 export default async function afterPack(context) {
+  const applicationDirectory = context.electronPlatformName === "darwin"
+    ? path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`)
+    : null;
   if (context.electronPlatformName === "darwin") {
-    const infoPlist = path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`, "Contents", "Info.plist");
+    const infoPlist = path.join(applicationDirectory, "Contents", "Info.plist");
     for (const key of unusedPrivacyDescriptions) await execFileAsync("/usr/bin/plutil", ["-remove", key, infoPlist]);
   }
 
@@ -62,4 +65,5 @@ export default async function afterPack(context) {
       console.log(`  • installed Electron-native ${packageName}/${relative}`);
     }
   }
+  if (applicationDirectory) await execFileAsync("/usr/bin/xattr", ["-cr", applicationDirectory]);
 }

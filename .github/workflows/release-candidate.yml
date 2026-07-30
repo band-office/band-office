@@ -22,9 +22,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run release:verify
 
-  macos-unsigned-acceptance:
+  macos-adhoc-acceptance:
     needs: quality
-    name: macos-${{ matrix.arch }}-unsigned-acceptance
+    name: macos-${{ matrix.arch }}-adhoc-acceptance
     strategy:
       fail-fast: false
       matrix:
@@ -48,13 +48,15 @@ jobs:
       - run: npm run ${{ matrix.package_script }}
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
-      - name: Verify architecture and unsigned distribution boundary
+      - name: Verify architecture, integrity seal, and distribution boundary
         run: |
           app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
           test -n "$app"
           test "$(lipo -archs "$app/Contents/MacOS/Band Office")" = "${{ matrix.executable_arch }}"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Signature=adhoc'
           if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'; then
-            echo "Unexpected Developer ID signature on the unsigned macOS release candidate." >&2
+            echo "Unexpected Developer ID signature on the ad hoc macOS release candidate." >&2
             exit 1
           fi
       - name: Verify disk image
@@ -64,7 +66,7 @@ jobs:
         run: shasum -a 256 Band-Office-*-mac-${{ matrix.arch }}.dmg Band-Office-*-mac-${{ matrix.arch }}.zip > SHA256SUMS-macos-${{ matrix.arch }}.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: unsigned-macos-${{ matrix.arch }}-test-artifacts
+          name: adhoc-macos-${{ matrix.arch }}-test-artifacts
           path: |
             dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.dmg
             dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.zip
