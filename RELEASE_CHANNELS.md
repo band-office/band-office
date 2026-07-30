@@ -18,7 +18,7 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** [`v0.1.0-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.4) issued as a public prerelease.
+**State:** [`v0.1.0-alpha.5`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.5) issued as a public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 

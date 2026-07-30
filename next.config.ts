@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   allowedDevOrigins: ["127.0.0.1"],
   output: "standalone",
+  images: {
+    unoptimized: true,
+  },
   ...(process.env.BANDOS_BRAND_CAPTURE === "1" ? { devIndicators: false } : {}),
   async headers() {
     return [{
