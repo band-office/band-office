@@ -4,13 +4,15 @@
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.5`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.5) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.6`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.6) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
 Band Office is a functioning local web and Electron application covering People, groups, inventory, assignments, repairs, financial ledgers, email communications, whole-set music library records, forms, events, attendance, reports, backup and restore, rollover, audit history, and a relationship-scoped read-only student and guardian portal with self-service password recovery.
 
 ## Accepted Evidence
+
+Desktop alpha.6 adds a guarded exit from the fictional demo. The permanent demo banner now offers **Start my program** only in the Desktop app. After native confirmation, Band Office verifies that the active database contains only the fixed Ridgeline demo, preserves the database and managed files in recovery snapshots, clears the active demo, restarts, and returns to first-run setup. The reset path rejects director-created programs and its lifecycle behavior is covered by automated acceptance.
 
 Desktop alpha.5 supersedes the alpha.3 Mac packages. A tester exposed that alpha.3 contained only an executable-level placeholder signature rather than a sealed application-bundle signature, which could cause macOS to report that the app was damaged. The alpha.4 tag did not produce a release because the strengthened gate caught a runtime image-cache write inside the sealed bundle. Alpha.5 disables that write and requires a valid ad hoc bundle seal, strict recursive `codesign` verification after packaged-app acceptance, the `org.bandoffice.desktop` application identifier, and DMG verification before publication. Alpha.3 remains available as immutable release history but should not be installed on macOS.
 
@@ -47,7 +49,7 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 The current Desktop alpha is public as separate ad hoc integrity-sealed Apple Silicon and Intel macOS packages and an unsigned Windows package, with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
 
-The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
+The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. Its permanent banner provides a Desktop-only **Start my program** action that preserves recovery snapshots and returns to first-run setup. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 
 1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance on Apple Silicon macOS, Intel macOS, and Windows x64.
 2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.

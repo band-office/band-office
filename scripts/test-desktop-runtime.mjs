@@ -7,7 +7,17 @@ import { cp, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { validateBackupArchive } from "../desktop/backup-archive.mjs";
-import { applyPendingRestore, PENDING_EVENT_RESTORE_DIRECTORY, PENDING_FORM_RESTORE_DIRECTORY, PENDING_LIBRARY_RESTORE_DIRECTORY, PENDING_RESTORE_FILENAME } from "../desktop/data-lifecycle.mjs";
+import {
+  applyPendingDemoReset,
+  applyPendingRestore,
+  assertRidgelineDemoDatabase,
+  PENDING_DEMO_RESET_FILENAME,
+  PENDING_EVENT_RESTORE_DIRECTORY,
+  PENDING_FORM_RESTORE_DIRECTORY,
+  PENDING_LIBRARY_RESTORE_DIRECTORY,
+  PENDING_RESTORE_FILENAME,
+  RIDGELINE_DEMO_PROGRAM_ID,
+} from "../desktop/data-lifecycle.mjs";
 import { runDesktopMigrations } from "../desktop/migrations.mjs";
 import { runtimeAliasSegments } from "../desktop/runtime-alias.mjs";
 
@@ -268,11 +278,72 @@ try {
   assert.equal(recovered.prepare('SELECT "name" FROM "Program"').get().name, "Current Program");
   recovered.close();
 
+  const demoResetRoot = path.join(workDirectory, "demo-reset");
+  const demoData = path.join(demoResetRoot, "data");
+  const demoSnapshots = path.join(demoResetRoot, "snapshots");
+  const demoDatabasePath = path.join(demoData, "bandos.db");
+  await createCurrentDatabase(demoDatabasePath, demoSnapshots, RIDGELINE_DEMO_PROGRAM_ID, "Ridgeline Middle School Band");
+  assert.doesNotThrow(() => assertRidgelineDemoDatabase(demoDatabasePath));
+  for (const [directory, fileName] of [
+    ["library-files", "score.pdf"],
+    ["form-files", "permission-slip.pdf"],
+    ["event-files", "itinerary.pdf"],
+  ]) {
+    const managedDirectory = path.join(demoData, directory, "demo-record");
+    await mkdir(managedDirectory, { recursive: true });
+    await writeFile(path.join(managedDirectory, fileName), `preserved ${directory}`);
+  }
+  await writeFile(path.join(demoData, PENDING_DEMO_RESET_FILENAME), "pending\n", { mode: 0o600 });
+  const demoReset = await applyPendingDemoReset({
+    dataDirectory: demoData,
+    databasePath: demoDatabasePath,
+    snapshotsDirectory: demoSnapshots,
+  });
+  assert.ok(demoReset?.snapshotPath);
+  const preservedDemo = new Database(demoReset.snapshotPath, { readonly: true });
+  assert.equal(preservedDemo.prepare('SELECT "name" FROM "Program"').get().name, "Ridgeline Middle School Band");
+  preservedDemo.close();
+  for (const [directory, fileName] of [
+    ["library-files", "score.pdf"],
+    ["form-files", "permission-slip.pdf"],
+    ["event-files", "itinerary.pdf"],
+  ]) {
+    await assert.rejects(stat(path.join(demoData, directory)));
+    const preservedDirectory = (await readdir(demoSnapshots)).find((name) => name.startsWith("pre-demo-reset-") && name.endsWith(`-${directory}`));
+    assert.ok(preservedDirectory);
+    assert.equal(
+      (await readFile(path.join(demoSnapshots, preservedDirectory, "demo-record", fileName), "utf8")),
+      `preserved ${directory}`,
+    );
+  }
+  await assert.rejects(stat(path.join(demoData, PENDING_DEMO_RESET_FILENAME)));
+  await runDesktopMigrations({ databasePath: demoDatabasePath, migrationsDirectory, snapshotsDirectory: demoSnapshots });
+  const emptyProgram = new Database(demoDatabasePath, { readonly: true });
+  assert.equal(emptyProgram.prepare('SELECT COUNT(*) AS count FROM "Program"').get().count, 0);
+  emptyProgram.close();
+
+  const nonDemoPath = path.join(workDirectory, "non-demo", "bandos.db");
+  await createCurrentDatabase(nonDemoPath, path.join(workDirectory, "non-demo-snapshots"), "my-program", "My Program");
+  assert.throws(() => assertRidgelineDemoDatabase(nonDemoPath), /Only the fictional Ridgeline demo/);
+
+  const interruptedDemoResetData = path.join(workDirectory, "interrupted-demo-reset", "data");
+  await mkdir(path.join(interruptedDemoResetData, "library-files"), { recursive: true });
+  await writeFile(path.join(interruptedDemoResetData, "library-files", "partial.txt"), "partial");
+  await writeFile(path.join(interruptedDemoResetData, PENDING_DEMO_RESET_FILENAME), "pending\n", { mode: 0o600 });
+  const resumedDemoReset = await applyPendingDemoReset({
+    dataDirectory: interruptedDemoResetData,
+    databasePath: path.join(interruptedDemoResetData, "bandos.db"),
+    snapshotsDirectory: path.join(workDirectory, "interrupted-demo-reset", "snapshots"),
+  });
+  assert.deepEqual(resumedDemoReset, { snapshotPath: null });
+  await assert.rejects(stat(path.join(interruptedDemoResetData, PENDING_DEMO_RESET_FILENAME)));
+  await assert.rejects(stat(path.join(interruptedDemoResetData, "library-files")));
+
   const mismatchedArchivePath = path.join(workDirectory, "mismatched-backup.zip");
   await writeBackupArchive(replacementPath, mismatchedArchivePath, { components: "id,assetId,name,status,notes\nextra,missing,Case,PRESENT," }, 8, [libraryFileFixture], [formFileFixture], [eventFileFixture]);
   await assert.rejects(validateBackupArchive(mismatchedArchivePath), /components\.csv does not match/);
 
-  console.log("Desktop acceptance verified: fresh install, idempotent restart, historical upgrade, migration rollback, archive validation, restore preservation, and interrupted-swap recovery.");
+  console.log("Desktop acceptance verified: fresh install, idempotent restart, historical upgrade, migration rollback, archive validation, restore preservation, demo reset preservation, and interrupted recovery.");
 } finally {
   await rm(workDirectory, { recursive: true, force: true });
 }

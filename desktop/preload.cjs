@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("bandosDesktop", {
   isDesktop: true,
+  resetDemo: () => ipcRenderer.invoke("bandos:reset-demo"),
   restoreBackup: (passphrase) => ipcRenderer.invoke("bandos:restore-backup", { passphrase }),
   emailCredentialStatus: () => ipcRenderer.invoke("bandos:email-credential-status"),
   storeEmailCredential: (password) => ipcRenderer.invoke("bandos:store-email-credential", { password }),
