@@ -239,7 +239,14 @@ if (!backupRoute.includes(".bandoffice")) findings.push("Encrypted backups do no
 if (!desktopMain.includes('extensions: ["bandoffice", "bandos", "zip"]')) findings.push("Desktop restore does not accept current .bandoffice, legacy .bandos, and readable .zip archives.");
 evidence.push({ claim: "Backup naming is current without breaking restore compatibility", detail: "New encrypted archives use .bandoffice; Desktop restore retains .bandos and ZIP support" });
 
-for (const documentationFile of ["README.md", "CURRENT_STATUS.md", "DESKTOP_ALPHA_RELEASE.md", "NEXT_ACTION.md", "ROADMAP.md", "SECURITY_CHECKLIST.md"]) {
+for (const documentationFile of [
+  "README.md",
+  "docs/release/CURRENT_STATUS.md",
+  "docs/release/DESKTOP_ALPHA_RELEASE.md",
+  "docs/release/NEXT_ACTION.md",
+  "docs/product/ROADMAP.md",
+  "docs/release/SECURITY_CHECKLIST.md",
+]) {
   const content = await readFile(path.join(root, documentationFile), "utf8");
   if (/real-data pilot|real-program pilot|school-specific pilot/i.test(content)) findings.push(`${documentationFile} contains a program-specific release gate.`);
 }
@@ -273,7 +280,7 @@ else {
 }
 
 const report = { schemaVersion: 1, status: findings.length ? "fail" : "pass", checks: evidence, findings };
-await writeFile(path.join(root, "RELEASE_AUDIT.json"), `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(path.join(root, "docs/release/RELEASE_AUDIT.json"), `${JSON.stringify(report, null, 2)}\n`);
 if (findings.length) {
   console.error(findings.join("\n"));
   process.exitCode = 1;

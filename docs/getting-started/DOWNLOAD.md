@@ -32,7 +32,7 @@ Verify the download with the matching checksum file:
 
 Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/SHA256SUMS-windows.txt).
 
-School-managed computers may block unsigned applications. Do not bypass district controls. Ask district IT to review the [source](https://github.com/band-office/band-office), release checksums, and [current release status](./CURRENT_STATUS.md).
+School-managed computers may block unsigned applications. Do not bypass district controls. Ask district IT to review the [source](https://github.com/band-office/band-office), release checksums, and [current release status](../release/CURRENT_STATUS.md).
 
 ## What the fictional demo does
 
@@ -42,6 +42,6 @@ Use the demo to test workflows and decide whether Band Office fits your program.
 
 ## Need family portals?
 
-Desktop is not a public website. Student and guardian access requires the separately released, district-operated [Band Office Server](./SERVER_DEPLOYMENT.md). A district must own and approve the server, domain, HTTPS, email relay, monitoring, backups, and restore process.
+Desktop is not a public website. Student and guardian access requires the separately released, district-operated [Band Office Server](../deployment/SERVER_DEPLOYMENT.md). A district must own and approve the server, domain, HTTPS, email relay, monitoring, backups, and restore process.
 
 Read [Where Your Data Goes](./DATA_FLOW.md) before choosing either release.

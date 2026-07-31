@@ -9,10 +9,10 @@ Band Office welcomes contributions from educators, students, developers, self-ho
 Read:
 
 - [Code of Conduct](./CODE_OF_CONDUCT.md)
-- [Current status](./CURRENT_STATUS.md)
-- [Roadmap](./ROADMAP.md)
+- [Current status](./docs/release/CURRENT_STATUS.md)
+- [Roadmap](./docs/product/ROADMAP.md)
 - [Security policy](./SECURITY.md)
-- [Product decisions](./DECISIONS.md)
+- [Product decisions](./docs/product/DECISIONS.md)
 
 For a bug or bounded improvement, open an issue using the relevant template. For a large feature, data-model change, new external service, or change to a privacy boundary, discuss the proposal before writing code.
 

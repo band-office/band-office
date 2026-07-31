@@ -5,7 +5,7 @@
 **Mode:** Product architecture and staged implementation authority.
 **Author context:** Prepared for Joshua Bloodworth. 15 years as a band director. Current commitments: Practical AI Workbench launch blockers, Gig City AI v1 site build, MBA, SDMS band program, Unit27 Research.
 
-> **Historical strategy record:** This document explains the phased product decisions that led to the current application. Release truth now lives in `README.md`, `CURRENT_STATUS.md`, `RELEASE_CHANNELS.md`, and `CUTTIME_REPLACEMENT_MATRIX.md`.
+> **Historical strategy record:** This document explains the phased product decisions that led to the current application. Release truth now lives in the [README](../../README.md), [current status](../release/CURRENT_STATUS.md), [release channels](../release/RELEASE_CHANNELS.md), and [CutTime replacement matrix](../product/CUTTIME_REPLACEMENT_MATRIX.md).
 
 ## 1. Blunt Verdict
 
@@ -368,7 +368,7 @@ Not tables in v0.1. `agreement_on_file` on assignment covers the first workflow.
 - Treat every member row as a FERPA education record from day one.
 - The director is responsible for following district policy. The README tells the director to clear the tool with administration before loading real student data.
 - For SDMS, send one email to the principal describing what it stores and where it runs before dogfooding.
-- The repo includes `PRINCIPAL_CLEARANCE_DRAFT.md` as a concrete pre-dogfood deliverable, not a vague reminder.
+- The repo includes the [principal clearance draft](../product/PRINCIPAL_CLEARANCE_DRAFT.md) as a concrete pre-dogfood deliverable, not a vague reminder.
 - Every later module that adds a new data class, external connector, or non-staff user requires a revised privacy review and administrative approval. Approval for v0.1 inventory does not automatically cover portals, messaging, forms, or payments.
 
 **PII minimization:** the schema is the enforcement mechanism. Fields that do not exist cannot be filled. Notes fields are the leak path and carry permanent inline warnings.
@@ -575,7 +575,7 @@ uniform,Fruhauf,Jacket 38R,,RMS-UNI-021,good,available,2017,310
 
 - Keep the v0.1 asset and assignment specification intact as the first production slice.
 - Establish the shared foundation so later modules do not require a rewrite, but do not prebuild their features.
-- Use `CUTTIME_REPLACEMENT_MATRIX.md` as the scope authority for what is replaced, partial, planned, integrated, or intentionally excluded.
+- Use the [CutTime replacement matrix](../product/CUTTIME_REPLACEMENT_MATRIX.md) as the scope authority for what is replaced, partial, planned, integrated, or intentionally excluded.
 - Treat the implemented People/Groups/Access foundation as the ownership layer for assignments, financial accounts, communication audiences, library loans, form requests, and event rosters. Director-side Financials, standard SMTP Email, Music Library, Forms, Events/Attendance, and a relationship-scoped read-only portal are implemented. Public Server operation remains a separate technical-preview release channel.
 - Do not announce Band Office as a CutTime replacement until the README's current coverage table names enough completed workflows to make that statement true for a defined program profile.
 
@@ -585,7 +585,7 @@ The strategic commitment is now clear: Band Office aims to become an open-source
 
 The thesis, v0 list, replacement roadmap, schema draft, and privacy rules are above. Current companion authority files:
 
-- `CURRENT_STATUS.md`
-- `RELEASE_CHANNELS.md`
-- `PRINCIPAL_CLEARANCE_DRAFT.md`
-- `CUTTIME_REPLACEMENT_MATRIX.md`
+- [Current status](../release/CURRENT_STATUS.md)
+- [Release channels](../release/RELEASE_CHANNELS.md)
+- [Principal clearance draft](../product/PRINCIPAL_CLEARANCE_DRAFT.md)
+- [CutTime replacement matrix](../product/CUTTIME_REPLACEMENT_MATRIX.md)

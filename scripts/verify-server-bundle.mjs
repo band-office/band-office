@@ -19,8 +19,8 @@ const entrypoint = await text("scripts/docker-entrypoint.sh");
 const worker = await text("scripts/run-server-worker.mjs");
 const health = await text("src/app/api/health/route.ts");
 const authThrottle = await text("src/lib/auth-throttle.ts");
-const deployment = await text("SERVER_DEPLOYMENT.md");
-const backupRestore = await text("SERVER_BACKUP_RESTORE.md");
+const deployment = await text("docs/deployment/SERVER_DEPLOYMENT.md");
+const backupRestore = await text("docs/deployment/SERVER_BACKUP_RESTORE.md");
 const composeAcceptance = await text("scripts/test-server-compose.sh");
 
 function composeServiceBlock(name) {
@@ -31,14 +31,14 @@ function composeServiceBlock(name) {
 for (const required of [
   "LICENSE",
   "NOTICE",
-  "SERVER_ALPHA_RELEASE.md",
-  "SERVER_DEPLOYMENT.md",
-  "SERVER_OPERATOR_HANDOFF.md",
-  "PORTAL_ACTIVATION.md",
-  "SERVER_BACKUP_RESTORE.md",
-  "SERVER_UPGRADE.md",
-  "SERVER_SUPPORT_BOUNDARY.md",
-  "SERVER_ACCEPTANCE_RECORD.md",
+  "docs/release/SERVER_ALPHA_RELEASE.md",
+  "docs/deployment/SERVER_DEPLOYMENT.md",
+  "docs/deployment/SERVER_OPERATOR_HANDOFF.md",
+  "docs/deployment/PORTAL_ACTIVATION.md",
+  "docs/deployment/SERVER_BACKUP_RESTORE.md",
+  "docs/deployment/SERVER_UPGRADE.md",
+  "docs/deployment/SERVER_SUPPORT_BOUNDARY.md",
+  "docs/release/SERVER_ACCEPTANCE_RECORD.md",
   "deploy/server/.env.example",
   "deploy/server/secrets/README.md",
 ]) {
