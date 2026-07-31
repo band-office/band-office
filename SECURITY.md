@@ -33,4 +33,4 @@ The project will acknowledge a usable report as soon as practical, reproduce it,
 
 The Electron app is local-only. Family access requires the district-operated Server alpha behind HTTPS. A district may use that alpha for real program operations only after completing the published acceptance record, assigning infrastructure and data owners, and approving the deployment. Do not expose the development server, the raw application port, or a home-server port forward to the public internet.
 
-See [RELEASE_CHANNELS.md](./RELEASE_CHANNELS.md), [SERVER_SUPPORT_BOUNDARY.md](./SERVER_SUPPORT_BOUNDARY.md), [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md), and [CURRENT_STATUS.md](./CURRENT_STATUS.md) before using Band Office with real program data.
+See [RELEASE_CHANNELS.md](./docs/release/RELEASE_CHANNELS.md), [SERVER_SUPPORT_BOUNDARY.md](./docs/deployment/SERVER_SUPPORT_BOUNDARY.md), [SECURITY_CHECKLIST.md](./docs/release/SECURITY_CHECKLIST.md), and [CURRENT_STATUS.md](./docs/release/CURRENT_STATUS.md) before using Band Office with real program data.

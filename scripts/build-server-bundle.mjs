@@ -19,20 +19,21 @@ await rm(bundleDirectory, { recursive: true, force: true });
 await mkdir(bundleDirectory, { recursive: true });
 await cp(path.join(root, "deploy/server"), bundleDirectory, { recursive: true });
 
-const documentation = [
+const documentationSources = [
   "LICENSE",
   "NOTICE",
-  "SERVER_ALPHA_RELEASE.md",
-  "SERVER_DEPLOYMENT.md",
-  "SERVER_ACCEPTANCE_RECORD.md",
-  "SERVER_OPERATOR_HANDOFF.md",
-  "PORTAL_ACTIVATION.md",
-  "SERVER_BACKUP_RESTORE.md",
-  "SERVER_UPGRADE.md",
-  "SERVER_SUPPORT_BOUNDARY.md",
+  "docs/release/SERVER_ALPHA_RELEASE.md",
+  "docs/deployment/SERVER_DEPLOYMENT.md",
+  "docs/release/SERVER_ACCEPTANCE_RECORD.md",
+  "docs/deployment/SERVER_OPERATOR_HANDOFF.md",
+  "docs/deployment/PORTAL_ACTIVATION.md",
+  "docs/deployment/SERVER_BACKUP_RESTORE.md",
+  "docs/deployment/SERVER_UPGRADE.md",
+  "docs/deployment/SERVER_SUPPORT_BOUNDARY.md",
 ];
-for (const filename of documentation) {
-  await cp(path.join(root, filename), path.join(bundleDirectory, filename));
+const documentation = documentationSources.map((source) => path.basename(source));
+for (const source of documentationSources) {
+  await cp(path.join(root, source), path.join(bundleDirectory, path.basename(source)));
 }
 
 if (releaseImage) {

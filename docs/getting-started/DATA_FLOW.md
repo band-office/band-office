@@ -30,7 +30,7 @@ The district controls:
 - firewall rules, logs, monitoring, patches, and upgrades;
 - encrypted backups, restore tests, retention, and incident response.
 
-Band Office does not operate a hosted service and does not receive a copy of the server database. The server deployment must pass the supplied [acceptance record](./SERVER_ACCEPTANCE_RECORD.md) before real family accounts are activated.
+Band Office does not operate a hosted service and does not receive a copy of the server database. The server deployment must pass the supplied [acceptance record](../release/SERVER_ACCEPTANCE_RECORD.md) before real family accounts are activated.
 
 ## Email is an explicit network action
 

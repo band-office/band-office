@@ -43,7 +43,7 @@ This checklist separates changes already represented in the repository from GitH
 - [ ] Enable secret scanning and push protection where the organization plan supports them.
 - [ ] Create the initial `good first issue`, `help wanted`, `documentation`, `security`, `release`, `dependencies`, and `github-actions` labels.
 - [ ] Create at least three bounded contributor issues before actively recruiting contributors.
-- [ ] Publish a reviewed release tag only after the gates in `CURRENT_STATUS.md` are complete.
+- [ ] Publish a reviewed release tag only after the gates in [current status](../../release/CURRENT_STATUS.md) are complete.
 
 ## Final visual check
 

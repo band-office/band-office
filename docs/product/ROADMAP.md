@@ -1,6 +1,6 @@
 # Band Office roadmap
 
-This roadmap describes direction, not a delivery promise. Release truth lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).
+This roadmap describes direction, not a delivery promise. Release truth lives in [CURRENT_STATUS.md](../release/CURRENT_STATUS.md).
 
 ## Now: harden the public alphas
 

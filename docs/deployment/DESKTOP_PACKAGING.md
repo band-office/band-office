@@ -55,7 +55,7 @@ npm run desktop:dist:win:signed
 
 Those commands set `BANDOS_SIGN_DESKTOP=1` and remain available for future identified distribution channels. Windows signed packaging requires Microsoft Entra authentication secrets and Artifact Signing profile values; the packaging script fails before building if any are missing. The public alpha uses ad hoc Mac signing for bundle integrity and leaves Windows unsigned.
 
-The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It verifies the Mac integrity seal and non-Developer-ID boundary, the unsigned Windows boundary, packaged legal files, application behavior, disk image, and checksums, then requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](./DESKTOP_ALPHA_RELEASE.md).
+The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It verifies the Mac integrity seal and non-Developer-ID boundary, the unsigned Windows boundary, packaged legal files, application behavior, disk image, and checksums, then requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](../release/DESKTOP_ALPHA_RELEASE.md).
 
 ## Public release gates
 

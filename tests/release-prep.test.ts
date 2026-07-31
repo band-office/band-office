@@ -111,9 +111,9 @@ describe("public release preparation", () => {
 
   test("keeps public channels and unsupported deployment boundaries explicit", async () => {
     const readme = await readFile("README.md", "utf8");
-    const channels = await readFile("RELEASE_CHANNELS.md", "utf8");
-    const download = await readFile("DOWNLOAD.md", "utf8");
-    const deployment = await readFile("SERVER_DEPLOYMENT.md", "utf8");
+    const channels = await readFile("docs/release/RELEASE_CHANNELS.md", "utf8");
+    const download = await readFile("docs/getting-started/DOWNLOAD.md", "utf8");
+    const deployment = await readFile("docs/deployment/SERVER_DEPLOYMENT.md", "utf8");
     const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
     const pullRequestWorkflow = await readFile(".github/workflows/pull-request-quality.yml", "utf8");
@@ -176,7 +176,7 @@ describe("public release preparation", () => {
     expect(serverWorkflow).not.toContain(":latest");
     expect(pullRequestWorkflow).toContain("server-compose-acceptance:");
     expect(pullRequestWorkflow).toContain("npm run server:compose:test -- band-office-server:acceptance");
-    const backupRestore = await readFile("SERVER_BACKUP_RESTORE.md", "utf8");
+    const backupRestore = await readFile("docs/deployment/SERVER_BACKUP_RESTORE.md", "utf8");
     expect(backupRestore).toContain('sudo tar -czf "$backup" data');
     expect(backupRestore).toContain("sudo chown -R 10001:10001 data");
     const composeAcceptance = await readFile("scripts/test-server-compose.sh", "utf8");

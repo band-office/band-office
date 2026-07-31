@@ -24,4 +24,4 @@ Both require macOS 12 Monterey or later.
 - Verify the published SHA-256 checksum before opening a macOS package. The Mac bundle is integrity-sealed, but it is not identified, verified, or notarized by Apple.
 - Verify the published SHA-256 checksum before opening a Windows package. The unsigned Windows build is not verified by Microsoft.
 
-This alpha is not yet stable or a supported CutTime replacement. Read `DOWNLOAD.md`, `DATA_FLOW.md`, `CURRENT_STATUS.md`, `RELEASE_CHANNELS.md`, and `UPDATE_POLICY.md` before adoption.
+This alpha is not yet stable or a supported CutTime replacement. Read the [download instructions](https://github.com/band-office/band-office/blob/main/docs/getting-started/DOWNLOAD.md), [data-flow explanation](https://github.com/band-office/band-office/blob/main/docs/getting-started/DATA_FLOW.md), [current status](https://github.com/band-office/band-office/blob/main/docs/release/CURRENT_STATUS.md), [release channels](https://github.com/band-office/band-office/blob/main/docs/release/RELEASE_CHANNELS.md), and [update policy](https://github.com/band-office/band-office/blob/main/docs/deployment/UPDATE_POLICY.md) before adoption.
