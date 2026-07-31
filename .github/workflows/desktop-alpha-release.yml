@@ -43,7 +43,9 @@ jobs:
             executable_arch: x86_64
             package_script: desktop:dist:mac:x64:signed
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 35
+    # Apple notarization is asynchronous and can exceed a normal packaging window.
+    # Keep the job bounded, but leave enough time to receive and staple a ticket.
+    timeout-minutes: 120
     env:
       CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
       CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_PASSWORD }}
