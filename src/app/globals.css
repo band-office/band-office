@@ -75,6 +75,9 @@ h1, h2, h3 { letter-spacing: 0; }
 .mobile-bar, .mobile-nav { display: none; }
 .demo-banner { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 32px; padding: 6px 18px; color: #6f4f0c; background: #fff8df; border-bottom: 1px solid #ead99a; font-size: 10px; }
 .demo-banner strong { font-size: 10px; }
+.demo-exit-button { display: inline-flex; align-items: center; gap: 5px; min-height: 26px; margin-left: 6px; padding: 4px 8px; color: #0f172a; background: white; border: 1px solid #d7bd62; border-radius: 4px; font: inherit; font-weight: 700; cursor: pointer; }
+.demo-exit-button:hover { background: #fffdf5; border-color: #a97c16; }
+.demo-exit-button:disabled { opacity: .65; cursor: wait; }
 
 .content { width: min(1380px, 100%); margin: 0 auto; padding: 30px 34px 56px; }
 .narrow-content { width: min(940px, 100%); }
@@ -979,6 +982,7 @@ textarea { resize: vertical; }
   .mobile-nav .nav-link.active { background: #1e3a8a; }
   .demo-banner { flex-wrap: wrap; gap: 4px 6px; padding: 7px 12px; text-align: center; }
   .demo-banner span { flex-basis: 100%; }
+  .demo-exit-button { margin-left: 0; }
   .content { padding: 20px 13px 40px; }
   .portal-topbar { min-height: 58px; padding: 0 13px; }
   .portal-brand small { max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

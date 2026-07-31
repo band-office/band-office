@@ -1,12 +1,12 @@
 import { app, BrowserWindow, dialog, ipcMain, safeStorage, session } from "electron";
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { appendFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateBackupArchive } from "./backup-archive.mjs";
-import { applyPendingRestore, PENDING_EVENT_RESTORE_DIRECTORY, PENDING_FORM_RESTORE_DIRECTORY, PENDING_LIBRARY_RESTORE_DIRECTORY, PENDING_RESTORE_FILENAME } from "./data-lifecycle.mjs";
+import { applyPendingDemoReset, applyPendingRestore, assertRidgelineDemoDatabase, PENDING_DEMO_RESET_FILENAME, PENDING_EVENT_RESTORE_DIRECTORY, PENDING_FORM_RESTORE_DIRECTORY, PENDING_LIBRARY_RESTORE_DIRECTORY, PENDING_RESTORE_FILENAME } from "./data-lifecycle.mjs";
 import { runDesktopMigrations } from "./migrations.mjs";
 
 const desktopDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -193,6 +193,8 @@ async function bootstrap() {
   const snapshotsDirectory = path.join(app.getPath("userData"), "recovery-snapshots");
   const databasePath = path.join(dataDirectory, "bandos.db");
   await mkdir(dataDirectory, { recursive: true });
+  const demoReset = await applyPendingDemoReset({ dataDirectory, databasePath, snapshotsDirectory });
+  if (demoReset) await writeLog(`Cleared fictional demo; prior database preserved at ${demoReset.snapshotPath ?? "an existing recovery snapshot"}`);
   const restoredSnapshot = await applyPendingRestore({ dataDirectory, databasePath, snapshotsDirectory });
   if (restoredSnapshot) await writeLog(`Applied verified restore; prior database preserved at ${restoredSnapshot}`);
   const migrationResult = await runDesktopMigrations({ databasePath, migrationsDirectory: resourcePath("prisma", "migrations"), snapshotsDirectory });
@@ -226,6 +228,33 @@ async function bootstrap() {
     app.relaunch();
     app.exit(0);
     return { restarting: true };
+  });
+
+  ipcMain.handle("bandos:reset-demo", async () => {
+    try {
+      assertRidgelineDemoDatabase(databasePath);
+      const restorePending = await stat(path.join(dataDirectory, PENDING_RESTORE_FILENAME)).then(() => true).catch(() => false);
+      if (restorePending) return { error: "A backup restore is already pending. Restart Band Office before leaving the demo." };
+      const confirmation = await dialog.showMessageBox(mainWindow, {
+        type: "warning",
+        title: "Start your own program?",
+        message: "Leave the fictional Ridgeline demo and start an empty program?",
+        detail: "Band Office will preserve the demo database as a recovery snapshot, clear the active demo data, and restart at first-run setup. Downloaded backups will not be changed.",
+        buttons: ["Cancel", "Start my program"],
+        defaultId: 0,
+        cancelId: 0,
+        noLink: true,
+      });
+      if (confirmation.response !== 1) return { canceled: true };
+      await writeFile(path.join(dataDirectory, PENDING_DEMO_RESET_FILENAME), JSON.stringify({ requestedAt: new Date().toISOString() }), { mode: 0o600 });
+      await session.defaultSession.clearStorageData({ storages: ["cookies"] });
+      await writeLog("Fictional demo reset scheduled");
+      setTimeout(() => { app.relaunch(); app.exit(0); }, 500);
+      return { scheduled: true };
+    } catch (error) {
+      await writeLog(`Demo reset rejected: ${error instanceof Error ? error.message : "Unknown validation error"}`);
+      return { error: error instanceof Error ? error.message : "The fictional demo could not be cleared." };
+    }
   });
 
   ipcMain.handle("bandos:restore-backup", async (_event, payload) => {

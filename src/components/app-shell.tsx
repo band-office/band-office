@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ArrowRight,
   ArchiveRestore,
   ClipboardCheck,
   ClipboardPlus,
@@ -68,6 +69,35 @@ function NavLink({ href, label, icon: Icon }: { href: string; label: string; ico
 export function AppShell({ children, programName, username, role, permissions, isDemo = false }: { children: React.ReactNode; programName: string; username: string; role: string; permissions: Permission[]; isDemo?: boolean }) {
   const allowedNavigation = navigation.filter((item) => !item.permissions || item.permissions.some((permission) => permissions.includes(permission)));
   const allowedAdministration = administration.filter((item) => item.permissions.some((permission) => permissions.includes(permission)));
+  const [canExitDemo, setCanExitDemo] = useState(false);
+  const [exitingDemo, setExitingDemo] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCanExitDemo(isDemo && Boolean(window.bandosDesktop?.isDesktop));
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [isDemo]);
+
+  async function exitDemo() {
+    const bridge = window.bandosDesktop;
+    if (!bridge) return;
+
+    setExitingDemo(true);
+    try {
+      const result = await bridge.resetDemo();
+      if (result.error) {
+        window.alert(result.error);
+        setExitingDemo(false);
+        return;
+      }
+      if (result.canceled) setExitingDemo(false);
+    } catch {
+      window.alert("Band Office could not prepare the demo reset. No records were changed.");
+      setExitingDemo(false);
+    }
+  }
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -92,7 +122,19 @@ export function AppShell({ children, programName, username, role, permissions, i
           <span className="mobile-program">{programName}</span>
           <form action={logoutAction}><button type="submit" aria-label="Sign out" title="Sign out"><LogOut size={16} /></button></form>
         </header>
-        {isDemo ? <div className="demo-banner"><FlaskConical size={15} /><strong>Fictional demo</strong><span>Do not add real student information.</span></div> : null}
+        {isDemo ? (
+          <div className="demo-banner">
+            <FlaskConical size={15} />
+            <strong>Fictional demo</strong>
+            <span>Do not add real student information.</span>
+            {canExitDemo ? (
+              <button className="demo-exit-button" type="button" onClick={() => void exitDemo()} disabled={exitingDemo}>
+                {exitingDemo ? "Restarting…" : "Start my program"}
+                <ArrowRight size={14} />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         <div className="mobile-nav" aria-label="Mobile navigation">
           {allowedNavigation.map((item) => <NavLink key={item.href} {...item} />)}
         </div>

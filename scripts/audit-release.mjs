@@ -221,6 +221,19 @@ for (const marker of [
 if (/writeLog\(`\[communications\][^`]*\$\{/.test(desktopMain)) findings.push("desktop/main.mjs writes HTTP-derived communication worker details to the desktop log");
 evidence.push({ claim: "Desktop shell enforces the local boundary", detail: "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path" });
 
+const desktopPreload = await readFile(path.join(root, "desktop/preload.cjs"), "utf8");
+const desktopLifecycle = await readFile(path.join(root, "desktop/data-lifecycle.mjs"), "utf8");
+const appShell = await readFile(path.join(root, "src/components/app-shell.tsx"), "utf8");
+for (const [content, marker] of [
+  [desktopMain, 'ipcMain.handle("bandos:reset-demo"'],
+  [desktopMain, "assertRidgelineDemoDatabase(databasePath)"],
+  [desktopMain, "PENDING_DEMO_RESET_FILENAME"],
+  [desktopPreload, 'resetDemo: () => ipcRenderer.invoke("bandos:reset-demo")'],
+  [desktopLifecycle, "pre-demo-reset-"],
+  [appShell, "Start my program"],
+]) if (!content.includes(marker)) findings.push(`Desktop demo exit is missing release marker: ${marker}`);
+evidence.push({ claim: "Desktop demo has a guarded exit", detail: "Only the fixed Ridgeline demo can schedule a reset; restart preserves its database and managed files before returning to first-run setup" });
+
 const backupRoute = await readFile(path.join(root, "src/app/api/backup/route.ts"), "utf8");
 if (!backupRoute.includes(".bandoffice")) findings.push("Encrypted backups do not use the current .bandoffice extension.");
 if (!desktopMain.includes('extensions: ["bandoffice", "bandos", "zip"]')) findings.push("Desktop restore does not accept current .bandoffice, legacy .bandos, and readable .zip archives.");

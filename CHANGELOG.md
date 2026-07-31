@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.6 — 2026-07-30
+
+### Fixed
+
+- Added a permanent Desktop-only **Start my program** action to the fictional demo banner.
+- Preserved the demo database and managed library, form, and event files in recovery snapshots before clearing the active demo and returning to first-run setup.
+- Restricted the reset path to the fixed Ridgeline demo program so it cannot clear a director-created program.
+
 ## Desktop 0.1.0-alpha.5 — 2026-07-30
 
 ### Fixed

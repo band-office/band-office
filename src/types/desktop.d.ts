@@ -4,6 +4,7 @@ declare global {
   interface Window {
     bandosDesktop?: {
       isDesktop: true;
+      resetDemo(): Promise<{ canceled?: boolean; scheduled?: boolean; error?: string }>;
       restoreBackup(passphrase: string): Promise<{ canceled?: boolean; scheduled?: boolean; error?: string }>;
       emailCredentialStatus(): Promise<{ available: boolean; stored: boolean }>;
       storeEmailCredential(password: string): Promise<{ stored?: boolean; restartRequired?: boolean; error?: string }>;

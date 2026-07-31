@@ -6,6 +6,8 @@ export const PENDING_RESTORE_FILENAME = "bandos.restore-pending.db";
 export const PENDING_LIBRARY_RESTORE_DIRECTORY = "library-files.restore-pending";
 export const PENDING_FORM_RESTORE_DIRECTORY = "form-files.restore-pending";
 export const PENDING_EVENT_RESTORE_DIRECTORY = "event-files.restore-pending";
+export const PENDING_DEMO_RESET_FILENAME = "bandos.demo-reset-pending";
+export const RIDGELINE_DEMO_PROGRAM_ID = "program-ridgeline";
 const STAGED_RESTORE_FILENAME = "bandos.restore-staged.db";
 const DISPLACED_DATABASE_FILENAME = "bandos.restore-current.db";
 const LIBRARY_DIRECTORY = "library-files";
@@ -20,6 +22,60 @@ const DISPLACED_EVENT_DIRECTORY = "event-files.restore-current";
 
 function timestamp() {
   return new Date().toISOString().replace(/[:.]/g, "-");
+}
+
+export function assertRidgelineDemoDatabase(databasePath) {
+  const database = new Database(databasePath, { readonly: true, fileMustExist: true });
+  try {
+    const hasProgramTable = database.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'Program'").get();
+    if (!hasProgramTable) throw new Error("The local database is not a configured Band Office program.");
+    const programs = database.prepare('SELECT "id" FROM "Program" ORDER BY "id"').all();
+    if (programs.length !== 1 || programs[0].id !== RIDGELINE_DEMO_PROGRAM_ID) {
+      throw new Error("Only the fictional Ridgeline demo can be cleared with this action.");
+    }
+  } finally {
+    database.close();
+  }
+}
+
+export async function applyPendingDemoReset({ dataDirectory, databasePath, snapshotsDirectory }) {
+  const pendingPath = path.join(dataDirectory, PENDING_DEMO_RESET_FILENAME);
+  const pending = await stat(pendingPath).then(() => true).catch(() => false);
+  if (!pending) return null;
+
+  const resetTimestamp = timestamp();
+  const databaseExists = await stat(databasePath).then(() => true).catch(() => false);
+  let snapshotPath = null;
+  await mkdir(snapshotsDirectory, { recursive: true });
+
+  if (databaseExists) {
+    assertRidgelineDemoDatabase(databasePath);
+    snapshotPath = path.join(snapshotsDirectory, `pre-demo-reset-${resetTimestamp}.db`);
+    const database = new Database(databasePath, { readonly: true, fileMustExist: true });
+    try {
+      await database.backup(snapshotPath);
+    } finally {
+      database.close();
+    }
+    await chmod(snapshotPath, 0o600);
+  }
+
+  for (const directory of [LIBRARY_DIRECTORY, FORM_DIRECTORY, EVENT_DIRECTORY]) {
+    const source = path.join(dataDirectory, directory);
+    const exists = await stat(source).then((entry) => entry.isDirectory()).catch(() => false);
+    if (exists) {
+      await cp(source, path.join(snapshotsDirectory, `pre-demo-reset-${resetTimestamp}-${directory}`), { recursive: true, force: false });
+    }
+  }
+
+  await rm(`${databasePath}-wal`, { force: true });
+  await rm(`${databasePath}-shm`, { force: true });
+  await rm(databasePath, { force: true });
+  await rm(path.join(dataDirectory, LIBRARY_DIRECTORY), { recursive: true, force: true });
+  await rm(path.join(dataDirectory, FORM_DIRECTORY), { recursive: true, force: true });
+  await rm(path.join(dataDirectory, EVENT_DIRECTORY), { recursive: true, force: true });
+  await rm(pendingPath, { force: true });
+  return { snapshotPath };
 }
 
 export async function applyPendingRestore({ dataDirectory, databasePath, snapshotsDirectory }) {

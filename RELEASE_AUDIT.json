@@ -43,6 +43,10 @@
       "detail": "Loopback-only requests, fixed worker diagnostics, self-only CSP, denied external navigation, sandboxed renderer, and explicit camera-only permission path"
     },
     {
+      "claim": "Desktop demo has a guarded exit",
+      "detail": "Only the fixed Ridgeline demo can schedule a reset; restart preserves its database and managed files before returning to first-run setup"
+    },
+    {
       "claim": "Backup naming is current without breaking restore compatibility",
       "detail": "New encrypted archives use .bandoffice; Desktop restore retains .bandos and ZIP support"
     },

@@ -7,9 +7,9 @@ Band Office Desktop is the local version for one director and one program. It st
 
 ## Choose your computer
 
-- **[Apple Silicon Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/Band-Office-0.1.0-mac-arm64.dmg)** for Macs with an M-series chip.
-- **[Intel Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/Band-Office-0.1.0-mac-x64.dmg)** for Macs that list an Intel processor.
-- **[Windows x64 installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/Band-Office-0.1.0-win-x64.exe)** for 64-bit Windows computers.
+- **[Apple Silicon Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/Band-Office-0.1.0-mac-arm64.dmg)** for Macs with an M-series chip.
+- **[Intel Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/Band-Office-0.1.0-mac-x64.dmg)** for Macs that list an Intel processor.
+- **[Windows x64 installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/Band-Office-0.1.0-win-x64.exe)** for 64-bit Windows computers.
 
 ### Install on a Mac
 
@@ -21,8 +21,8 @@ Band Office Desktop requires macOS 12 Monterey or later. To identify your Mac, o
 
 Verify the download with the matching checksum file:
 
-- [Apple Silicon checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/SHA256SUMS-macos-arm64.txt)
-- [Intel Mac checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/SHA256SUMS-macos-x64.txt)
+- [Apple Silicon checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/SHA256SUMS-macos-arm64.txt)
+- [Intel Mac checksums](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/SHA256SUMS-macos-x64.txt)
 
 ### Install on Windows
 
@@ -30,7 +30,7 @@ Verify the download with the matching checksum file:
 2. If Microsoft Defender SmartScreen appears, choose **More info**, verify that the app is Band Office, then choose **Run anyway**.
 3. Create a local director account. Choose **Fictional demo** on the first screen to explore without student information.
 
-Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.5/SHA256SUMS-windows.txt).
+Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.6/SHA256SUMS-windows.txt).
 
 School-managed computers may block unsigned applications. Do not bypass district controls. Ask district IT to review the [source](https://github.com/band-office/band-office), release checksums, and [current release status](./CURRENT_STATUS.md).
 
@@ -38,7 +38,7 @@ School-managed computers may block unsigned applications. Do not bypass district
 
 The first-run **Fictional demo** option loads Ridgeline Middle School Band, a deterministic set of invented people, assets, assignments, financial records, library records, forms, and events. You choose the local director username and password.
 
-Use the demo to test workflows and decide whether Band Office fits your program. Do not add real student records to the demo installation. When you are ready to start an approved program installation, remove the demo application data or use a clean computer profile and create **My program** instead.
+Use the demo to test workflows and decide whether Band Office fits your program. Do not add real student records to the demo installation. When you are ready to start an approved program installation, choose **Start my program** in the permanent demo banner. Band Office preserves the demo in its recovery snapshots, clears the active demo data, restarts, and returns to first-run setup so you can create **My program**.
 
 ## Need family portals?
 
