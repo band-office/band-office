@@ -20,6 +20,7 @@ Start with the [main README](../README.md) for the product overview and the curr
 - [Portal activation](./deployment/PORTAL_ACTIVATION.md)
 - [Backup and restore](./deployment/SERVER_BACKUP_RESTORE.md)
 - [Server upgrades](./deployment/SERVER_UPGRADE.md)
+- [macOS signing setup](./deployment/MACOS_SIGNING.md) (maintainers)
 
 ## Release evidence
 

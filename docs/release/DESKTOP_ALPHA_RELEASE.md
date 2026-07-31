@@ -1,6 +1,6 @@
 # Band Office Desktop Alpha Release
 
-The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after Apple Silicon and Intel macOS produce valid ad hoc integrity seals, Windows produces an explicitly unsigned package, every package is checksum-protected, and all three native jobs complete packaged-application acceptance.
+The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after Apple Silicon and Intel macOS produce valid Developer ID signatures and stapled Apple notarization tickets, Windows produces an explicitly unsigned package, every package is checksum-protected, and all three native jobs complete packaged-application acceptance.
 
 Desktop packages exclude repository databases. A fresh installation creates its own database and offers an empty program or the deterministic fictional Ridgeline demo during first-run setup. Real student information should be loaded only into a non-demo installation after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
 
@@ -9,21 +9,29 @@ Desktop packages exclude repository databases. A fresh installation creates its 
 - Package version: `package.json` without prerelease text, for example `0.1.0`.
 - Tag format: `v<package-version>-alpha.<number>`, for example `v0.1.0-alpha.1`.
 - GitHub release: prerelease, created only by `.github/workflows/desktop-alpha-release.yml`.
-- Updates: manual and director-initiated under `UPDATE_POLICY.md`.
+- Updates: manual and director-initiated under the [update policy](../deployment/UPDATE_POLICY.md).
 
 The tag must point to an accepted commit on `main`. The workflow fetches `main` and rejects a tag whose commit is not in that history. It also rejects a mismatched tag, dirty package metadata, an unexpectedly signed platform output, or a failed platform acceptance step.
 
-## Protected Environment
+## Protected Environment And Credentials
 
-Create a GitHub environment named `desktop-alpha-release`. Limit deployment to protected branches and tags that match the alpha format, and add a required reviewer. The environment contains no signing secrets or variables; it is the manual approval gate immediately before GitHub publishes the prerelease.
+Create a GitHub environment named `desktop-alpha-release`. Limit deployment to protected branches and tags that match the alpha format, and add a required reviewer. It remains the manual approval gate immediately before GitHub publishes the prerelease.
+
+Store the following as repository Actions secrets. Do not add a certificate, private key, or notarization key to the repository, a release artifact, or a local `.env` file:
+
+- `APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64`: base64-encoded Developer ID Application `.p12` export.
+- `APPLE_DEVELOPER_ID_APPLICATION_P12_PASSWORD`: password protecting that `.p12` export.
+- `APPLE_NOTARY_KEY_P8_BASE64`: base64-encoded App Store Connect **team** API key `.p8` file.
+- `APPLE_NOTARY_KEY_ID`: App Store Connect key ID.
+- `APPLE_NOTARY_ISSUER_ID`: App Store Connect issuer ID.
+
+The release workflow materializes the notarization key only in the ephemeral native macOS runner. Electron Builder creates a temporary signing keychain from the certificate, and the workflow verifies the final app before uploading it as a release artifact.
 
 ## Distribution Enrollment
 
 ### macOS
 
-The macOS alpha is ad hoc signed to seal the app bundle and ships separate Apple Silicon and Intel x64 packages. Each architecture is built and launched on a native GitHub-hosted runner. The workflow requires `codesign --verify --deep --strict` to pass and rejects any unexpected Developer ID identity. Do not add Apple credentials to the release environment or describe either package as Apple-verified. The release notes must state that macOS requires a manual Gatekeeper override, and users must be given the architecture-specific published SHA-256 checksum.
-
-Apple Developer Program enrollment, Developer ID signing, and notarization are deferred until adoption warrants the annual cost. The future signed command remains available, but it is not part of this alpha workflow.
+The macOS alpha ships separate Apple Silicon and Intel x64 packages built and launched on native GitHub-hosted runners. The workflow requires a valid Developer ID Application authority, strict recursive signature verification, a stapled notarization ticket, and a Gatekeeper assessment reporting `Notarized Developer ID`. It rejects ad hoc signatures. Release notes must identify the Mac packages as Developer ID-signed and Apple-notarized, and users must still receive architecture-specific published SHA-256 checksums.
 
 ### Windows
 
@@ -38,7 +46,7 @@ Microsoft Artifact Signing is deferred until adoption warrants the monthly cost.
 3. Run `npm ci` and `npm run release:verify`.
 4. Update `CHANGELOG.md` and `CURRENT_STATUS.md`.
 5. Confirm the package version is the intended alpha version.
-6. Confirm the protected environment contains no signing credentials.
+6. Confirm the five Apple signing and notarization secrets are present without revealing their values.
 7. Confirm a named reviewer is available to approve publication.
 
 ## Create The Alpha
@@ -56,14 +64,15 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 
 ### macOS
 
-- Electron Builder packages with signing identity auto-discovery disabled and explicit ad hoc signing enabled.
+- Electron Builder packages with forced code signing and notarization enabled.
 - Apple Silicon and Intel x64 packages are built and launched on matching native runners.
 - The packaged executable architecture matches the download label.
 - Strict recursive code-signature verification passes, including the sealed resource manifest.
-- The job confirms the ad hoc signature and rejects any unexpected Developer ID signature.
+- The job confirms a Developer ID Application signature and rejects an ad hoc signature.
+- `xcrun stapler validate` succeeds and Gatekeeper reports `Notarized Developer ID` for the packaged app.
 - Packaged application acceptance passes.
 - The DMG verifies.
-- SHA-256 checksums are generated and the release notes disclose the ad hoc, non-notarized status and Gatekeeper override.
+- SHA-256 checksums are generated and the release notes disclose the Developer ID signature and Apple notarization.
 
 ### Windows
 
@@ -83,10 +92,10 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 
 1. Download the Apple Silicon macOS, Intel macOS, and Windows packages from the GitHub Release, not Actions.
 2. Verify published checksums on separate clean machines.
-3. On macOS, verify the documented Privacy & Security > Open Anyway flow.
+3. On macOS, verify that a clean machine recognizes the notarized application without the Privacy & Security > Open Anyway flow.
 4. On Windows, verify the SmartScreen warning and user-controlled override on a clean, non-managed test machine.
 5. Complete first-run setup, encrypted backup, restore, upgrade, and uninstall checks on all three platform/architecture targets.
 6. Record those results in `CURRENT_STATUS.md`.
 7. Keep the alpha prerelease label until the remaining release gates pass reproducibly.
 
-Apple and Microsoft signing are deliberately deferred distribution enhancements. Neither is required to evaluate the alpha.
+Windows signing remains a deferred distribution enhancement. Apple Developer ID signing and notarization are required for each new macOS alpha release.
