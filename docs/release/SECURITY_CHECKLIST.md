@@ -62,10 +62,10 @@
 - [x] Configure Desktop packaging to include `LICENSE` and `NOTICE`, and verify those files in the rebuilt macOS package.
 - [x] Verify required legal files in all three native Desktop package jobs (`npm run release:desktop:verify` in release run `30550782069`).
 - [x] Verify `LICENSE` and `NOTICE` in the Server runtime and published operator bundle.
-- [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer and no signing secrets.
+- [x] Create the protected `desktop-alpha-release` GitHub environment with a required reviewer. Apple signing credentials are held only as GitHub Actions secrets and materialized only in the native macOS release runners.
 - [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Apple Silicon Mac.
 - [ ] Verify the documented Gatekeeper override, published checksums, and unsigned-package warning on a separate clean Intel Mac.
-- [ ] Deferred: sign and notarize macOS when adoption warrants Apple Developer Program enrollment.
+- [ ] Create a Developer ID Application certificate and App Store Connect team API key, configure the required GitHub Actions secrets, and publish the first Developer ID-signed and Apple-notarized macOS alpha.
 - [ ] Verify the documented SmartScreen warning, published checksums, and unsigned-package warning on a separate clean Windows machine.
 - [ ] Deferred: sign Windows when adoption warrants Microsoft Artifact Signing.
 - [ ] Build, install, back up, restore, upgrade, and uninstall the Windows x64 application on a clean Windows machine.

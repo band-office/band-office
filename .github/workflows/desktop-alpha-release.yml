@@ -27,9 +27,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run release:verify
 
-  adhoc-macos:
+  notarized-macos:
     needs: quality
-    name: adhoc-macos-${{ matrix.arch }}
+    name: notarized-macos-${{ matrix.arch }}
     strategy:
       fail-fast: false
       matrix:
@@ -37,13 +37,19 @@ jobs:
           - arch: arm64
             runner: macos-14
             executable_arch: arm64
-            package_script: desktop:dist:mac:arm64
+            package_script: desktop:dist:mac:arm64:signed
           - arch: x64
             runner: macos-15-intel
             executable_arch: x86_64
-            package_script: desktop:dist:mac:x64
+            package_script: desktop:dist:mac:x64:signed
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
+    env:
+      CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
+      CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_PASSWORD }}
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+      APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -52,11 +58,23 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Materialize notarization credential
+        shell: bash
+        run: |
+          test -n "$CSC_LINK"
+          test -n "$CSC_KEY_PASSWORD"
+          test -n "$APPLE_API_KEY_ID"
+          test -n "$APPLE_API_ISSUER"
+          test -n "$APPLE_NOTARY_KEY_P8_BASE64"
+          notary_key="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "$APPLE_NOTARY_KEY_P8_BASE64" | base64 --decode > "$notary_key"
+          chmod 600 "$notary_key"
+          echo "APPLE_API_KEY=$notary_key" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm run ${{ matrix.package_script }}
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
-      - name: Verify architecture, integrity seal, distribution boundary, and disk image
+      - name: Verify architecture, Developer ID signature, notarization, and disk image
         run: |
           app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
           dmg="$(find dist-desktop -name 'Band-Office-*-mac-${{ matrix.arch }}.dmg' -type f | head -n 1)"
@@ -64,18 +82,20 @@ jobs:
           test -n "$dmg"
           test "$(lipo -archs "$app/Contents/MacOS/Band Office")" = "${{ matrix.executable_arch }}"
           codesign --verify --deep --strict --verbose=2 "$app"
-          codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Signature=adhoc'
-          if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'; then
-            echo "Unexpected Developer ID signature on the ad hoc macOS release." >&2
+          codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'
+          if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Signature=adhoc'; then
+            echo "Ad hoc signing is not allowed for the notarized macOS release." >&2
             exit 1
           fi
+          xcrun stapler validate "$app"
+          spctl --assess --type execute --verbose=4 "$app" 2>&1 | grep -q 'source=Notarized Developer ID'
           hdiutil verify "$dmg"
       - name: Write macOS checksums
         working-directory: dist-desktop
         run: shasum -a 256 Band-Office-*-mac-${{ matrix.arch }}.dmg Band-Office-*-mac-${{ matrix.arch }}.zip > SHA256SUMS-macos-${{ matrix.arch }}.txt
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: adhoc-macos-${{ matrix.arch }}-alpha
+          name: notarized-macos-${{ matrix.arch }}-alpha
           retention-days: 30
           path: |
             dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.dmg
@@ -129,7 +149,7 @@ jobs:
 
   publish-prerelease:
     needs:
-      - adhoc-macos
+      - notarized-macos
       - unsigned-windows
     runs-on: ubuntu-latest
     environment: desktop-alpha-release
@@ -153,7 +173,7 @@ jobs:
       - name: Publish durable Desktop alpha prerelease
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            release-assets/adhoc-macos-*-alpha/* \
+            release-assets/notarized-macos-*-alpha/* \
             release-assets/unsigned-windows-alpha/* \
             release-assets/Band-Office-RELEASE-MANIFEST.json \
             --repo "$GITHUB_REPOSITORY" \

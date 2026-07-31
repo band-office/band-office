@@ -47,7 +47,7 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The current Desktop alpha is public as separate ad hoc integrity-sealed Apple Silicon and Intel macOS packages and an unsigned Windows package, with SHA-256 checksums and platform-warning instructions. Apple Developer ID signing, notarization, and Microsoft Artifact Signing are deferred until user interest warrants their recurring costs.
+The current Desktop alpha.6 is public as separate ad hoc integrity-sealed Apple Silicon and Intel macOS packages and an unsigned Windows package, with SHA-256 checksums and platform-warning instructions. No issued alpha should be described as Apple-notarized. Developer ID signing and notarization are being configured for the next macOS alpha; Microsoft Artifact Signing remains deferred.
 
 The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. Its permanent banner provides a Desktop-only **Start my program** action that preserves recovery snapshots and returns to first-run setup. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 

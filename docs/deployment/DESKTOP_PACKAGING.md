@@ -11,7 +11,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 - Camera permission is limited to director-initiated inventory scanning; audio and all unrelated Electron permissions remain denied.
 - SMTP credentials are encrypted with Electron `safeStorage`, excluded from the database and backups, and passed only to the supervised local server process after restart.
 - Unsigned Windows NSIS and ZIP packaging plus packaged-app smoke acceptance pass in public GitHub Actions.
-- The repository includes a fail-closed alpha workflow. Mac bundles require a valid ad hoc integrity seal; Windows remains unsigned. Both have checksums and platform warnings. Current CI artifacts are test builds only.
+- Desktop alpha.6 Mac packages remain ad hoc-signed release history. Each new Mac alpha must use Developer ID signing and Apple notarization; Windows remains unsigned. Every package has checksums and platform warnings. Current pull-request artifacts are test builds only.
 
 ## Runtime layout
 
@@ -41,6 +41,8 @@ npm run desktop:pack       # unpacked application for the current OS
 npm run desktop:dist:mac   # ad hoc-signed macOS DMG and ZIP
 npm run desktop:dist:mac:arm64 # explicit Apple Silicon package
 npm run desktop:dist:mac:x64   # explicit Intel package; run on Intel macOS
+npm run desktop:dist:mac:arm64:signed # Developer ID-sign and notarize Apple Silicon
+npm run desktop:dist:mac:x64:signed   # Developer ID-sign and notarize Intel macOS
 npm run desktop:dist:win   # unsigned Windows NSIS and ZIP, run on Windows
 ```
 
@@ -53,13 +55,13 @@ npm run desktop:dist:mac:signed
 npm run desktop:dist:win:signed
 ```
 
-Those commands set `BANDOS_SIGN_DESKTOP=1` and remain available for future identified distribution channels. Windows signed packaging requires Microsoft Entra authentication secrets and Artifact Signing profile values; the packaging script fails before building if any are missing. The public alpha uses ad hoc Mac signing for bundle integrity and leaves Windows unsigned.
+The signed Mac commands set `BANDOS_SIGN_DESKTOP=1`, force code signing, and enable Electron Builder notarization. They require a Developer ID Application certificate and App Store Connect team API key; see [macOS signing setup](./MACOS_SIGNING.md). Windows signed packaging requires Microsoft Entra authentication secrets and Artifact Signing profile values; the packaging script fails before building if any are missing. The current Windows alpha remains unsigned.
 
-The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It verifies the Mac integrity seal and non-Developer-ID boundary, the unsigned Windows boundary, packaged legal files, application behavior, disk image, and checksums, then requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](../release/DESKTOP_ALPHA_RELEASE.md).
+The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It verifies the Mac Developer ID signature, notarization ticket, Gatekeeper assessment, unsigned Windows boundary, packaged legal files, application behavior, disk image, and checksums, then requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](../release/DESKTOP_ALPHA_RELEASE.md).
 
 ## Public release gates
 
-1. Both ad hoc-signed macOS architectures pass strict recursive integrity verification, native application acceptance, executable-architecture checks, DMG verification, checksum generation, and clean-machine Gatekeeper override testing.
+1. Both Developer ID-signed and Apple-notarized macOS architectures pass strict recursive signature verification, notarization-ticket validation, Gatekeeper assessment, native application acceptance, executable-architecture checks, DMG verification, checksum generation, and clean-machine launch testing without a Gatekeeper override.
 2. The unsigned Windows package passes application acceptance, checksum generation, and clean-machine SmartScreen override testing.
 3. Clean macOS and Windows machines complete install, first-run setup, backup, restore, and uninstall checks.
 4. An older supported database upgrades successfully, with the automatic recovery snapshot verified.

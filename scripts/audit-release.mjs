@@ -98,6 +98,8 @@ evidence.push({ claim: "Desktop packages include release legal files", detail: "
 
 for (const [script, markers] of Object.entries({
   "desktop:dist:mac:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
+  "desktop:dist:mac:arm64:signed": ["BANDOS_SIGN_DESKTOP=1", "--arm64", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
+  "desktop:dist:mac:x64:signed": ["BANDOS_SIGN_DESKTOP=1", "--x64", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
   "desktop:dist:win:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true"],
 })) {
   const command = packageJson.scripts?.[script] ?? "";
@@ -110,14 +112,20 @@ for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
   "environment: desktop-alpha-release",
-  "desktop:dist:mac:arm64",
-  "desktop:dist:mac:x64",
+  "desktop:dist:mac:arm64:signed",
+  "desktop:dist:mac:x64:signed",
   "macos-15-intel",
   'lipo -archs "$app/Contents/MacOS/Band Office"',
   "codesign --verify --deep --strict",
-  "Signature=adhoc",
+  "APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64",
+  "APPLE_NOTARY_KEY_P8_BASE64",
+  "APPLE_API_KEY_ID",
+  "APPLE_API_ISSUER",
+  "Authority=Developer ID Application",
+  "xcrun stapler validate",
+  "source=Notarized Developer ID",
   "npm run desktop:dist:win",
-  "Unexpected Developer ID signature on the ad hoc macOS release.",
+  "Ad hoc signing is not allowed for the notarized macOS release.",
   "Unexpected Authenticode signature on the unsigned Windows release",
   "hdiutil verify",
   "Get-AuthenticodeSignature",
@@ -143,7 +151,7 @@ for (const forbiddenMarker of [
 ]) {
   if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow includes deferred signing configuration: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon and Intel macOS bundles require valid ad hoc integrity seals; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon and Intel macOS bundles require Developer ID signatures and stapled notarization tickets; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication" });
 
 const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
 const pullRequestWorkflow = await readFile(path.join(root, ".github/workflows/pull-request-quality.yml"), "utf8");

@@ -32,7 +32,7 @@
     },
     {
       "claim": "Desktop alpha publication is explicit and fail-closed",
-      "detail": "Apple Silicon and Intel macOS bundles require valid ad hoc integrity seals; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication"
+      "detail": "Apple Silicon and Intel macOS bundles require Developer ID signatures and stapled notarization tickets; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication"
     },
     {
       "claim": "Server alpha publication is protected and attributable",
