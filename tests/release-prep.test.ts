@@ -194,6 +194,7 @@ describe("public release preparation", () => {
     expect(preparationWorkflow).toContain("unsigned-windows-alpha");
     expect(preparationWorkflow).toContain("desktop:dist:mac:arm64:sign-only");
     expect(preparationWorkflow).toContain("desktop:dist:mac:x64:sign-only");
+    expect(preparationWorkflow).toContain("BANDOS_DESKTOP_SKIP_RUNTIME_LAUNCH");
     expect(preparationWorkflow).toContain("xcrun notarytool submit");
     expect(preparationWorkflow).toContain("scripts/write-notarization-submission.mjs");
     expect(preparationWorkflow).toContain("macos-15-intel");

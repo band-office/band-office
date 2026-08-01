@@ -73,6 +73,8 @@ jobs:
       - run: npm ci
       - run: npm run ${{ matrix.package_script }}
       - run: npm run test:desktop-package
+        env:
+          BANDOS_DESKTOP_SKIP_RUNTIME_LAUNCH: ${{ matrix.arch == 'arm64' && '1' || '0' }}
       - run: npm run release:desktop:verify
       - name: Verify architecture and Developer ID signature
         run: |
@@ -89,7 +91,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          version="$(node -p \"require('./package.json').version\")"
+          version="$(node -p 'require("./package.json").version')"
           app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
           test -n "$app"
           mkdir -p pending-notarization
