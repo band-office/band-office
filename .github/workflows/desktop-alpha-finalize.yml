@@ -95,7 +95,7 @@ jobs:
             --key-id "$APPLE_API_KEY_ID" \
             --issuer "$APPLE_API_ISSUER" \
             --output-format json > notarization-status.json
-          status="$(node -p \"JSON.parse(require('fs').readFileSync('notarization-status.json', 'utf8')).status\")"
+          status="$(node -p 'JSON.parse(require("fs").readFileSync("notarization-status.json", "utf8")).status')"
           if [ "$status" != "Accepted" ]; then
             echo "Apple notarization status is $status. The release remains unpublished." >&2
             exit 1
@@ -123,7 +123,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          version="$(node -p \"require('./package.json').version\")"
+          version="$(node -p 'require("./package.json").version')"
           mkdir release-macos
           zip="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.zip"
           dmg="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.dmg"
