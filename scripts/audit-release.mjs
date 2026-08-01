@@ -111,6 +111,7 @@ evidence.push({ claim: "Signed Desktop commands fail closed", detail: "Developer
 
 const alphaWorkflow = await readFile(path.join(root, ".github/workflows/desktop-alpha-release.yml"), "utf8");
 const alphaFinalizerWorkflow = await readFile(path.join(root, ".github/workflows/desktop-alpha-finalize.yml"), "utf8");
+const notaryStatusWorkflow = await readFile(path.join(root, ".github/workflows/apple-notary-status.yml"), "utf8");
 for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
@@ -150,6 +151,14 @@ for (const marker of [
   "--verify-tag",
   "scripts/read-notarization-submission.mjs",
 ]) if (!alphaFinalizerWorkflow.includes(marker)) findings.push(`Desktop alpha finalizer workflow is missing release gate: ${marker}`);
+for (const marker of [
+  "workflow_dispatch:",
+  "submission_ids:",
+  "xcrun notarytool info",
+  "APPLE_NOTARY_KEY_P8_BASE64",
+  "Apple notarization status",
+]) if (!notaryStatusWorkflow.includes(marker)) findings.push(`Apple notarization status workflow is missing status check: ${marker}`);
+if (notaryStatusWorkflow.includes("xcrun notarytool submit")) findings.push("Apple notarization status workflow must not submit a new notarization request.");
 for (const forbiddenMarker of [
   "WINDOWS_CSC_LINK",
   "WINDOWS_CSC_KEY_PASSWORD",

@@ -153,6 +153,7 @@ describe("public release preparation", () => {
     const deployment = await readFile("docs/deployment/SERVER_DEPLOYMENT.md", "utf8");
     const preparationWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
     const finalizerWorkflow = await readFile(".github/workflows/desktop-alpha-finalize.yml", "utf8");
+    const notaryStatusWorkflow = await readFile(".github/workflows/apple-notary-status.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
     const pullRequestWorkflow = await readFile(".github/workflows/pull-request-quality.yml", "utf8");
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
@@ -213,6 +214,12 @@ describe("public release preparation", () => {
     expect(finalizerWorkflow).toContain("environment: desktop-alpha-release");
     expect(finalizerWorkflow).toContain("gh release create");
     expect(finalizerWorkflow).toContain("scripts/read-notarization-submission.mjs");
+    expect(notaryStatusWorkflow).toContain("workflow_dispatch:");
+    expect(notaryStatusWorkflow).toContain("submission_ids:");
+    expect(notaryStatusWorkflow).toContain("xcrun notarytool info");
+    expect(notaryStatusWorkflow).toContain("APPLE_NOTARY_KEY_P8_BASE64");
+    expect(notaryStatusWorkflow).toContain("Apple notarization status");
+    expect(notaryStatusWorkflow).not.toContain("xcrun notarytool submit");
     expect(serverWorkflow).toContain('- "v*-server-alpha.*"');
     expect(serverWorkflow).toContain("environment: server-alpha-release");
     expect(serverWorkflow).toContain("platforms: linux/amd64,linux/arm64");
