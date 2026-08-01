@@ -287,8 +287,13 @@ evidence.push({ claim: "Public release gates are deployment-neutral", detail: "C
 
 const entitlementText = await readFile(path.join(root, "desktop/entitlements.mac.plist"), "utf8");
 const entitlementKeys = [...entitlementText.matchAll(/<key>([^<]+)<\/key>/g)].map((match) => match[1]);
-if (entitlementKeys.length !== 1 || entitlementKeys[0] !== "com.apple.security.device.camera") findings.push(`Unexpected macOS entitlements: ${entitlementKeys.join(", ") || "none"}`);
-evidence.push({ claim: "macOS entitlement scope is camera-only", detail: entitlementKeys.join(", ") });
+const expectedProductionEntitlements = ["com.apple.security.cs.allow-jit", "com.apple.security.device.camera"];
+if (entitlementKeys.length !== expectedProductionEntitlements.length || expectedProductionEntitlements.some((key) => !entitlementKeys.includes(key))) findings.push(`Unexpected macOS entitlements: ${entitlementKeys.join(", ") || "none"}`);
+if (entitlementKeys.includes("com.apple.security.cs.allow-unsigned-executable-memory")) findings.push("macOS production entitlements must not allow unsigned executable memory");
+const inheritedEntitlementText = await readFile(path.join(root, "desktop/entitlements.mac.inherit.plist"), "utf8");
+if (!inheritedEntitlementText.includes("<key>com.apple.security.cs.allow-jit</key>")) findings.push("macOS helper entitlements are missing the required JIT permission");
+if (inheritedEntitlementText.includes("com.apple.security.cs.allow-unsigned-executable-memory")) findings.push("macOS helper entitlements must not allow unsigned executable memory");
+evidence.push({ claim: "macOS production entitlements are minimal and Electron-compatible", detail: "Camera access for director-initiated scanning plus hardened-runtime JIT for the app and helpers; unsigned executable memory remains prohibited" });
 
 const adHocEntitlementText = await readFile(path.join(root, "desktop/entitlements.mac.adhoc.plist"), "utf8");
 for (const requiredEntitlement of [
