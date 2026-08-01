@@ -2,6 +2,8 @@
 
 This one-time setup enables official direct distribution of Band Office Desktop outside the Mac App Store. It is not App Store submission or App Review. Apple requires a Developer ID Application certificate and notarization for this distribution path.
 
+> **Current release:** Desktop `v0.1.0-alpha.10` uses this path for both Apple Silicon and Intel downloads. Each published application is Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated. This guide remains the maintainer setup and credential-rotation reference.
+
 ## 1. Create a Developer ID Application certificate
 
 1. Sign in as the Apple Developer Program Account Holder at [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/certificates/list).

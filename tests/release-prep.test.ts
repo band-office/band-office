@@ -159,10 +159,12 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.6");
+    expect(readme).toContain("v0.1.0-alpha.10");
     expect(readme).toContain("public prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
+    expect(readme).toContain("Apple-notarized");
+    expect(readme).toContain("Windows is unsigned");
     expect(readme).toContain("v0.1.0-server-alpha.4");
     expect(readme).toContain("district-operated prerelease");
     expect(channels).toContain("Band Office Server Alpha");
@@ -170,7 +172,7 @@ describe("public release preparation", () => {
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(download).toContain("v0.1.0-alpha.6");
+    expect(download).toContain("v0.1.0-alpha.10");
     expect(download).toContain("Start my program");
     expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
     expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");
@@ -178,6 +180,8 @@ describe("public release preparation", () => {
     expect(download).toContain("SHA256SUMS-macos-arm64.txt");
     expect(download).toContain("SHA256SUMS-macos-x64.txt");
     expect(download).toContain("macOS 12 Monterey or later");
+    expect(download).toContain("Developer ID-signed and Apple-notarized");
+    expect(download).not.toContain("choose **Open Anyway**");
     expect(deployment).toContain("Fresh installations start empty");
     expect(deployment).toContain("activating real family accounts");
     expect(deployment).toContain("sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt");

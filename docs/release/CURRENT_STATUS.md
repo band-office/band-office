@@ -1,16 +1,18 @@
 # Band Office Current Status
 
-**Status date:** July 30, 2026
+**Status date:** August 1, 2026
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.6`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.6) public prerelease issued; ad hoc integrity-sealed Apple Silicon and Intel macOS packages plus unsigned Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.10`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.10) public prerelease issued; Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4) public district-operated prerelease issued
 
 Band Office is a functioning local web and Electron application covering People, groups, inventory, assignments, repairs, financial ledgers, email communications, whole-set music library records, forms, events, attendance, reports, backup and restore, rollover, audit history, and a relationship-scoped read-only student and guardian portal with self-service password recovery.
 
 ## Accepted Evidence
+
+Desktop alpha.10 at source commit `10dd054bcbe9d0b46b8750d20dee57e2c2167c96` passed the protected [GitHub Actions finalizer run 30721964472](https://github.com/band-office/band-office/actions/runs/30721964472). It verified both saved Apple notarization submissions as accepted, stapled the exact submitted Apple Silicon and Intel applications, validated the stapled tickets, and required Gatekeeper to report `Notarized Developer ID` before the required reviewer approved publication. The release contains both Mac DMGs and ZIPs, the unsigned Windows installer and ZIP, architecture-specific checksums, and a source-bound manifest.
 
 Desktop alpha.6 adds a guarded exit from the fictional demo. The permanent demo banner now offers **Start my program** only in the Desktop app. After native confirmation, Band Office verifies that the active database contains only the fixed Ridgeline demo, preserves the database and managed files in recovery snapshots, clears the active demo, restarts, and returns to first-run setup. The reset path rejects director-created programs and its lifecycle behavior is covered by automated acceptance.
 
@@ -27,7 +29,7 @@ The tagged Desktop alpha.5 at commit `8524ee2bc8d277d042ca3230759501bbe95edf9c` 
 - architecture-specific SHA-256 checksum and release-manifest generation;
 - required-reviewer approval before prerelease publication.
 
-The quality job included all 50 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The three native platform jobs then passed packaged-application acceptance, unsigned-distribution checks, and checksum generation. The ten published release assets are three installers, three ZIP packages, three checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
+The quality job included all 51 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The native platform jobs then passed packaged-application acceptance, signature or unsigned-distribution checks as applicable, and checksum generation. The ten published release assets are three installers, three ZIP packages, three checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
 
 Earlier Desktop alpha.1 through alpha.3 releases remain immutable. Alpha.4 is an immutable tag without a published release because its strengthened integrity gate failed closed.
 
@@ -47,12 +49,13 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The current Desktop alpha.6 is public as separate ad hoc integrity-sealed Apple Silicon and Intel macOS packages and an unsigned Windows package, with SHA-256 checksums and platform-warning instructions. No issued alpha should be described as Apple-notarized. Developer ID signing and notarization are being configured for the next macOS alpha; Microsoft Artifact Signing remains deferred.
+The current Desktop alpha.10 is public as separate Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs and an unsigned Windows package, with SHA-256 checksums and platform-specific guidance. The Mac applications were stapled and Gatekeeper-validated before publication. Microsoft Artifact Signing remains deferred.
 
 The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. Its permanent banner provides a Desktop-only **Start my program** action that preserves recovery snapshots and returns to first-run setup. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 
-1. Clean-machine install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance on Apple Silicon macOS, Intel macOS, and Windows x64.
-2. Clear confirmation that the unsigned-install instructions are understandable to a nondeveloper.
+1. Clean-machine install, backup, restore, upgrade, and uninstall acceptance on Apple Silicon macOS and Intel macOS, confirming that the notarized app opens without a Gatekeeper override.
+2. Clean-machine SmartScreen, install, backup, restore, upgrade, and uninstall acceptance on Windows x64.
+3. Clear confirmation that a nondeveloper can choose the correct package and follow the current platform guidance.
 
 See `DESKTOP_ALPHA_RELEASE.md`.
 

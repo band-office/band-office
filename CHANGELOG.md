@@ -6,6 +6,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.10 — 2026-08-01
+
+### Changed
+
+- Published separate Apple Silicon and Intel macOS packages signed with the Band Office Developer ID and notarized by Apple.
+- Stapled the exact Apple-accepted applications and required Gatekeeper validation before protected prerelease publication.
+- Updated public download and release guidance to distinguish notarized macOS packages from the still-unsigned Windows package.
+
+### Verification
+
+- Published DMGs, ZIPs, architecture-specific SHA-256 checksums, and a source-bound release manifest through the protected finalizer workflow.
+
 ## Desktop 0.1.0-alpha.6 — 2026-07-30
 
 ### Fixed

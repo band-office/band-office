@@ -4,12 +4,12 @@ This roadmap describes direction, not a delivery promise. Release truth lives in
 
 ## Now: harden the public alphas
 
-- Complete clean-machine Desktop install, Gatekeeper and SmartScreen override, backup, restore, upgrade, and uninstall acceptance.
-- Confirm that a nondeveloper can follow the unsigned-install and recovery instructions without assistance.
+- Complete clean-machine Desktop install, backup, restore, upgrade, and uninstall acceptance, including normal launch of the notarized Mac apps and the SmartScreen flow on Windows.
+- Confirm that a nondeveloper can follow the current platform and recovery instructions without assistance.
 - Complete the first district-owned Server public-edge, SMTP, portal, upgrade, rollback, and restore acceptance record.
 - Keep CodeQL, dependency audits, container scanning, release attestations, and required pull-request checks green.
 - Turn public issues and pilot findings into bounded reliability, accessibility, and documentation work.
-- Defer paid Apple and Microsoft signing until adoption warrants the recurring cost; signing is a later distribution improvement, not a prerequisite for the issued unsigned alphas.
+- Maintain Developer ID signing and Apple notarization for each Mac alpha. Defer Microsoft signing until adoption warrants its recurring cost; Windows remains unsigned in the current alpha.
 
 ## Next: make adoption repeatable
 

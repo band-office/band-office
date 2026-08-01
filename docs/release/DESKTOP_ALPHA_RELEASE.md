@@ -15,7 +15,7 @@ The tag must point to an accepted commit on `main`. The workflow fetches `main` 
 
 ## Protected Environment And Credentials
 
-Create a GitHub environment named `desktop-alpha-release`. Limit deployment to protected branches and tags that match the alpha format, and add a required reviewer. It remains the manual approval gate immediately before GitHub publishes the prerelease.
+Create a GitHub environment named `desktop-alpha-release`. Permit the protected `main` branch for the reviewed finalizer and alpha-format tags for release preparation, and add a required reviewer. It remains the manual approval gate immediately before GitHub publishes the prerelease.
 
 Store the following as repository Actions secrets. Do not add a certificate, private key, or notarization key to the repository, a release artifact, or a local `.env` file:
 
@@ -54,8 +54,8 @@ Microsoft Artifact Signing is deferred until adoption warrants the monthly cost.
 ```bash
 git switch main
 git pull --ff-only
-git tag -a v0.1.0-alpha.6 -m "Band Office Desktop 0.1.0 alpha 6"
-git push origin v0.1.0-alpha.6
+git tag -a v0.1.0-alpha.<number> -m "Band Office Desktop 0.1.0 alpha <number>"
+git push origin v0.1.0-alpha.<number>
 ```
 
 The tag starts the mixed-distribution preparation workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.
@@ -69,7 +69,7 @@ gh workflow run desktop-alpha-finalize.yml \
   --repo band-office/band-office \
   --ref main \
   -f source_run_id=<preparation-run-id> \
-  -f tag=v0.1.0-alpha.6
+  -f tag=v0.1.0-alpha.<number>
 ```
 
 The finalizer fails safely while Apple reports `In Progress`, `Invalid`, or any status other than `Accepted`. It creates no release in those cases. It only reaches the protected `desktop-alpha-release` publication approval after both accepted applications pass stapling and Gatekeeper validation.

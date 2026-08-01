@@ -18,13 +18,13 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** [`v0.1.0-alpha.6`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.6) issued as a public prerelease.
+**State:** [`v0.1.0-alpha.10`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.10) issued as a public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 
 The Desktop alpha is issued only when a `v*-alpha.*` GitHub prerelease contains:
 
-- separate ad hoc integrity-sealed Apple Silicon and Intel macOS DMGs and ZIPs with architecture-specific SHA-256 checksums and Gatekeeper instructions;
+- separate Developer ID-signed, Apple-notarized Apple Silicon and Intel macOS DMGs and ZIPs with architecture-specific SHA-256 checksums;
 - an explicitly unsigned Windows installer and ZIP with SHA-256 checksums and SmartScreen instructions;
 - platform acceptance results;
 - SHA-256 checksums;
@@ -53,4 +53,4 @@ Band Office does not host or operate this channel. Before activating real family
 
 ## Promotion Boundary
 
-LinkedIn, contributor-facing posts, and band-director communities may link to either alpha when they preserve its alpha status. Desktop posts must disclose that Mac packages are not Apple-notarized and Windows packages are unsigned. Server posts must say that it is district-operated, requires Linux administration and district acceptance, and is not a hosted Band Office service. Do not describe either channel as stable, district-approved, turnkey, or a supported CutTime replacement.
+LinkedIn, contributor-facing posts, and band-director communities may link to either alpha when they preserve its alpha status. Desktop posts may describe the alpha.10 Mac packages as Developer ID-signed and Apple-notarized, and must disclose that Windows packages are unsigned. Server posts must say that it is district-operated, requires Linux administration and district acceptance, and is not a hosted Band Office service. Do not describe either channel as stable, district-approved, turnkey, or a supported CutTime replacement.
