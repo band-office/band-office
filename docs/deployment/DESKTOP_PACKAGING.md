@@ -11,7 +11,7 @@ Band Office uses Electron as a local desktop shell around the same standalone Ne
 - Camera permission is limited to director-initiated inventory scanning; audio and all unrelated Electron permissions remain denied.
 - SMTP credentials are encrypted with Electron `safeStorage`, excluded from the database and backups, and passed only to the supervised local server process after restart.
 - Unsigned Windows NSIS and ZIP packaging plus packaged-app smoke acceptance pass in public GitHub Actions.
-- Desktop alpha.6 Mac packages remain ad hoc-signed release history. Each new Mac alpha must use Developer ID signing and Apple notarization; Windows remains unsigned. Every package has checksums and platform warnings. Current pull-request artifacts are test builds only.
+- Desktop alpha.10 Mac packages are Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated. Earlier ad hoc-signed packages remain release history only. Windows remains unsigned. Every package has checksums and platform guidance. Current pull-request artifacts are test builds only.
 
 ## Runtime layout
 
