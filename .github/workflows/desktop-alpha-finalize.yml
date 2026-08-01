@@ -1,0 +1,203 @@
+name: Finalize Band Office Desktop alpha release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful Desktop alpha preparation run ID
+        required: true
+        type: string
+      tag:
+        description: Desktop alpha tag prepared by that run
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  finalize-macos:
+    name: finalize-macos-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-14
+            executable_arch: arm64
+          - arch: x64
+            runner: macos-15-intel
+            executable_arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+      APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Materialize notarization credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$APPLE_API_KEY_ID"
+          test -n "$APPLE_API_ISSUER"
+          test -n "$APPLE_NOTARY_KEY_P8_BASE64"
+          notary_key="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "$APPLE_NOTARY_KEY_P8_BASE64" | base64 --decode > "$notary_key"
+          chmod 600 "$notary_key"
+          echo "APPLE_API_KEY=$notary_key" >> "$GITHUB_ENV"
+      - name: Download prepared macOS artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run download "$SOURCE_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "pending-notarization-macos-${{ matrix.arch }}-alpha" \
+            --dir pending-notarization
+      - name: Validate prepared notarization record
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata="$(find pending-notarization -type f -name notarization-submission.json -print -quit)"
+          test -n "$metadata"
+          node scripts/read-notarization-submission.mjs \
+            --input "$metadata" \
+            --tag "$RELEASE_TAG" \
+            --arch "${{ matrix.arch }}" \
+            --format env >> "$GITHUB_ENV"
+      - name: Confirm tag and prepared archive integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$NOTARIZATION_SOURCE_COMMIT"
+          npm run release:tag:verify -- "$RELEASE_TAG"
+          archive="$(find pending-notarization -type f -name "$NOTARIZATION_ARCHIVE" -print -quit)"
+          test -n "$archive"
+          test "$(shasum -a 256 "$archive" | awk '{print $1}')" = "$NOTARIZATION_ARCHIVE_SHA256"
+          echo "NOTARIZATION_ARCHIVE_PATH=$archive" >> "$GITHUB_ENV"
+      - name: Require Apple acceptance before stapling
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcrun notarytool info "$NOTARIZATION_SUBMISSION_ID" \
+            --key "$APPLE_API_KEY" \
+            --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_API_ISSUER" \
+            --output-format json > notarization-status.json
+          status="$(node -p \"JSON.parse(require('fs').readFileSync('notarization-status.json', 'utf8')).status\")"
+          if [ "$status" != "Accepted" ]; then
+            echo "Apple notarization status is $status. The release remains unpublished." >&2
+            exit 1
+          fi
+      - name: Staple and verify the exact accepted application
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir finalized-macos
+          ditto -x -k "$NOTARIZATION_ARCHIVE_PATH" finalized-macos
+          app="$(find finalized-macos -maxdepth 2 -type d -name 'Band Office.app' -print -quit)"
+          test -n "$app"
+          test "$(lipo -archs "$app/Contents/MacOS/Band Office")" = "${{ matrix.executable_arch }}"
+          xcrun stapler staple "$app"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'
+          if codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Signature=adhoc'; then
+            echo "Ad hoc signing is not allowed for the notarized macOS release." >&2
+            exit 1
+          fi
+          xcrun stapler validate "$app"
+          spctl --assess --type execute --verbose=4 "$app" 2>&1 | grep -q 'source=Notarized Developer ID'
+          echo "FINALIZED_APP=$app" >> "$GITHUB_ENV"
+      - name: Create verified macOS release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p \"require('./package.json').version\")"
+          mkdir release-macos
+          zip="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.zip"
+          dmg="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.dmg"
+          ditto -c -k --sequesterRsrc --keepParent "$FINALIZED_APP" "$zip"
+          hdiutil create -volname "Band Office" -srcfolder "$FINALIZED_APP" -ov -format UDZO "$dmg"
+          hdiutil verify "$dmg"
+          (
+            cd release-macos
+            shasum -a 256 "$(basename "$dmg")" "$(basename "$zip")" > "SHA256SUMS-macos-${{ matrix.arch }}.txt"
+          )
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: notarized-macos-${{ matrix.arch }}-alpha
+          retention-days: 30
+          path: release-macos/
+
+  publish-prerelease:
+    needs: finalize-macos
+    runs-on: ubuntu-latest
+    environment: desktop-alpha-release
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Confirm source tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          npm run release:tag:verify -- "$RELEASE_TAG"
+      - name: Download final and source artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir release-assets
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name notarized-macos-arm64-alpha --dir release-assets
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name notarized-macos-x64-alpha --dir release-assets
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name unsigned-windows-alpha --dir release-assets
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name pending-notarization-macos-arm64-alpha --dir source-metadata
+      - name: Bind the release manifest to the prepared source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          metadata="$(find source-metadata -type f -name notarization-submission.json -print -quit)"
+          test -n "$metadata"
+          node scripts/read-notarization-submission.mjs \
+            --input "$metadata" \
+            --tag "$RELEASE_TAG" \
+            --arch arm64 \
+            --format env >> "$GITHUB_ENV"
+      - name: Publish durable Desktop alpha prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$NOTARIZATION_SOURCE_COMMIT"
+          GITHUB_REF_NAME="$RELEASE_TAG" GITHUB_SHA="$NOTARIZATION_SOURCE_COMMIT" npm run release:manifest -- release-assets
+          gh release create "$RELEASE_TAG" \
+            release-assets/notarized-macos-arm64-alpha/* \
+            release-assets/notarized-macos-x64-alpha/* \
+            release-assets/unsigned-windows-alpha/* \
+            release-assets/Band-Office-RELEASE-MANIFEST.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --prerelease \
+            --verify-tag \
+            --title "Band Office Desktop ${RELEASE_TAG#v}" \
+            --notes-file .github/desktop-alpha-release-notes.md

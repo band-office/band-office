@@ -100,20 +100,22 @@ for (const [script, markers] of Object.entries({
   "desktop:dist:mac:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
   "desktop:dist:mac:arm64:signed": ["BANDOS_SIGN_DESKTOP=1", "--arm64", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
   "desktop:dist:mac:x64:signed": ["BANDOS_SIGN_DESKTOP=1", "--x64", "--config.forceCodeSigning=true", "--config.mac.notarize=true"],
+  "desktop:dist:mac:arm64:sign-only": ["BANDOS_SIGN_DESKTOP=1", "--arm64", "--config.forceCodeSigning=true", "--config.mac.notarize=false"],
+  "desktop:dist:mac:x64:sign-only": ["BANDOS_SIGN_DESKTOP=1", "--x64", "--config.forceCodeSigning=true", "--config.mac.notarize=false"],
   "desktop:dist:win:signed": ["BANDOS_SIGN_DESKTOP=1", "--config.forceCodeSigning=true"],
 })) {
   const command = packageJson.scripts?.[script] ?? "";
   for (const marker of markers) if (!command.includes(marker)) findings.push(`package.json ${script} is missing ${marker}`);
 }
-evidence.push({ claim: "Signed Desktop commands fail closed", detail: "Signed macOS and Windows commands force signing; macOS also forces notarization" });
+evidence.push({ claim: "Signed Desktop commands fail closed", detail: "Developer ID Mac commands force signing; dedicated preparation commands explicitly defer notarization to the resumable release finalizer" });
 
 const alphaWorkflow = await readFile(path.join(root, ".github/workflows/desktop-alpha-release.yml"), "utf8");
+const alphaFinalizerWorkflow = await readFile(path.join(root, ".github/workflows/desktop-alpha-finalize.yml"), "utf8");
 for (const marker of [
   'tags:\n      - "v*-alpha.*"',
   "git fetch --no-tags origin main:refs/remotes/origin/main",
-  "environment: desktop-alpha-release",
-  "desktop:dist:mac:arm64:signed",
-  "desktop:dist:mac:x64:signed",
+  "desktop:dist:mac:arm64:sign-only",
+  "desktop:dist:mac:x64:sign-only",
   "macos-15-intel",
   'lipo -archs "$app/Contents/MacOS/Band Office"',
   "codesign --verify --deep --strict",
@@ -122,18 +124,32 @@ for (const marker of [
   "APPLE_API_KEY_ID",
   "APPLE_API_ISSUER",
   "Authority=Developer ID Application",
-  "xcrun stapler validate",
-  "source=Notarized Developer ID",
+  "xcrun notarytool submit",
+  "pending-notarization-macos-${{ matrix.arch }}-alpha",
+  "scripts/write-notarization-submission.mjs",
   "npm run desktop:dist:win",
   "Ad hoc signing is not allowed for the notarized macOS release.",
   "Unexpected Authenticode signature on the unsigned Windows release",
-  "hdiutil verify",
   "Get-AuthenticodeSignature",
   "npm run release:desktop:verify",
+]) if (!alphaWorkflow.includes(marker)) findings.push(`Desktop alpha workflow is missing release gate: ${marker}`);
+for (const marker of [
+  "workflow_dispatch:",
+  "source_run_id:",
+  "RELEASE_TAG: ${{ inputs.tag }}",
+  "xcrun notarytool info",
+  "Apple notarization status is $status. The release remains unpublished.",
+  "xcrun stapler staple",
+  "xcrun stapler validate",
+  "source=Notarized Developer ID",
+  "hdiutil verify",
+  "notarized-macos-${{ matrix.arch }}-alpha",
+  "environment: desktop-alpha-release",
   "gh release create",
   "--prerelease",
   "--verify-tag",
-]) if (!alphaWorkflow.includes(marker)) findings.push(`Desktop alpha workflow is missing release gate: ${marker}`);
+  "scripts/read-notarization-submission.mjs",
+]) if (!alphaFinalizerWorkflow.includes(marker)) findings.push(`Desktop alpha finalizer workflow is missing release gate: ${marker}`);
 for (const forbiddenMarker of [
   "WINDOWS_CSC_LINK",
   "WINDOWS_CSC_KEY_PASSWORD",
@@ -151,7 +167,7 @@ for (const forbiddenMarker of [
 ]) {
   if (alphaWorkflow.includes(forbiddenMarker)) findings.push(`Desktop alpha workflow includes deferred signing configuration: ${forbiddenMarker}`);
 }
-evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Apple Silicon and Intel macOS bundles require Developer ID signatures and stapled notarization tickets; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication" });
+evidence.push({ claim: "Desktop alpha publication is explicit and fail-closed", detail: "Preparation signs and submits exact Apple Silicon and Intel artifacts without waiting; finalization verifies Apple acceptance, staples those exact artifacts, validates Gatekeeper, and uses the protected environment before prerelease publication. Windows remains unsigned." });
 
 const serverWorkflow = await readFile(path.join(root, ".github/workflows/server-alpha-release.yml"), "utf8");
 const pullRequestWorkflow = await readFile(path.join(root, ".github/workflows/pull-request-quality.yml"), "utf8");

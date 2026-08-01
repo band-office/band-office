@@ -1,4 +1,4 @@
-name: Band Office Desktop alpha release
+name: Band Office Desktop alpha preparation
 
 on:
   push:
@@ -27,9 +27,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run release:verify
 
-  notarized-macos:
+  signed-macos:
     needs: quality
-    name: notarized-macos-${{ matrix.arch }}
+    name: signed-macos-${{ matrix.arch }}
     strategy:
       fail-fast: false
       matrix:
@@ -37,15 +37,13 @@ jobs:
           - arch: arm64
             runner: macos-14
             executable_arch: arm64
-            package_script: desktop:dist:mac:arm64:signed
+            package_script: desktop:dist:mac:arm64:sign-only
           - arch: x64
             runner: macos-15-intel
             executable_arch: x86_64
-            package_script: desktop:dist:mac:x64:signed
+            package_script: desktop:dist:mac:x64:sign-only
     runs-on: ${{ matrix.runner }}
-    # Apple notarization is asynchronous and can exceed a normal packaging window.
-    # Keep the job bounded, but leave enough time to receive and staple a ticket.
-    timeout-minutes: 120
+    timeout-minutes: 45
     env:
       CSC_LINK: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
       CSC_KEY_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_PASSWORD }}
@@ -76,12 +74,10 @@ jobs:
       - run: npm run ${{ matrix.package_script }}
       - run: npm run test:desktop-package
       - run: npm run release:desktop:verify
-      - name: Verify architecture, Developer ID signature, notarization, and disk image
+      - name: Verify architecture and Developer ID signature
         run: |
           app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
-          dmg="$(find dist-desktop -name 'Band-Office-*-mac-${{ matrix.arch }}.dmg' -type f | head -n 1)"
           test -n "$app"
-          test -n "$dmg"
           test "$(lipo -archs "$app/Contents/MacOS/Band Office")" = "${{ matrix.executable_arch }}"
           codesign --verify --deep --strict --verbose=2 "$app"
           codesign -dv --verbose=4 "$app" 2>&1 | grep -q 'Authority=Developer ID Application'
@@ -89,20 +85,37 @@ jobs:
             echo "Ad hoc signing is not allowed for the notarized macOS release." >&2
             exit 1
           fi
-          xcrun stapler validate "$app"
-          spctl --assess --type execute --verbose=4 "$app" 2>&1 | grep -q 'source=Notarized Developer ID'
-          hdiutil verify "$dmg"
-      - name: Write macOS checksums
-        working-directory: dist-desktop
-        run: shasum -a 256 Band-Office-*-mac-${{ matrix.arch }}.dmg Band-Office-*-mac-${{ matrix.arch }}.zip > SHA256SUMS-macos-${{ matrix.arch }}.txt
+      - name: Submit exact signed application for Apple notarization
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p \"require('./package.json').version\")"
+          app="$(find dist-desktop -maxdepth 3 -type d -name 'Band Office.app' | head -n 1)"
+          test -n "$app"
+          mkdir -p pending-notarization
+          archive_name="Band-Office-${version}-mac-${{ matrix.arch }}-pending-notarization.zip"
+          archive="pending-notarization/$archive_name"
+          ditto -c -k --sequesterRsrc --keepParent "$app" "$archive"
+          xcrun notarytool submit "$archive" \
+            --key "$APPLE_API_KEY" \
+            --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_API_ISSUER" \
+            --output-format json > pending-notarization/notarytool-response.json
+          sha256="$(shasum -a 256 "$archive" | awk '{print $1}')"
+          node scripts/write-notarization-submission.mjs \
+            --output pending-notarization/notarization-submission.json \
+            --response pending-notarization/notarytool-response.json \
+            --tag "$GITHUB_REF_NAME" \
+            --commit "$GITHUB_SHA" \
+            --arch "${{ matrix.arch }}" \
+            --archive "$archive_name" \
+            --sha256 "$sha256"
+          rm pending-notarization/notarytool-response.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: notarized-macos-${{ matrix.arch }}-alpha
-          retention-days: 30
-          path: |
-            dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.dmg
-            dist-desktop/Band-Office-*-mac-${{ matrix.arch }}.zip
-            dist-desktop/SHA256SUMS-macos-${{ matrix.arch }}.txt
+          name: pending-notarization-macos-${{ matrix.arch }}-alpha
+          retention-days: 90
+          path: pending-notarization/
 
   unsigned-windows:
     needs: quality
@@ -148,38 +161,3 @@ jobs:
             dist-desktop/Band-Office-*-win-x64.exe
             dist-desktop/Band-Office-*-win-x64.zip
             dist-desktop/SHA256SUMS-windows.txt
-
-  publish-prerelease:
-    needs:
-      - notarized-macos
-      - unsigned-windows
-    runs-on: ubuntu-latest
-    environment: desktop-alpha-release
-    permissions:
-      actions: read
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-      - run: git fetch --no-tags origin main:refs/remotes/origin/main
-      - run: npm run release:tag:verify
-      - name: Download platform artifacts
-        run: gh run download "$GITHUB_RUN_ID" --dir release-assets
-      - run: npm run release:manifest -- release-assets
-      - name: Publish durable Desktop alpha prerelease
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            release-assets/notarized-macos-*-alpha/* \
-            release-assets/unsigned-windows-alpha/* \
-            release-assets/Band-Office-RELEASE-MANIFEST.json \
-            --repo "$GITHUB_REPOSITORY" \
-            --prerelease \
-            --verify-tag \
-            --title "Band Office Desktop ${GITHUB_REF_NAME#v}" \
-            --notes-file .github/desktop-alpha-release-notes.md

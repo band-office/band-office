@@ -1,6 +1,6 @@
 # Band Office Desktop Alpha Release
 
-The Desktop alpha workflow is fail-closed around the selected distribution policy. It publishes a GitHub prerelease only after Apple Silicon and Intel macOS produce valid Developer ID signatures and stapled Apple notarization tickets, Windows produces an explicitly unsigned package, every package is checksum-protected, and all three native jobs complete packaged-application acceptance.
+The Desktop alpha process is fail-closed around the selected distribution policy. A tag starts a preparation workflow that signs the two native macOS builds, submits the exact signed ZIPs to Apple, and saves the submission IDs with checksums. It does not wait for Apple and cannot publish a release. A separate manual finalizer can publish only after Apple reports both submissions as accepted, the exact submitted apps are stapled, Gatekeeper recognizes them as `Notarized Developer ID`, and the protected publication environment is approved.
 
 Desktop packages exclude repository databases. A fresh installation creates its own database and offers an empty program or the deterministic fictional Ridgeline demo during first-run setup. Real student information should be loaded only into a non-demo installation after school approval, encrypted-device preparation, and a verified encrypted backup and restore.
 
@@ -8,7 +8,7 @@ Desktop packages exclude repository databases. A fresh installation creates its 
 
 - Package version: `package.json` without prerelease text, for example `0.1.0`.
 - Tag format: `v<package-version>-alpha.<number>`, for example `v0.1.0-alpha.1`.
-- GitHub release: prerelease, created only by `.github/workflows/desktop-alpha-release.yml`.
+- GitHub release: prerelease, created only by `.github/workflows/desktop-alpha-finalize.yml`.
 - Updates: manual and director-initiated under the [update policy](../deployment/UPDATE_POLICY.md).
 
 The tag must point to an accepted commit on `main`. The workflow fetches `main` and rejects a tag whose commit is not in that history. It also rejects a mismatched tag, dirty package metadata, an unexpectedly signed platform output, or a failed platform acceptance step.
@@ -25,13 +25,13 @@ Store the following as repository Actions secrets. Do not add a certificate, pri
 - `APPLE_NOTARY_KEY_ID`: App Store Connect key ID.
 - `APPLE_NOTARY_ISSUER_ID`: App Store Connect issuer ID.
 
-The release workflow materializes the notarization key only in the ephemeral native macOS runner. Electron Builder creates a temporary signing keychain from the certificate, and the workflow verifies the final app before uploading it as a release artifact.
+The preparation workflow materializes the signing certificate and notarization key only in an ephemeral native macOS runner. The finalizer materializes only the notarization key, downloads the exact submitted ZIP, and never rebuilds or re-signs it before stapling.
 
 ## Distribution Enrollment
 
 ### macOS
 
-The macOS alpha ships separate Apple Silicon and Intel x64 packages built and launched on native GitHub-hosted runners. The workflow requires a valid Developer ID Application authority, strict recursive signature verification, a stapled notarization ticket, and a Gatekeeper assessment reporting `Notarized Developer ID`. It rejects ad hoc signatures. Release notes must identify the Mac packages as Developer ID-signed and Apple-notarized, and users must still receive architecture-specific published SHA-256 checksums.
+The macOS alpha ships separate Apple Silicon and Intel x64 packages built on native GitHub-hosted runners. Preparation requires a valid Developer ID Application authority and strict recursive signature verification; it rejects ad hoc signatures. Finalization checks Apple's stored submission status, staples the exact accepted app, validates the stapled ticket, and requires a Gatekeeper assessment reporting `Notarized Developer ID`. Release notes must identify the Mac packages as Developer ID-signed and Apple-notarized, and users must still receive architecture-specific published SHA-256 checksums.
 
 ### Windows
 
@@ -58,20 +58,35 @@ git tag -a v0.1.0-alpha.6 -m "Band Office Desktop 0.1.0 alpha 6"
 git push origin v0.1.0-alpha.6
 ```
 
-The tag starts the mixed-distribution workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.
+The tag starts the mixed-distribution preparation workflow. Do not create the GitHub Release manually and do not upload temporary Actions artifacts as substitutes.
+
+## Finalize After Apple Accepts
+
+Use the preparation run ID shown in GitHub Actions after both `signed-macos-*` jobs succeed. Do not rerun preparation merely because Apple processing is still pending. Once Apple has accepted both submissions, run the finalizer from `main`:
+
+```bash
+gh workflow run desktop-alpha-finalize.yml \
+  --repo band-office/band-office \
+  --ref main \
+  -f source_run_id=<preparation-run-id> \
+  -f tag=v0.1.0-alpha.6
+```
+
+The finalizer fails safely while Apple reports `In Progress`, `Invalid`, or any status other than `Accepted`. It creates no release in those cases. It only reaches the protected `desktop-alpha-release` publication approval after both accepted applications pass stapling and Gatekeeper validation.
 
 ## Required Workflow Evidence
 
 ### macOS
 
-- Electron Builder packages with forced code signing and notarization enabled.
+- Electron Builder packages with forced Developer ID signing. The preparation workflow creates and checksums the exact ZIP submitted to Apple without waiting for a ticket.
 - Apple Silicon and Intel x64 packages are built and launched on matching native runners.
 - The packaged executable architecture matches the download label.
 - Strict recursive code-signature verification passes, including the sealed resource manifest.
 - The job confirms a Developer ID Application signature and rejects an ad hoc signature.
-- `xcrun stapler validate` succeeds and Gatekeeper reports `Notarized Developer ID` for the packaged app.
-- Packaged application acceptance passes.
-- The DMG verifies.
+- The finalizer checks the saved Apple submission ID and stops unless its status is `Accepted`.
+- The finalizer staples the exact submitted application; `xcrun stapler validate` succeeds and Gatekeeper reports `Notarized Developer ID`.
+- Packaged application acceptance passes during preparation.
+- The finalizer rebuilds only the DMG and ZIP around the stapled app, then verifies the DMG.
 - SHA-256 checksums are generated and the release notes disclose the Developer ID signature and Apple notarization.
 
 ### Windows
@@ -85,7 +100,7 @@ The tag starts the mixed-distribution workflow. Do not create the GitHub Release
 
 - `LICENSE` and `NOTICE` are present under the packaged `resources/legal` directory.
 - Artifact checksums are generated after packaging.
-- The source tag and workflow commit match.
+- The source tag, submission metadata, saved ZIP checksum, and release manifest commit match.
 - The release is marked as a GitHub prerelease.
 
 ## After Publication

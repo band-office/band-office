@@ -52,6 +52,6 @@ Paste each copied value directly into its matching GitHub secret. Replace the fi
 
 ## 4. Release and verify
 
-Merge the signing workflow through normal review, then create the next Desktop alpha tag. The release workflow builds each Mac architecture on native GitHub-hosted hardware and fails unless the app has a Developer ID signature, a stapled notarization ticket, and a successful Gatekeeper assessment.
+Merge the signing workflow through normal review, then create the next Desktop alpha tag. The preparation workflow builds each Mac architecture on native GitHub-hosted hardware, validates its Developer ID signature, and submits the exact signed ZIP to Apple without waiting for processing. After Apple accepts both tickets, a maintainer runs the documented finalizer. It staples those exact applications and fails unless Gatekeeper reports `Notarized Developer ID`; only then can the protected publication job create a release.
 
 After publication, verify the released DMG on a separate clean Apple Silicon Mac and a separate clean Intel Mac. The application should identify the Band Office developer and must not require the manual **Open Anyway** bypass.

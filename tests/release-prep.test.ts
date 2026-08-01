@@ -80,6 +80,43 @@ describe("public release preparation", () => {
     expect(manifest.files.every((file: { sha256: string }) => /^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
   });
 
+  test("writes and validates resumable notarization metadata", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "band-office-notarization-metadata-"));
+    temporaryDirectories.push(directory);
+    const responsePath = path.join(directory, "notary-response.json");
+    const outputPath = path.join(directory, "notarization-submission.json");
+    const submissionId = "26497f5b-d263-4326-8769-3a5671a61910";
+    await writeFile(responsePath, JSON.stringify({ id: submissionId }));
+
+    await execFileAsync(process.execPath, [
+      "scripts/write-notarization-submission.mjs",
+      "--output", outputPath,
+      "--response", responsePath,
+      "--tag", "v0.1.0-alpha.1",
+      "--commit", "d".repeat(40),
+      "--arch", "arm64",
+      "--archive", "Band-Office-0.1.0-mac-arm64-pending-notarization.zip",
+      "--sha256", "e".repeat(64),
+    ]);
+
+    const { stdout } = await execFileAsync(process.execPath, [
+      "scripts/read-notarization-submission.mjs",
+      "--input", outputPath,
+      "--tag", "v0.1.0-alpha.1",
+      "--arch", "arm64",
+      "--format", "env",
+    ]);
+    expect(stdout).toContain(`NOTARIZATION_SUBMISSION_ID=${submissionId}`);
+    expect(stdout).toContain(`NOTARIZATION_SOURCE_COMMIT=${"d".repeat(40)}`);
+
+    await expect(execFileAsync(process.execPath, [
+      "scripts/read-notarization-submission.mjs",
+      "--input", outputPath,
+      "--tag", "v0.1.0-alpha.1",
+      "--arch", "x64",
+    ])).rejects.toThrow();
+  });
+
   test("builds and verifies a digest-pinned Server operator bundle and manifest", async () => {
     const digest = `sha256:${"b".repeat(64)}`;
     await execFileAsync("npm", ["run", "server:bundle", "--", "--image", `ghcr.io/band-office/band-office-server@${digest}`]);
@@ -114,7 +151,8 @@ describe("public release preparation", () => {
     const channels = await readFile("docs/release/RELEASE_CHANNELS.md", "utf8");
     const download = await readFile("docs/getting-started/DOWNLOAD.md", "utf8");
     const deployment = await readFile("docs/deployment/SERVER_DEPLOYMENT.md", "utf8");
-    const signedWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
+    const preparationWorkflow = await readFile(".github/workflows/desktop-alpha-release.yml", "utf8");
+    const finalizerWorkflow = await readFile(".github/workflows/desktop-alpha-finalize.yml", "utf8");
     const acceptanceWorkflow = await readFile(".github/workflows/release-candidate.yml", "utf8");
     const pullRequestWorkflow = await readFile(".github/workflows/pull-request-quality.yml", "utf8");
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
@@ -143,28 +181,38 @@ describe("public release preparation", () => {
     expect(deployment).toContain("activating real family accounts");
     expect(deployment).toContain("sudo chown 10001:10001 data secrets/worker-token.txt secrets/smtp-password.txt");
     expect(deployment).toContain("sudo chmod 400 secrets/worker-token.txt secrets/smtp-password.txt");
-    expect(signedWorkflow).toContain('(($lines -join "`n") + "`n")');
+    expect(preparationWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain('(($lines -join "`n") + "`n")');
     expect(acceptanceWorkflow).toContain("codesign --verify --deep --strict");
     expect(acceptanceWorkflow).toContain("Unexpected Developer ID signature on the ad hoc macOS release candidate.");
     expect(acceptanceWorkflow).toContain("Unexpected Authenticode signature on the unsigned Windows release candidate");
-    expect(signedWorkflow).not.toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
-    expect(signedWorkflow).not.toContain("WINDOWS_CSC_LINK");
-    expect(signedWorkflow).toContain("codesign --verify --deep --strict");
-    expect(signedWorkflow).toContain("notarized-macos-${{ matrix.arch }}-alpha");
-    expect(signedWorkflow).toContain("unsigned-windows-alpha");
-    expect(signedWorkflow).toContain("desktop:dist:mac:arm64:signed");
-    expect(signedWorkflow).toContain("desktop:dist:mac:x64:signed");
-    expect(signedWorkflow).toContain("macos-15-intel");
-    expect(signedWorkflow).toContain('lipo -archs "$app/Contents/MacOS/Band Office"');
-    expect(signedWorkflow).toContain("Authority=Developer ID Application");
-    expect(signedWorkflow).toContain("xcrun stapler validate");
-    expect(signedWorkflow).toContain("source=Notarized Developer ID");
-    expect(signedWorkflow).toContain("APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64");
-    expect(signedWorkflow).toContain("APPLE_NOTARY_KEY_P8_BASE64");
-    expect(signedWorkflow).toContain("npm run desktop:dist:win");
-    expect(signedWorkflow).toContain('- "!v*-server-alpha.*"');
-    expect(signedWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
+    expect(preparationWorkflow).not.toContain("AZURE_SIGNING_CERTIFICATE_PROFILE_NAME");
+    expect(preparationWorkflow).not.toContain("WINDOWS_CSC_LINK");
+    expect(preparationWorkflow).toContain("codesign --verify --deep --strict");
+    expect(preparationWorkflow).toContain("pending-notarization-macos-${{ matrix.arch }}-alpha");
+    expect(preparationWorkflow).toContain("unsigned-windows-alpha");
+    expect(preparationWorkflow).toContain("desktop:dist:mac:arm64:sign-only");
+    expect(preparationWorkflow).toContain("desktop:dist:mac:x64:sign-only");
+    expect(preparationWorkflow).toContain("xcrun notarytool submit");
+    expect(preparationWorkflow).toContain("scripts/write-notarization-submission.mjs");
+    expect(preparationWorkflow).toContain("macos-15-intel");
+    expect(preparationWorkflow).toContain('lipo -archs "$app/Contents/MacOS/Band Office"');
+    expect(preparationWorkflow).toContain("Authority=Developer ID Application");
+    expect(preparationWorkflow).toContain("APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64");
+    expect(preparationWorkflow).toContain("APPLE_NOTARY_KEY_P8_BASE64");
+    expect(preparationWorkflow).toContain("npm run desktop:dist:win");
+    expect(preparationWorkflow).toContain('- "!v*-server-alpha.*"');
+    expect(preparationWorkflow).not.toContain("APPLE_APP_SPECIFIC_PASSWORD");
+    expect(finalizerWorkflow).toContain("workflow_dispatch:");
+    expect(finalizerWorkflow).toContain("source_run_id:");
+    expect(finalizerWorkflow).toContain("xcrun notarytool info");
+    expect(finalizerWorkflow).toContain("Apple notarization status is $status. The release remains unpublished.");
+    expect(finalizerWorkflow).toContain("xcrun stapler validate");
+    expect(finalizerWorkflow).toContain("source=Notarized Developer ID");
+    expect(finalizerWorkflow).toContain("notarized-macos-${{ matrix.arch }}-alpha");
+    expect(finalizerWorkflow).toContain("environment: desktop-alpha-release");
+    expect(finalizerWorkflow).toContain("gh release create");
+    expect(finalizerWorkflow).toContain("scripts/read-notarization-submission.mjs");
     expect(serverWorkflow).toContain('- "v*-server-alpha.*"');
     expect(serverWorkflow).toContain("environment: server-alpha-release");
     expect(serverWorkflow).toContain("platforms: linux/amd64,linux/arm64");

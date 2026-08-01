@@ -40,6 +40,8 @@
     "desktop:dist:mac:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --config.forceCodeSigning=true --config.mac.notarize=true",
     "desktop:dist:mac:arm64:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --arm64 --config.forceCodeSigning=true --config.mac.notarize=true",
     "desktop:dist:mac:x64:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --x64 --config.forceCodeSigning=true --config.mac.notarize=true",
+    "desktop:dist:mac:arm64:sign-only": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --arm64 --config.forceCodeSigning=true --config.mac.notarize=false",
+    "desktop:dist:mac:x64:sign-only": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --mac dmg zip --x64 --config.forceCodeSigning=true --config.mac.notarize=false",
     "desktop:dist:win": "node scripts/package-desktop.mjs --win nsis zip",
     "desktop:dist:win:signed": "cross-env BANDOS_SIGN_DESKTOP=1 node scripts/package-desktop.mjs --win nsis zip --config.forceCodeSigning=true",
     "server:bundle": "node scripts/build-server-bundle.mjs",
