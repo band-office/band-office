@@ -43,6 +43,8 @@ npm run desktop:dist:mac:arm64 # explicit Apple Silicon package
 npm run desktop:dist:mac:x64   # explicit Intel package; run on Intel macOS
 npm run desktop:dist:mac:arm64:signed # Developer ID-sign and notarize Apple Silicon
 npm run desktop:dist:mac:x64:signed   # Developer ID-sign and notarize Intel macOS
+npm run desktop:dist:mac:arm64:sign-only # Developer ID-sign Apple Silicon without waiting for Apple
+npm run desktop:dist:mac:x64:sign-only   # Developer ID-sign Intel without waiting for Apple
 npm run desktop:dist:win   # unsigned Windows NSIS and ZIP, run on Windows
 ```
 
@@ -55,9 +57,9 @@ npm run desktop:dist:mac:signed
 npm run desktop:dist:win:signed
 ```
 
-The signed Mac commands set `BANDOS_SIGN_DESKTOP=1`, force code signing, and enable Electron Builder notarization. They require a Developer ID Application certificate and App Store Connect team API key; see [macOS signing setup](./MACOS_SIGNING.md). Windows signed packaging requires Microsoft Entra authentication secrets and Artifact Signing profile values; the packaging script fails before building if any are missing. The current Windows alpha remains unsigned.
+The signed Mac commands set `BANDOS_SIGN_DESKTOP=1` and force code signing. The `:signed` commands also enable Electron Builder notarization for a local maintainer; the `:sign-only` commands are reserved for the resumable GitHub release preparation workflow. Both require a Developer ID Application certificate and App Store Connect team API key; see [macOS signing setup](./MACOS_SIGNING.md). Windows signed packaging requires Microsoft Entra authentication secrets and Artifact Signing profile values; the packaging script fails before building if any are missing. The current Windows alpha remains unsigned.
 
-The only authorized public Desktop publication path is `.github/workflows/desktop-alpha-release.yml`. It verifies the Mac Developer ID signature, notarization ticket, Gatekeeper assessment, unsigned Windows boundary, packaged legal files, application behavior, disk image, and checksums, then requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](../release/DESKTOP_ALPHA_RELEASE.md).
+The only authorized public Desktop publication path is the two-stage GitHub workflow: `.github/workflows/desktop-alpha-release.yml` prepares Developer ID-signed Mac artifacts and submits their exact ZIPs to Apple; `.github/workflows/desktop-alpha-finalize.yml` validates accepted tickets, staples those exact apps, checks Gatekeeper, combines them with the unsigned Windows artifacts, and requires approval through the protected `desktop-alpha-release` environment before creating a GitHub prerelease. See [DESKTOP_ALPHA_RELEASE.md](../release/DESKTOP_ALPHA_RELEASE.md).
 
 ## Public release gates
 

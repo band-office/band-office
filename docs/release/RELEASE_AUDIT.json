@@ -28,11 +28,11 @@
     },
     {
       "claim": "Signed Desktop commands fail closed",
-      "detail": "Signed macOS and Windows commands force signing; macOS also forces notarization"
+      "detail": "Developer ID Mac commands force signing; dedicated preparation commands explicitly defer notarization to the resumable release finalizer"
     },
     {
       "claim": "Desktop alpha publication is explicit and fail-closed",
-      "detail": "Apple Silicon and Intel macOS bundles require Developer ID signatures and stapled notarization tickets; Windows remains unsigned; native package acceptance, architecture checks, checksums, platform warnings, and the protected environment gate prerelease publication"
+      "detail": "Preparation signs and submits exact Apple Silicon and Intel artifacts without waiting; finalization verifies Apple acceptance, staples those exact artifacts, validates Gatekeeper, and uses the protected environment before prerelease publication. Windows remains unsigned."
     },
     {
       "claim": "Server alpha publication is protected and attributable",
