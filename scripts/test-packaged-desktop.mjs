@@ -27,11 +27,13 @@ async function launch(executable, profileName) {
   const userData = path.join(workDirectory, profileName);
   const screenshot = path.join(workDirectory, `${profileName}.png`);
   await mkdir(userData, { recursive: true });
+  const environment = { ...process.env, BANDOS_DESKTOP_USER_DATA: userData, BANDOS_DESKTOP_SMOKE_SCREENSHOT: screenshot };
   await new Promise((resolve, reject) => {
-    const child = execFile(executable, [], {
-      env: { ...process.env, BANDOS_DESKTOP_USER_DATA: userData, BANDOS_DESKTOP_SMOKE_SCREENSHOT: screenshot },
-      timeout: 60_000,
-    }, (error, stdout, stderr) => error ? reject(new Error(`${error.message}\n${stdout}\n${stderr}`)) : resolve());
+    const command = process.platform === "darwin" ? "/usr/bin/open" : executable;
+    const args = process.platform === "darwin"
+      ? ["-W", "-n", "-g", "--env", `BANDOS_DESKTOP_USER_DATA=${userData}`, "--env", `BANDOS_DESKTOP_SMOKE_SCREENSHOT=${screenshot}`, path.dirname(path.dirname(path.dirname(executable)))]
+      : [];
+    const child = execFile(command, args, { env: environment, timeout: 60_000 }, (error, stdout, stderr) => error ? reject(new Error(`${error.message}\n${stdout}\n${stderr}`)) : resolve());
     child.once("error", reject);
   });
   assert.ok((await stat(screenshot)).size > 1000, `${profileName} smoke screenshot is empty`);
@@ -101,6 +103,15 @@ try {
     assert.match(camera.stdout, /inventory barcode or QR code/);
     for (const key of ["NSMicrophoneUsageDescription", "NSAudioCaptureUsageDescription", "NSBluetoothAlwaysUsageDescription"]) {
       await assert.rejects(execFileAsync("/usr/bin/plutil", ["-extract", key, "raw", infoPlist]));
+    }
+
+    for (const entitlementFile of [
+      "desktop/entitlements.mac.plist",
+      "desktop/entitlements.mac.inherit.plist",
+    ]) {
+      const entitlements = await readFile(path.resolve(entitlementFile), "utf8");
+      assert.match(entitlements, /com\.apple\.security\.cs\.allow-jit/, `${entitlementFile} must allow Electron's JIT runtime.`);
+      assert.doesNotMatch(entitlements, /com\.apple\.security\.cs\.allow-unsigned-executable-memory/, `${entitlementFile} must not broaden executable-memory access.`);
     }
   }
 
