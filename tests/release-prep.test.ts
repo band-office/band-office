@@ -215,6 +215,8 @@ describe("public release preparation", () => {
     expect(finalizerWorkflow).toContain("xcrun stapler validate");
     expect(finalizerWorkflow).toContain("source=Notarized Developer ID");
     expect(finalizerWorkflow).toContain("notarized-macos-${{ matrix.arch }}-alpha");
+    expect(finalizerWorkflow).toContain("release-assets/*");
+    expect(finalizerWorkflow).not.toContain("release-assets/notarized-macos-arm64-alpha/*");
     expect(finalizerWorkflow).toContain("environment: desktop-alpha-release");
     expect(finalizerWorkflow).toContain("gh release create");
     expect(finalizerWorkflow).toContain("scripts/read-notarization-submission.mjs");
