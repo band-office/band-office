@@ -74,6 +74,10 @@ gh workflow run desktop-alpha-finalize.yml \
 
 The finalizer fails safely while Apple reports `In Progress`, `Invalid`, or any status other than `Accepted`. It creates no release in those cases. It only reaches the protected `desktop-alpha-release` publication approval after both accepted applications pass stapling and Gatekeeper validation.
 
+## Check An Existing Apple Submission
+
+Use **Actions > Check Apple notarization status > Run workflow** to query an existing submission without building, uploading, stapling, or publishing anything. Paste one submission ID per line. The run summary reports each ID as `In Progress`, `Accepted`, or `Invalid` with Apple's short status summary. This manual workflow is appropriate while Apple support investigates a delayed submission.
+
 ## Required Workflow Evidence
 
 ### macOS
