@@ -192,10 +192,7 @@ jobs:
           test "$(git rev-list -n 1 "$RELEASE_TAG")" = "$NOTARIZATION_SOURCE_COMMIT"
           GITHUB_REF_NAME="$RELEASE_TAG" GITHUB_SHA="$NOTARIZATION_SOURCE_COMMIT" npm run release:manifest -- release-assets
           gh release create "$RELEASE_TAG" \
-            release-assets/notarized-macos-arm64-alpha/* \
-            release-assets/notarized-macos-x64-alpha/* \
-            release-assets/unsigned-windows-alpha/* \
-            release-assets/Band-Office-RELEASE-MANIFEST.json \
+            release-assets/* \
             --repo "$GITHUB_REPOSITORY" \
             --prerelease \
             --verify-tag \
