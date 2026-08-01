@@ -209,6 +209,9 @@ describe("public release preparation", () => {
     expect(finalizerWorkflow).toContain("source_run_id:");
     expect(finalizerWorkflow).toContain("xcrun notarytool info");
     expect(finalizerWorkflow).toContain("Apple notarization status is $status. The release remains unpublished.");
+    expect(finalizerWorkflow).toContain("status=\"$(node -p 'JSON.parse(require(\"fs\").readFileSync(\"notarization-status.json\", \"utf8\")).status')\"");
+    expect(finalizerWorkflow).toContain("version=\"$(node -p 'require(\"./package.json\").version')\"");
+    expect(finalizerWorkflow).not.toContain('node -p \\"');
     expect(finalizerWorkflow).toContain("xcrun stapler validate");
     expect(finalizerWorkflow).toContain("source=Notarized Developer ID");
     expect(finalizerWorkflow).toContain("notarized-macos-${{ matrix.arch }}-alpha");
