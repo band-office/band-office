@@ -117,6 +117,10 @@ jobs:
           archive_name="Band-Office-${version}-mac-${{ matrix.arch }}-pending-notarization.zip"
           archive="pending-notarization/$archive_name"
           ditto -c -k --sequesterRsrc --keepParent "$app" "$archive"
+          installer_template="$(find dist-desktop -maxdepth 1 -type f -name "Band-Office-${version}-mac-${{ matrix.arch }}.dmg" -print -quit)"
+          test -n "$installer_template"
+          hdiutil verify "$installer_template"
+          cp "$installer_template" "pending-notarization/Band-Office-${version}-mac-${{ matrix.arch }}-installer-template.dmg"
           xcrun notarytool submit "$archive" \
             --key "$APPLE_API_KEY" \
             --key-id "$APPLE_API_KEY_ID" \
