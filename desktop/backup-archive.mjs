@@ -67,6 +67,12 @@ const V8_TABLES = [
   ["calendar_subscriptions", "CalendarSubscription"],
   ...V7_TABLES.slice(36),
 ];
+const V9_TABLES = [
+  ...V8_TABLES.slice(0, 48),
+  ["migration_runs", "MigrationRun"], ["migration_sources", "MigrationSource"],
+  ["migration_issues", "MigrationIssue"], ["external_references", "ExternalReference"],
+  ...V8_TABLES.slice(48),
+];
 
 function validateStorageKey(value) {
   if (typeof value !== "string" || !value || value.includes("\\") || path.posix.isAbsolute(value)) throw new Error("Backup contains an invalid managed file key.");
@@ -120,8 +126,8 @@ export async function validateBackupArchive(archivePath, passphrase = "") {
   const zip = await JSZip.loadAsync(decrypt(archiveBytes, passphrase));
   for (const name of ["manifest.json", "bandos.db"]) if (!zip.file(name)) throw new Error(`Backup is missing ${name}.`);
   const manifest = JSON.parse((await readBoundedEntry(zip, "manifest.json", 1024 * 1024)).toString("utf8"));
-  if (!["BandOS full backup", "Band Office full backup"].includes(manifest.format) || ![2, 3, 4, 5, 6, 7, 8].includes(manifest.version) || typeof manifest.programId !== "string" || !Array.isArray(manifest.tables)) throw new Error("Backup manifest is invalid or unsupported.");
-  const requiredTables = manifest.version === 2 ? V2_TABLES : manifest.version === 3 ? V3_TABLES : manifest.version === 4 ? V4_TABLES : manifest.version === 5 ? V5_TABLES : manifest.version === 6 ? V6_TABLES : manifest.version === 7 ? V7_TABLES : V8_TABLES;
+  if (!["BandOS full backup", "Band Office full backup"].includes(manifest.format) || ![2, 3, 4, 5, 6, 7, 8, 9].includes(manifest.version) || typeof manifest.programId !== "string" || !Array.isArray(manifest.tables)) throw new Error("Backup manifest is invalid or unsupported.");
+  const requiredTables = manifest.version === 2 ? V2_TABLES : manifest.version === 3 ? V3_TABLES : manifest.version === 4 ? V4_TABLES : manifest.version === 5 ? V5_TABLES : manifest.version === 6 ? V6_TABLES : manifest.version === 7 ? V7_TABLES : manifest.version === 8 ? V8_TABLES : V9_TABLES;
   for (const [name] of requiredTables) {
     if (!manifest.tables.includes(name)) throw new Error(`Backup manifest is missing table ${name}.`);
     if (!zip.file(`${name}.csv`)) throw new Error(`Backup is missing ${name}.csv.`);

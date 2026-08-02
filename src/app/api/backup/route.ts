@@ -62,6 +62,10 @@ const BACKUP_TABLES = [
   ["volunteer_signups", "VolunteerSignup"],
   ["event_reminders", "EventReminder"],
   ["calendar_subscriptions", "CalendarSubscription"],
+  ["migration_runs", "MigrationRun"],
+  ["migration_sources", "MigrationSource"],
+  ["migration_issues", "MigrationIssue"],
+  ["external_references", "ExternalReference"],
   ["operating_periods", "OperatingPeriod"],
   ["audit_log", "AuditLog"],
   ["backup_records", "BackupRecord"],
@@ -116,7 +120,7 @@ async function buildArchive() {
       zip.file(`event-files/${file.storageKey}`, bytes);
     }
     zip.file("bandos.db", await readFile(snapshotPath));
-    zip.file("manifest.json", JSON.stringify({ format: "Band Office full backup", version: 8, programId, createdAt: new Date().toISOString(), tables: Object.keys(tables), libraryFiles, formFiles, eventFiles, verification: "npm run backup:verify -- <archive>" }, null, 2));
+    zip.file("manifest.json", JSON.stringify({ format: "Band Office full backup", version: 9, programId, createdAt: new Date().toISOString(), tables: Object.keys(tables), libraryFiles, formFiles, eventFiles, verification: "npm run backup:verify -- <archive>" }, null, 2));
     return { archive: Buffer.from(await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" })), program: { id: programId } };
   } finally {
     await rm(workDirectory, { recursive: true, force: true });

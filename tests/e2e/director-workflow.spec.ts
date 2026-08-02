@@ -582,7 +582,7 @@ test("director can set up, import, check out, return with damage, back up, and s
   const savedBackupPath = path.resolve("test-results/e2e-backup.bandoffice");
   await download.saveAs(savedBackupPath);
   const verification = await execFileAsync(process.execPath, ["scripts/verify-backup.mjs", savedBackupPath, "BandOffice-E2E-Backup-Key!"]);
-  expect(verification.stdout).toContain("SQLite integrity and foreign keys ok, 51 CSV table counts match");
+  expect(verification.stdout).toContain("SQLite integrity and foreign keys ok, 55 CSV table counts match");
 
   await page.screenshot({ path: "test-results/e2e-settings-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });

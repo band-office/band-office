@@ -295,6 +295,14 @@ enum VolunteerSignupStatus {
   CANCELED
 }
 
+enum MigrationRunStatus {
+  COMPLETED
+}
+
+enum MigrationIssueSeverity {
+  WARNING
+}
+
 enum EventReminderAudience {
   PARTICIPANTS
   GUARDIANS
@@ -326,6 +334,8 @@ model Program {
   eventSeries           EventSeries[]
   events                Event[]
   calendarSubscriptions CalendarSubscription[]
+  migrationRuns         MigrationRun[]
+  externalReferences    ExternalReference[]
 }
 
 model StaffUser {
@@ -429,6 +439,68 @@ model BackupRecord {
   program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@index([programId, createdAt])
+}
+
+model MigrationRun {
+  id          String             @id
+  programId   String
+  source      String
+  status      MigrationRunStatus @default(COMPLETED)
+  actor       String
+  cutoverAt   DateTime
+  summaryJson String
+  completedAt DateTime           @default(now())
+  program     Program            @relation(fields: [programId], references: [id], onDelete: Cascade)
+  sources     MigrationSource[]
+  issues      MigrationIssue[]
+  references  ExternalReference[]
+
+  @@index([programId, completedAt])
+}
+
+model MigrationSource {
+  id             String       @id
+  migrationRunId String
+  sourceKind     String
+  filename       String
+  contentHash    String
+  headersJson    String
+  mappingJson    String
+  rowCount       Int
+  migrationRun   MigrationRun @relation(fields: [migrationRunId], references: [id], onDelete: Cascade)
+
+  @@unique([migrationRunId, sourceKind, contentHash])
+  @@index([migrationRunId])
+}
+
+model MigrationIssue {
+  id             String                 @id
+  migrationRunId String
+  severity       MigrationIssueSeverity @default(WARNING)
+  code           String
+  sourceKind     String?
+  rowNumber      Int?
+  message        String
+  migrationRun   MigrationRun           @relation(fields: [migrationRunId], references: [id], onDelete: Cascade)
+
+  @@index([migrationRunId, severity])
+}
+
+model ExternalReference {
+  id             String        @id
+  programId      String
+  migrationRunId String?
+  source         String
+  entityType     String
+  sourceId       String
+  entityId       String
+  createdAt      DateTime      @default(now())
+  program        Program       @relation(fields: [programId], references: [id], onDelete: Cascade)
+  migrationRun   MigrationRun? @relation(fields: [migrationRunId], references: [id], onDelete: SetNull)
+
+  @@unique([programId, source, entityType, sourceId])
+  @@index([programId, entityType, entityId])
+  @@index([migrationRunId])
 }
 
 model Person {

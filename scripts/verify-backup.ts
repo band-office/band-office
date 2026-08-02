@@ -76,12 +76,18 @@ const v8Checks: Array<[string, string]> = [
   ["calendar_subscriptions.csv", "CalendarSubscription"],
   ...v7Checks.slice(36),
 ];
+const v9Checks: Array<[string, string]> = [
+  ...v8Checks.slice(0, 48),
+  ["migration_runs.csv", "MigrationRun"], ["migration_sources.csv", "MigrationSource"],
+  ["migration_issues.csv", "MigrationIssue"], ["external_references.csv", "ExternalReference"],
+  ...v8Checks.slice(48),
+];
 const required = ["manifest.json", "bandos.db"];
 for (const name of required) if (!zip.file(name)) throw new Error(`Backup is missing ${name}.`);
 
 const manifest = JSON.parse(await zip.file("manifest.json")!.async("string")) as { format?: string; version?: number; programId?: string; tables?: string[] };
-if (!["BandOS full backup", "Band Office full backup"].includes(manifest.format ?? "") || !manifest.programId || ![2, 3, 4, 5, 6, 7, 8].includes(manifest.version ?? 0) || !Array.isArray(manifest.tables)) throw new Error("Backup manifest is invalid or unsupported.");
-const checks = manifest.version === 2 ? v2Checks : manifest.version === 3 ? v3Checks : manifest.version === 4 ? v4Checks : manifest.version === 5 ? v5Checks : manifest.version === 6 ? v6Checks : manifest.version === 7 ? v7Checks : v8Checks;
+if (!["BandOS full backup", "Band Office full backup"].includes(manifest.format ?? "") || !manifest.programId || ![2, 3, 4, 5, 6, 7, 8, 9].includes(manifest.version ?? 0) || !Array.isArray(manifest.tables)) throw new Error("Backup manifest is invalid or unsupported.");
+const checks = manifest.version === 2 ? v2Checks : manifest.version === 3 ? v3Checks : manifest.version === 4 ? v4Checks : manifest.version === 5 ? v5Checks : manifest.version === 6 ? v6Checks : manifest.version === 7 ? v7Checks : manifest.version === 8 ? v8Checks : v9Checks;
 for (const [csvName] of checks) {
   const archiveName = csvName.replace(/\.csv$/, "");
   if (!manifest.tables.includes(archiveName) || !zip.file(csvName)) throw new Error(`Backup is missing ${csvName}.`);

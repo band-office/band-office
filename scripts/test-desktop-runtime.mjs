@@ -77,6 +77,12 @@ const v8ArchiveTables = [
   ["calendar_subscriptions", "CalendarSubscription"],
   ...v7ArchiveTables.slice(36),
 ];
+const v9ArchiveTables = [
+  ...v8ArchiveTables.slice(0, 48),
+  ["migration_runs", "MigrationRun"], ["migration_sources", "MigrationSource"],
+  ["migration_issues", "MigrationIssue"], ["external_references", "ExternalReference"],
+  ...v8ArchiveTables.slice(48),
+];
 
 assert.deepEqual(runtimeAliasSegments("../../node_modules/better-sqlite3"), ["better-sqlite3"]);
 assert.deepEqual(runtimeAliasSegments("D:\\a\\band-office\\band-office\\node_modules\\@prisma\\client"), ["@prisma", "client"]);
@@ -123,10 +129,10 @@ async function createCurrentDatabase(databasePath, snapshotsDirectory, programId
   }
 }
 
-async function writeBackupArchive(databasePath, archivePath, overrides = {}, version = 8, libraryFiles = [], formFiles = [], eventFiles = []) {
+async function writeBackupArchive(databasePath, archivePath, overrides = {}, version = 9, libraryFiles = [], formFiles = [], eventFiles = []) {
   const database = new Database(databasePath, { readonly: true, fileMustExist: true });
   const zip = new JSZip();
-  const archiveTables = version === 2 ? v2ArchiveTables : version === 3 ? v3ArchiveTables : version === 4 ? v4ArchiveTables : version === 5 ? v5ArchiveTables : version === 6 ? v6ArchiveTables : version === 7 ? v7ArchiveTables : v8ArchiveTables;
+  const archiveTables = version === 2 ? v2ArchiveTables : version === 3 ? v3ArchiveTables : version === 4 ? v4ArchiveTables : version === 5 ? v5ArchiveTables : version === 6 ? v6ArchiveTables : version === 7 ? v7ArchiveTables : version === 8 ? v8ArchiveTables : v9ArchiveTables;
   try {
     for (const [archiveName, tableName] of archiveTables) {
       const csv = archiveName in overrides ? overrides[archiveName] : Papa.unparse(database.prepare(`SELECT * FROM "${tableName}"`).all());
@@ -150,7 +156,7 @@ const snapshotsDirectory = path.join(workDirectory, "snapshots");
 try {
   const freshPath = path.join(workDirectory, "fresh", "bandos.db");
   const firstRun = await runDesktopMigrations({ databasePath: freshPath, migrationsDirectory, snapshotsDirectory });
-  assert.equal(firstRun.applied.length, 11);
+  assert.equal(firstRun.applied.length, 12);
   const secondRun = await runDesktopMigrations({ databasePath: freshPath, migrationsDirectory, snapshotsDirectory });
   assert.deepEqual(secondRun.applied, []);
 
@@ -165,7 +171,7 @@ try {
   assert.equal(legacyValidated.manifest.version, 2);
   assert.equal(legacyValidated.checkedTables, v2ArchiveTables.length);
   const upgrade = await runDesktopMigrations({ databasePath: upgradePath, migrationsDirectory, snapshotsDirectory: upgradeSnapshots });
-  assert.deepEqual(upgrade.applied, ["20260720192637_release_hardening", "20260720192710_program_graduation_grade", "20260721120000_people_groups_access", "20260721180000_financial_ledger", "20260721204612_email_communications", "20260721212904_music_library", "20260722020643_forms", "20260724215148_events_attendance", "20260724233000_portal_password_recovery", "20260726143500_authentication_throttling"]);
+  assert.deepEqual(upgrade.applied, ["20260720192637_release_hardening", "20260720192710_program_graduation_grade", "20260721120000_people_groups_access", "20260721180000_financial_ledger", "20260721204612_email_communications", "20260721212904_music_library", "20260722020643_forms", "20260724215148_events_attendance", "20260724233000_portal_password_recovery", "20260726143500_authentication_throttling", "20260802130000_cuttime_migration"]);
   assert.ok(upgrade.snapshotPath);
   const upgraded = new Database(upgradePath, { readonly: true });
   assert.equal(upgraded.prepare('SELECT "name" FROM "Program" WHERE "id" = ?').get("upgrade-program").name, "Upgrade Program");
@@ -233,10 +239,10 @@ try {
   replacementDatabase.prepare('INSERT INTO "EventResource" ("id", "eventId", "kind", "label", "fileName", "mimeType", "byteSize", "storageKey", "contentHash", "status", "createdAt", "createdBy") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run("event-test-resource", "event-test", "LOCAL_FILE", "Verified itinerary", "verified-itinerary.txt", "text/plain", eventFileFixture.byteSize, eventFileFixture.storageKey, eventFileFixture.contentHash, "ACTIVE", new Date().toISOString(), "test");
   replacementDatabase.close();
   const validArchivePath = path.join(workDirectory, "valid-backup.zip");
-  await writeBackupArchive(replacementPath, validArchivePath, {}, 8, [libraryFileFixture], [formFileFixture], [eventFileFixture]);
+  await writeBackupArchive(replacementPath, validArchivePath, {}, 9, [libraryFileFixture], [formFileFixture], [eventFileFixture]);
   const validated = await validateBackupArchive(validArchivePath);
   assert.equal(validated.manifest.programId, "restored-program");
-  assert.equal(validated.checkedTables, v8ArchiveTables.length);
+  assert.equal(validated.checkedTables, v9ArchiveTables.length);
   await writeFile(path.join(dataDirectory, PENDING_RESTORE_FILENAME), validated.databaseBytes, { mode: 0o600 });
   const pendingLibraryRoot = path.join(dataDirectory, PENDING_LIBRARY_RESTORE_DIRECTORY);
   for (const file of validated.libraryFiles) {

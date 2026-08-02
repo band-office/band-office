@@ -568,6 +568,46 @@ textarea { resize: vertical; }
 .import-commit span { display: grid; gap: 3px; }
 .import-commit strong { font-size: 12px; }
 .import-commit small { color: var(--muted); font-size: 10px; }
+.import-section-title { margin: 22px 0 11px; font-size: 14px; }
+.migration-route { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 13px; padding: 15px; background: var(--brand-soft); border: 1px solid #bfdbfe; border-radius: 7px; }
+.migration-route .panel-icon { display: grid; width: 38px; height: 38px; place-items: center; color: var(--brand); background: white; border: 1px solid #dbeafe; border-radius: 6px; }
+.migration-route strong { font-size: 13px; }
+.migration-route p { margin: 3px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.cuttime-migration { overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
+.migration-intro { display: flex; align-items: flex-start; gap: 11px; padding: 16px 20px; color: #1e40af; background: #eff6ff; border-bottom: 1px solid #bfdbfe; }
+.migration-intro > svg { flex: 0 0 auto; margin-top: 1px; }
+.migration-intro strong { color: var(--ink); font-size: 13px; }
+.migration-intro p { margin: 3px 0 0; color: #52627a; font-size: 11px; line-height: 1.5; }
+.migration-date { max-width: 230px; }
+.migration-file-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.migration-file { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 9px; min-height: 82px; padding: 12px; background: var(--surface); border: 1px dashed #93c5fd; border-radius: 6px; cursor: pointer; }
+.migration-file:hover { background: var(--brand-soft); border-color: var(--brand); }
+.migration-file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.migration-file-icon { display: grid; width: 28px; height: 28px; place-items: center; color: var(--brand); background: #eff6ff; border-radius: 5px; }
+.migration-file > span:last-of-type { display: grid; gap: 3px; min-width: 0; }
+.migration-file strong { color: var(--ink); font-size: 11px; }
+.migration-file small { overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.35; text-overflow: ellipsis; }
+.migration-file em { grid-column: 1 / -1; color: var(--red); font-size: 10px; font-style: normal; font-weight: 700; }
+.migration-preview { display: grid; gap: 12px; margin-top: 15px; }
+.migration-ready { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-items: center; column-gap: 8px; padding: 12px; border: 1px solid; border-radius: 6px; }
+.migration-ready.success { color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
+.migration-ready.error { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+.migration-ready strong { font-size: 12px; }
+.migration-ready > span { grid-column: 2; color: var(--muted); font-size: 10px; }
+.migration-counts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; }
+.migration-counts span { display: grid; gap: 2px; padding: 10px; color: var(--muted); border-right: 1px solid var(--line); font-size: 9px; text-transform: uppercase; }
+.migration-counts span:last-child { border-right: 0; }
+.migration-counts strong { color: var(--ink); font-size: 17px; }
+.migration-messages { padding: 12px; border: 1px solid; border-radius: 6px; }
+.migration-messages.error { background: #fff7ed; border-color: #fed7aa; }
+.migration-messages.warning { background: #fffbeb; border-color: #fde68a; }
+.migration-messages strong { font-size: 11px; }
+.migration-messages p { margin: 5px 0 0; color: #5b5546; font-size: 10px; line-height: 1.45; }
+.migration-source-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.migration-source-list > div { display: grid; gap: 3px; padding: 10px; background: var(--surface-muted); border: 1px solid var(--line); border-radius: 6px; }
+.migration-source-list strong { font-size: 10px; }
+.migration-source-list span, .migration-source-list small { overflow: hidden; color: var(--muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.migration-commit form { margin-top: 14px; }
 
 .label-workspace { display: grid; grid-template-columns: 318px minmax(0, 1fr); gap: 20px; align-items: start; }
 .label-controls { position: sticky; top: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
@@ -1042,6 +1082,12 @@ textarea { resize: vertical; }
   .audit-list > div { grid-template-columns: 55px 1fr; }
   .audit-meta { display: none !important; }
   .mapping-grid { grid-template-columns: 1fr; }
+  .migration-route { grid-template-columns: 38px minmax(0, 1fr); align-items: start; }
+  .migration-route .button { grid-column: 1 / -1; width: 100%; }
+  .migration-file-grid, .migration-source-list { grid-template-columns: 1fr; }
+  .migration-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .migration-counts span:nth-child(3n) { border-right: 0; }
+  .migration-counts span:nth-child(n + 4) { border-top: 1px solid var(--line); }
   .import-commit { align-items: stretch; flex-direction: column; }
   .settings-form, .rollover-form { grid-template-columns: 1fr; }
   .backup-form { grid-template-columns: 1fr; }
