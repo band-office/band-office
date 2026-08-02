@@ -1,7 +1,7 @@
 # Band Office v0.1 Security and Release Checklist
 
 **Status date:** August 2, 2026
-**Release state:** public source; Developer ID-signed and Apple-notarized Desktop `v0.1.0-alpha.15` prerelease; district-operated Server `v0.1.0-server-alpha.5` prerelease
+**Release state:** public source; Developer ID-signed and Apple-notarized Desktop `v0.1.0-alpha.16` prerelease; district-operated Server `v0.1.0-server-alpha.5` prerelease
 
 ## Verified locally
 
@@ -78,7 +78,7 @@
 - [ ] Complete a controlled live SMTP test through the approved school mailbox, including reply routing, an attachment, a rejected address and retry, downtime scheduling, and restore verification.
 - [ ] Implement and security-review Google and Microsoft OAuth adapters before claiming first-class support for those provider paths.
 
-Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.15` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.15), and district operators use the verified [`v0.1.0-server-alpha.5` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.5). The Mac downloads are Developer ID-signed and Apple-notarized; the Windows download remains unsigned. Fresh Desktop installations offer an empty program or an explicitly marked fictional demo. Real program records require a non-demo installation, school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
+Temporary Actions artifacts remain test builds. Director-facing downloads are the versioned, verified [`v0.1.0-alpha.16` Desktop artifacts](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.16), and district operators use the verified [`v0.1.0-server-alpha.5` Server bundle](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.5). The Mac downloads are Developer ID-signed and Apple-notarized; the Windows download remains unsigned. Fresh Desktop installations offer an empty program or an explicitly marked fictional demo. Real program records require a non-demo installation, school approval, encrypted equipment or infrastructure, named backup ownership, and a verified encrypted restore. Server installations must also pass their own public-edge, SMTP, portal, upgrade, and rollback acceptance before real family accounts are enabled.
 
 ## Reproducible commands
 

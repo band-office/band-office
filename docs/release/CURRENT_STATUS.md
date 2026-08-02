@@ -4,7 +4,7 @@
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.15`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.15) public prerelease issued; Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs plus unsigned Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.16`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.16) public prerelease issued; Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.5`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.5) public district-operated prerelease issued
 
@@ -53,7 +53,7 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The current Desktop alpha.15 is public as separate Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs and an unsigned Windows package, with SHA-256 checksums and platform-specific guidance. The Mac applications were stapled and Gatekeeper-validated before publication. Microsoft Artifact Signing remains deferred.
+The current Desktop alpha.16 is public as separate Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs and an unsigned Windows package, with SHA-256 checksums and platform-specific guidance. The Mac applications were stapled and Gatekeeper-validated before publication. Microsoft Artifact Signing remains deferred.
 
 The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. Its permanent banner provides a Desktop-only **Start my program** action that preserves recovery snapshots and returns to first-run setup. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 
