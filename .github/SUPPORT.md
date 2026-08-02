@@ -4,12 +4,12 @@ Band Office is a public open-source alpha project, not a supported commercial se
 
 ## Start here
 
-- Installation and verification: [README](./README.md)
-- Current alpha status and remaining gates: [CURRENT_STATUS.md](./docs/release/CURRENT_STATUS.md)
-- District server deployment: [SERVER_DEPLOYMENT.md](./docs/deployment/SERVER_DEPLOYMENT.md)
-- Email configuration: [EMAIL_SETUP.md](./docs/getting-started/EMAIL_SETUP.md)
-- Desktop packaging: [DESKTOP_PACKAGING.md](./docs/deployment/DESKTOP_PACKAGING.md)
-- Backup and restore: [SERVER_BACKUP_RESTORE.md](./docs/deployment/SERVER_BACKUP_RESTORE.md)
+- Installation and verification: [README](../README.md)
+- Current alpha status and remaining gates: [CURRENT_STATUS.md](../docs/release/CURRENT_STATUS.md)
+- District server deployment: [SERVER_DEPLOYMENT.md](../docs/deployment/SERVER_DEPLOYMENT.md)
+- Email configuration: [EMAIL_SETUP.md](../docs/getting-started/EMAIL_SETUP.md)
+- Desktop packaging: [DESKTOP_PACKAGING.md](../docs/deployment/DESKTOP_PACKAGING.md)
+- Backup and restore: [SERVER_BACKUP_RESTORE.md](../docs/deployment/SERVER_BACKUP_RESTORE.md)
 
 ## Ask for help
 
