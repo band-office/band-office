@@ -36,8 +36,15 @@ try {
 const serverEntry = path.join(destination, "server.js");
 const serverSource = await readFile(serverEntry, "utf8");
 const configMarker = "process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(nextConfig)";
-if (!serverSource.includes(configMarker)) throw new Error("Could not locate the Next.js standalone configuration marker.");
-await writeFile(serverEntry, serverSource.replace(
+const directoryMarker = "const __dirname = fileURLToPath(new URL('.', import.meta.url))";
+if (!serverSource.includes(configMarker) || !serverSource.includes(directoryMarker)) {
+  throw new Error("Could not locate the Next.js standalone configuration markers.");
+}
+const sourceWithRuntimeModules = serverSource.replace(
+  directoryMarker,
+  `${directoryMarker}\n\nconst runtimeModules = path.join(__dirname, "runtime-modules")\nprocess.env.NODE_PATH = [runtimeModules, process.env.NODE_PATH].filter(Boolean).join(path.delimiter)\nmodule.Module._initPaths()`,
+);
+await writeFile(serverEntry, sourceWithRuntimeModules.replace(
   configMarker,
   `nextConfig.outputFileTracingRoot = dir\nnextConfig.turbopack = { ...nextConfig.turbopack, root: dir }\n\n${configMarker}`,
 ));
