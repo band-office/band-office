@@ -4,7 +4,7 @@ Complete an isolated synthetic restore drill before loading student information.
 
 Band Office Server requires two backup layers:
 
-1. **Portable program archive:** a director regularly downloads the encrypted archive from Settings to district-approved storage. Current source uses `.bandoffice`; the published `v0.1.0-server-alpha.4` build and older archives use `.bandos`. Both remain accepted.
+1. **Portable program archive:** a director regularly downloads the encrypted archive from Settings to district-approved storage. Current source and `v0.1.0-server-alpha.5` use `.bandoffice`; older `.bandos` archives remain accepted.
 2. **Infrastructure recovery copy:** IT backs up the complete server `data` directory while the application and worker are stopped.
 
 The infrastructure copy is the server's direct disaster-recovery path. It contains the SQLite database and managed library, form, and event files. Copying only `bandos.db` is incomplete.
