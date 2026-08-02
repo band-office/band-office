@@ -116,8 +116,24 @@ jobs:
             echo "Ad hoc signing is not allowed for the notarized macOS release." >&2
             exit 1
           fi
+          verify_jit_entitlement() {
+            local signed_target="$1"
+            local entitlement_file="$RUNNER_TEMP/$(basename "$signed_target").entitlements.plist"
+
+            if ! codesign -d --entitlements :- "$signed_target" > "$entitlement_file" 2>/dev/null; then
+              echo "Could not read entitlements for $signed_target." >&2
+              return 1
+            fi
+
+            if ! plutil -extract 'com\.apple\.security\.cs\.allow-jit' raw -o - "$entitlement_file" | grep -qx true; then
+              echo "Missing required hardened-runtime JIT entitlement on $signed_target." >&2
+              plutil -p "$entitlement_file" >&2
+              return 1
+            fi
+          }
+
           for signed_target in "$app" "$app/Contents/Frameworks/Band Office Helper.app"; do
-            codesign -d --entitlements :- "$signed_target" 2>/dev/null | plutil -extract com.apple.security.cs.allow-jit raw -o - - | grep -qx true
+            verify_jit_entitlement "$signed_target"
           done
           xcrun stapler validate "$app"
           spctl --assess --type execute --verbose=4 "$app" 2>&1 | grep -q 'source=Notarized Developer ID'
