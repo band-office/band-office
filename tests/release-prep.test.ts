@@ -169,20 +169,20 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.14");
+    expect(readme).toContain("v0.1.0-alpha.15");
     expect(readme).toContain("public prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
     expect(readme).toContain("Apple-notarized");
     expect(readme).toContain("Windows is unsigned");
-    expect(readme).toContain("v0.1.0-server-alpha.4");
+    expect(readme).toContain("v0.1.0-server-alpha.5");
     expect(readme).toContain("district-operated prerelease");
     expect(channels).toContain("Band Office Server Alpha");
-    expect(channels).toContain("v0.1.0-server-alpha.4");
+    expect(channels).toContain("v0.1.0-server-alpha.5");
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(download).toContain("v0.1.0-alpha.14");
+    expect(download).toContain("v0.1.0-alpha.15");
     expect(download).toContain("Start my program");
     expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
     expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");
