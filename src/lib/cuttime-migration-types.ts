@@ -1,4 +1,4 @@
-export const CUTTIME_SOURCE_KINDS = ["students", "guardians", "groups", "instruments", "attire", "equipment", "balances"] as const;
+export const CUTTIME_SOURCE_KINDS = ["students", "guardians", "groups", "instruments", "attire", "equipment", "balances", "library"] as const;
 
 export type CutTimeSourceKind = typeof CUTTIME_SOURCE_KINDS[number];
 
@@ -33,6 +33,7 @@ export type CutTimeMigrationPreview = {
     assets: number;
     assignments: number;
     openingBalances: number;
+    libraryItems: number;
   };
   sources: Array<{
     kind: CutTimeSourceKind;
@@ -40,4 +41,61 @@ export type CutTimeMigrationPreview = {
     rowCount: number;
     mappedFields: string[];
   }>;
+};
+
+export type CutTimeLibraryImportInput = {
+  source: CutTimeMigrationSource;
+};
+
+export type CutTimeLibraryImportPreview = {
+  ready: boolean;
+  errors: CutTimeMigrationMessage[];
+  warnings: CutTimeMigrationMessage[];
+  count: number;
+  source: {
+    filename: string;
+    rowCount: number;
+    mappedFields: string[];
+  };
+};
+
+export type CutTimeGuardianImportInput = {
+  source: CutTimeMigrationSource;
+};
+
+export type CutTimeGuardianImportPreview = {
+  ready: boolean;
+  errors: CutTimeMigrationMessage[];
+  warnings: CutTimeMigrationMessage[];
+  counts: {
+    guardians: number;
+    links: number;
+    existingGuardians: number;
+  };
+  source: {
+    filename: string;
+    rowCount: number;
+    mappedFields: string[];
+  };
+};
+
+export type CutTimeBalanceImportInput = {
+  cutoverDate: string;
+  source: CutTimeMigrationSource;
+};
+
+export type CutTimeBalanceImportPreview = {
+  ready: boolean;
+  errors: CutTimeMigrationMessage[];
+  warnings: CutTimeMigrationMessage[];
+  counts: {
+    charges: number;
+    credits: number;
+    zeroBalances: number;
+  };
+  source: {
+    filename: string;
+    rowCount: number;
+    mappedFields: string[];
+  };
 };

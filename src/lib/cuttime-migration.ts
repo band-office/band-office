@@ -12,6 +12,8 @@ import {
   type Prisma,
 } from "@/generated/prisma/client";
 import type { createPrismaClient } from "@/lib/db";
+import { cutTimeMemberGuardianMappedFields, planCutTimeGuardiansFromMemberExport } from "@/lib/cuttime-guardian-import";
+import { cutTimeLibraryMappedFields, planCutTimeLibrarySource } from "@/lib/cuttime-library-import";
 import {
   CUTTIME_SOURCE_KINDS,
   type CutTimeMigrationInput,
@@ -81,6 +83,7 @@ type MigrationPlan = {
   memberships: PlannedGroupMembership[];
   assets: PlannedAsset[];
   balances: PlannedBalance[];
+  libraryItems: ReturnType<typeof planCutTimeLibrarySource>["items"];
   errors: CutTimeMigrationMessage[];
   warnings: CutTimeMigrationMessage[];
   sources: CutTimeMigrationPreview["sources"];
@@ -198,19 +201,22 @@ function planMigration(input: CutTimeMigrationInput): MigrationPlan {
   const memberships: PlannedGroupMembership[] = [];
   const assets: PlannedAsset[] = [];
   const balances: PlannedBalance[] = [];
+  const libraryItems: MigrationPlan["libraryItems"] = [];
   const sources: CutTimeMigrationPreview["sources"] = [];
 
   for (const source of input.sources ?? []) {
     const fields = source.kind === "students"
-      ? [{ label: "Student ID", aliases: ["student id", "member id", "cuttime id"] }, { label: "First name", aliases: ["first name", "firstname"] }, { label: "Last name", aliases: ["last name", "lastname"] }, { label: "Grade", aliases: ["grade"] }, { label: "Primary position", aliases: ["primary position", "position", "instrument", "section"] }, { label: "Groups", aliases: ["groups", "group"] }]
+      ? [{ label: "Student ID", aliases: ["student id", "member id", "cuttime id"] }, { label: "First name", aliases: ["first name", "firstname"] }, { label: "Last name", aliases: ["last name", "lastname"] }, { label: "Grade", aliases: ["grade"] }, { label: "Primary position", aliases: ["primary position", "position", "instrument", "section"] }, { label: "Groups", aliases: ["groups", "group"] }, { label: "Guardian 1", aliases: ["guardian 1 name", "guardian1name"] }, { label: "Guardian 2", aliases: ["guardian 2 name", "guardian2name"] }]
       : source.kind === "guardians"
         ? [{ label: "Student ID", aliases: ["student id", "member id", "cuttime student id"] }, { label: "Guardian ID", aliases: ["guardian id", "contact id"] }, { label: "First name", aliases: ["first name", "guardian first name"] }, { label: "Last name", aliases: ["last name", "guardian last name"] }, { label: "Email", aliases: ["email", "guardian email"] }, { label: "Phone", aliases: ["phone", "guardian phone", "mobile"] }]
         : source.kind === "groups"
           ? [{ label: "Group", aliases: ["group", "group name", "name"] }, { label: "Student ID", aliases: ["student id", "member id"] }, { label: "Position", aliases: ["position", "role"] }]
           : source.kind === "balances"
             ? [{ label: "Student ID", aliases: ["student id", "member id", "cuttime student id"] }, { label: "Balance", aliases: ["balance", "student balance", "amount due", "total due"] }]
-          : [{ label: "Asset ID", aliases: ["instrument id", "attire id", "equipment id", "asset id", "inventory id", "id"] }, { label: "Asset tag", aliases: ["asset tag", "school asset tag", "inventory number", "tag"] }, { label: "Current student ID", aliases: ["assigned student id", "student id", "member id"] }, { label: "Condition", aliases: ["condition"] }];
-    sources.push({ kind: source.kind, filename: source.filename, rowCount: source.rows.length, mappedFields: sourceFields(source, fields) });
+            : source.kind === "library"
+              ? []
+            : [{ label: "Asset ID", aliases: ["instrument id", "attire id", "equipment id", "asset id", "inventory id", "id"] }, { label: "Asset tag", aliases: ["asset tag", "school asset tag", "inventory number", "tag"] }, { label: "Current student ID", aliases: ["assigned student id", "student id", "member id"] }, { label: "Condition", aliases: ["condition"] }];
+    sources.push({ kind: source.kind, filename: source.filename, rowCount: source.rows.length, mappedFields: source.kind === "library" ? cutTimeLibraryMappedFields(source) : source.kind === "students" ? [...sourceFields(source, fields), ...cutTimeMemberGuardianMappedFields(source).filter((field) => !["Student ID", "Guardian 1", "Guardian 2"].includes(field))] : sourceFields(source, fields) });
   }
 
   const studentSource = sourceFor(input, "students");
@@ -263,6 +269,11 @@ function planMigration(input: CutTimeMigrationInput): MigrationPlan {
       const sourceId = firstValue(row, ["guardian id", "contact id"]) || `${email.toLowerCase()}|${phone.replace(/\D/g, "")}`;
       guardians.push({ sourceId, studentSourceId, firstName, lastName, email: email || null, phone: phone || null, relationshipLabel: firstValue(row, ["relationship", "relationship type"]) || null, primaryContact: parseBoolean(firstValue(row, ["primary", "primary contact"])), });
     }
+  } else if (studentSource && cutTimeMemberGuardianMappedFields(studentSource).includes("Guardian 1")) {
+    const guardianPlan = planCutTimeGuardiansFromMemberExport(studentSource);
+    guardians.push(...guardianPlan.guardians);
+    errors.push(...guardianPlan.errors);
+    warnings.push(...guardianPlan.warnings);
   }
 
   const groupSource = sourceFor(input, "groups");
@@ -340,6 +351,14 @@ function planMigration(input: CutTimeMigrationInput): MigrationPlan {
     }
   }
 
+  const librarySource = sourceFor(input, "library");
+  if (librarySource) {
+    const libraryPlan = planCutTimeLibrarySource(librarySource);
+    libraryItems.push(...libraryPlan.items);
+    errors.push(...libraryPlan.errors);
+    warnings.push(...libraryPlan.warnings);
+  }
+
   const studentIds = new Set(students.map((student) => student.sourceId));
   for (const guardian of guardians) if (!studentIds.has(guardian.studentSourceId)) errors.push(message("UNKNOWN_GUARDIAN_STUDENT", `Guardian ${guardian.firstName} ${guardian.lastName} references student ID ${guardian.studentSourceId}, which was not found in the member export.`, "guardians"));
   for (const membership of memberships) if (!studentIds.has(membership.studentSourceId)) errors.push(message("UNKNOWN_GROUP_STUDENT", `Group ${membership.groupName} references student ID ${membership.studentSourceId}, which was not found in the member export.`, "groups"));
@@ -357,20 +376,21 @@ function planMigration(input: CutTimeMigrationInput): MigrationPlan {
     if (asset.assignedStudentSourceId && !studentIds.has(asset.assignedStudentSourceId)) errors.push(message("UNKNOWN_ASSET_STUDENT", `${asset.schoolAssetTag} references student ID ${asset.assignedStudentSourceId}, which was not found in the member export.`));
   }
 
-  return { cutoverAt, students, guardians, memberships, assets, balances, errors, warnings, sources };
+  return { cutoverAt, students, guardians, memberships, assets, balances, libraryItems, errors, warnings, sources };
 }
 
 async function assertEmptyDestination(db: DatabaseClient, programId: string) {
-  const [students, guardians, groups, assets, assignments, financialEntries, priorRuns] = await Promise.all([
+  const [students, guardians, groups, assets, assignments, financialEntries, libraryItems, priorRuns] = await Promise.all([
     db.studentProfile.count({ where: { programId } }),
     db.personClassification.count({ where: { classification: PersonClassificationType.GUARDIAN, person: { programId } } }),
     db.group.count({ where: { programId } }),
     db.asset.count({ where: { programId } }),
     db.assignment.count({ where: { asset: { programId } } }),
     db.financialEntry.count({ where: { programId } }),
+    db.libraryItem.count({ where: { programId } }),
     db.migrationRun.count({ where: { programId, source: CUTTIME_SOURCE } }),
   ]);
-  if (students || guardians || groups || assets || assignments || financialEntries || priorRuns) throw new CutTimeMigrationError("Migrate from CutTime is available only for a new, empty Band Office program. Use the regular spreadsheet importer for later updates.");
+  if (students || guardians || groups || assets || assignments || financialEntries || libraryItems || priorRuns) throw new CutTimeMigrationError("Migrate from CutTime is available only for a new, empty Band Office program. Use the regular spreadsheet importer for later updates.");
 }
 
 function previewFromPlan(plan: MigrationPlan): CutTimeMigrationPreview {
@@ -384,7 +404,7 @@ function previewFromPlan(plan: MigrationPlan): CutTimeMigrationPreview {
     ready: plan.errors.length === 0,
     errors: plan.errors,
     warnings: plan.warnings,
-    counts: { students: plan.students.length, guardians: new Set(plan.guardians.map((guardian) => guardian.sourceId)).size, groups: groupNames.size, assets: plan.assets.length, assignments: plan.assets.filter((asset) => Boolean(asset.assignedStudentSourceId)).length, openingBalances: plan.balances.length },
+    counts: { students: plan.students.length, guardians: new Set(plan.guardians.map((guardian) => guardian.sourceId)).size, groups: groupNames.size, assets: plan.assets.length, assignments: plan.assets.filter((asset) => Boolean(asset.assignedStudentSourceId)).length, openingBalances: plan.balances.length, libraryItems: plan.libraryItems.length },
     sources: plan.sources,
   };
 }
@@ -417,7 +437,7 @@ export async function commitCutTimeMigration(db: DatabaseClient, input: { progra
         source: CUTTIME_SOURCE,
         actor: input.actor,
         cutoverAt: plan.cutoverAt,
-        summaryJson: JSON.stringify({ source: CUTTIME_SOURCE, cutoverAt: plan.cutoverAt.toISOString(), students: plan.students.length, guardians: new Set(plan.guardians.map((guardian) => guardian.sourceId)).size, assets: plan.assets.length, balances: plan.balances.length, warnings: plan.warnings.length }),
+        summaryJson: JSON.stringify({ source: CUTTIME_SOURCE, cutoverAt: plan.cutoverAt.toISOString(), students: plan.students.length, guardians: new Set(plan.guardians.map((guardian) => guardian.sourceId)).size, assets: plan.assets.length, balances: plan.balances.length, libraryItems: plan.libraryItems.length, warnings: plan.warnings.length }),
       },
     });
     await tx.migrationSource.createMany({ data: input.migration.sources.map((source) => ({ id: randomUUID(), migrationRunId: run.id, sourceKind: source.kind, filename: source.filename, contentHash: source.contentHash, headersJson: JSON.stringify(source.headers), mappingJson: JSON.stringify(plan.sources.find((entry) => entry.kind === source.kind)?.mappedFields ?? []), rowCount: source.rows.length })) });
@@ -515,6 +535,13 @@ export async function commitCutTimeMigration(db: DatabaseClient, input: { progra
       const type = balance.amount > 0 ? FinancialEntryType.CHARGE : FinancialEntryType.CREDIT;
       const entry = await tx.financialEntry.create({ data: { id: randomUUID(), programId: input.programId, personId: student.personId, operatingPeriodId: input.operatingPeriodId, type, amount: balance.amount, occurredAt: plan.cutoverAt, description: `Imported CutTime opening balance as of ${input.migration.cutoverDate}`, reference: CUTTIME_SOURCE, createdBy: input.actor } });
       await writeAudit(tx, input.programId, input.actor, "FinancialEntry", entry.id, "Posted opening balance from CutTime migration", ["personId", "operatingPeriodId", "type", "amount", "occurredAt", "description", "reference"]);
+    }
+
+    for (const item of plan.libraryItems) {
+      const itemId = randomUUID();
+      await tx.libraryItem.create({ data: { id: itemId, programId: input.programId, title: item.title, composer: item.composer, arranger: item.arranger, publisher: item.publisher, grade: item.grade, category: item.category, catalogNumber: item.catalogNumber, storageLocation: item.storageLocation, acquisitionDate: item.acquisitionDate, acquisitionSource: "Imported from CutTime", acquisitionCost: item.acquisitionCost, comments: item.comments } });
+      await tx.externalReference.create({ data: { id: randomUUID(), programId: input.programId, migrationRunId: run.id, source: CUTTIME_SOURCE, entityType: "LibraryItem", sourceId: item.sourceId, entityId: itemId } });
+      await writeAudit(tx, input.programId, input.actor, "LibraryItem", itemId, "Created music library record from CutTime migration", ["title", "composer", "arranger", "publisher", "grade", "category", "catalogNumber", "storageLocation", "acquisitionDate", "acquisitionCost", "comments"]);
     }
 
     if (plan.warnings.length) await tx.migrationIssue.createMany({ data: plan.warnings.map((warning) => ({ id: randomUUID(), migrationRunId: run.id, code: warning.code, sourceKind: warning.sourceKind ?? null, rowNumber: warning.rowNumber ?? null, message: warning.message })) });

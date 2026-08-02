@@ -36,6 +36,13 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.getByRole("button", { name: "Import students" }).click();
   await expect(page.getByText("Roster import complete: 1 created, 0 updated.")).toBeVisible();
 
+  await page.goto("/import/cuttime-guardians");
+  await page.getByLabel("Select CutTime Member export").setInputFiles(path.resolve("tests/fixtures/cuttime-members-guardians.csv"));
+  await page.getByRole("button", { name: "Preview guardian import" }).click();
+  await expect(page.getByText("Ready to import")).toBeVisible();
+  await page.getByRole("button", { name: "Create family links" }).click();
+  await expect(page.getByText("CutTime guardian import complete: 1 guardians created and 1 family links added.")).toBeVisible();
+
   await page.goto("/groups");
   const clarinetGroup = page.getByRole("link", { name: /clarinet/i });
   await expect(clarinetGroup).toBeVisible();
@@ -235,8 +242,23 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.screenshot({ path: "test-results/e2e-financials-mobile.png", fullPage: true });
   await page.setViewportSize({ width: 1280, height: 720 });
 
+  await page.getByRole("link", { name: "Import CutTime balances" }).click();
+  await page.getByLabel("CutTime balance date").fill("2026-08-02");
+  await page.getByLabel("Select CutTime balance export").setInputFiles(path.resolve("tests/fixtures/cuttime-student-balances.csv"));
+  await page.getByRole("button", { name: "Preview balances" }).click();
+  await expect(page.getByText("Ready to import")).toBeVisible();
+  await page.getByRole("button", { name: "Import opening balances" }).click();
+  await expect(page.getByText("CutTime balances imported: 0 charges and 1 credits.")).toBeVisible();
+
   await page.goto("/library");
   await expect(page.getByRole("heading", { name: "Music library" })).toBeVisible();
+  await page.getByRole("link", { name: "Import CutTime library" }).click();
+  await page.getByLabel("Select CutTime Library export").setInputFiles(path.resolve("tests/fixtures/cuttime-library.csv"));
+  await page.getByRole("button", { name: "Preview library import" }).click();
+  await expect(page.getByText("Ready to import")).toBeVisible();
+  await page.getByRole("button", { name: "Import 1 library sets" }).click();
+  await expect(page.getByText("CutTime library import complete: 1 whole score-and-parts sets added.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "First Suite" })).toBeVisible();
   await page.locator("summary").filter({ hasText: "Add music" }).click();
   const libraryForm = page.locator("form").filter({ hasText: "New whole-set record" });
   await libraryForm.getByLabel("Title").fill("E2E Concert Work");
