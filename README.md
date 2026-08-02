@@ -13,7 +13,6 @@
   <strong><a href="./docs/getting-started/FIRST_RUN.md">First-run guide</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
   <strong><a href="./docs/getting-started/DATA_FLOW.md">Where your data goes</a></strong> ·
-  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14">Desktop alpha</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4">Server alpha</a></strong> ·
   <strong><a href="./docs/deployment/SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./docs/">Documentation</a></strong> ·
