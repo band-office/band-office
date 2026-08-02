@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileUp } from "lucide-react";
+import { ArrowRight, FileUp, Waypoints } from "lucide-react";
 import { redirect } from "next/navigation";
 import { importAssetsAction, importStudentsAction } from "@/app/actions";
 import { FlashMessage } from "@/components/flash-message";
@@ -38,5 +38,6 @@ export default async function ImportPage({ searchParams }: { searchParams: Promi
     if (!assets && canImportAssets) redirect("/import?kind=assets");
     redirect("/today?error=Import%20access%20is%20restricted.");
   }
-  return <main className="content narrow-content"><PageHeader eyebrow="Data migration" title="Import records" description="Map and reconcile spreadsheet data before any records change." icon={FileUp} /><FlashMessage {...params} /><div className="segment-tabs">{canImportPeople ? <Link className={!assets ? "active" : ""} href="/import">Students</Link> : null}{canImportAssets ? <Link className={assets ? "active" : ""} href="/import?kind=assets">Assets</Link> : null}</div>{assets ? <ImportWizard kind="assets" fields={assetFields} action={importAssetsAction} /> : <ImportWizard kind="students" fields={memberFields} action={importStudentsAction} />}<p className="privacy-copy">Imports become school records. Review the dry run and keep source files in district-approved storage.</p></main>;
+  const canMigrate = hasPermission(user, "RUN_MIGRATION");
+  return <main className="content narrow-content"><PageHeader eyebrow="Data migration" title="Import records" description="Map and reconcile spreadsheet data before any records change." icon={FileUp} /><FlashMessage {...params} />{canMigrate ? <section className="migration-route"><span className="panel-icon"><Waypoints size={18} /></span><div><strong>Migrate from CutTime</strong><p>Guided, one-time cutover for a new Band Office program. Upload CutTime exports; Band Office never connects to your CutTime account.</p></div><Link className="button secondary" href="/import/cuttime">Open migration <ArrowRight size={15} /></Link></section> : null}<h2 className="import-section-title">Spreadsheet imports</h2><div className="segment-tabs">{canImportPeople ? <Link className={!assets ? "active" : ""} href="/import">Students</Link> : null}{canImportAssets ? <Link className={assets ? "active" : ""} href="/import?kind=assets">Assets</Link> : null}</div>{assets ? <ImportWizard kind="assets" fields={assetFields} action={importAssetsAction} /> : <ImportWizard kind="students" fields={memberFields} action={importStudentsAction} />}<p className="privacy-copy">Imports become school records. Review the dry run and keep source files in district-approved storage.</p></main>;
 }

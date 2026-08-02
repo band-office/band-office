@@ -11,6 +11,7 @@
 <p align="center">
   <strong><a href="./docs/getting-started/DOWNLOAD.md">Download Desktop</a></strong> ·
   <strong><a href="./docs/getting-started/FIRST_RUN.md">First-run guide</a></strong> ·
+  <strong><a href="./docs/getting-started/CUTTIME_MIGRATION.md">Migrate from CutTime</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
   <strong><a href="./docs/getting-started/DATA_FLOW.md">Where your data goes</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4">Server alpha</a></strong> ·
@@ -94,6 +95,7 @@ Band Office does not yet replace every Charms or CutTime workflow. Granular guar
 - Bounded volunteer opportunities and assignments, managed event files and approved HTTPS links, and reviewable email reminder drafts
 - Public iCalendar subscription and embeddable calendar page, plus revocable private calendar links whose bearer tokens are stored only as SHA-256 hashes
 - Event roster, RSVP, attendance, absence, volunteer, trip-roster, and equipment-list CSV reports
+- Guided CutTime cutover from CSV or XLSX exports with a dry-run preview, source provenance, reconciliation warnings, and opening-balance carryover for a new program
 - Mapped student and asset CSV imports with a dry-run preview and automatic section-group membership
 - Permanent person, group-membership, and assignment history
 - Instrument, uniform-piece, and equipment inventory with attached components
@@ -104,7 +106,7 @@ Band Office does not yet replace every Charms or CutTime workflow. Granular guar
 - Atomic damage return and repair creation
 - Repair queue, vendor/cost tracking, closeout, and lifetime service history
 - Thirty-one program-level CSV reports, individual statement exports, browser print layouts, and operational queues
-- Encrypted full backups containing 51 CSV tables, a manifest, managed library, form, and event files, and a consistent SQLite snapshot
+- Encrypted full backups containing 55 CSV tables, a manifest, managed library, form, and event files, migration provenance, and a consistent SQLite snapshot
 - Append-only audit history for record changes, imports, exports, and backups
 - Archive-gated operating-period rollover with configurable graduation grade
 
@@ -187,7 +189,7 @@ Rollover remains blocked until every assignment is resolved and a backup newer t
 
 ## Email setup
 
-Open Email, then Shared mailbox. Standard SMTP is the currently implemented connector. Desktop users store the SMTP password through operating-system encrypted storage and restart Band Office before verification. Production-server administrators mount it from `secrets/smtp-password.txt`; the container entrypoint reads it without placing the value in Compose or SQLite. Sender settings, templates, announcements, attachments, audience snapshots, attempts, queue state, and contact holds are included in version-8 backups; credentials are not.
+Open Email, then Shared mailbox. Standard SMTP is the currently implemented connector. Desktop users store the SMTP password through operating-system encrypted storage and restart Band Office before verification. Production-server administrators mount it from `secrets/smtp-password.txt`; the container entrypoint reads it without placing the value in Compose or SQLite. Sender settings, templates, announcements, attachments, audience snapshots, attempts, queue state, contact holds, and migration provenance are included in version-9 backups; credentials are not.
 
 Scheduled desktop email runs only while Band Office is open. Server deployments run the authenticated internal worker continuously. If a scheduled time passes while the relevant runtime is down, the message is held until a staff user confirms delivery. Provider acceptance records SMTP handoff, not guaranteed inbox delivery. See [EMAIL_SETUP.md](./docs/getting-started/EMAIL_SETUP.md).
 
