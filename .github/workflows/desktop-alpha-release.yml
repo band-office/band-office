@@ -87,6 +87,9 @@ jobs:
             echo "Ad hoc signing is not allowed for the notarized macOS release." >&2
             exit 1
           fi
+          for signed_target in "$app" "$app/Contents/Frameworks/Band Office Helper.app"; do
+            codesign -d --entitlements :- "$signed_target" 2>/dev/null | plutil -extract com.apple.security.cs.allow-jit raw -o - - | grep -qx true
+          done
       - name: Submit exact signed application for Apple notarization
         shell: bash
         run: |

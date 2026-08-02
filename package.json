@@ -160,7 +160,7 @@
     "mac": {
       "category": "public.app-category.education",
       "entitlements": "desktop/entitlements.mac.plist",
-      "entitlementsInherit": "desktop/entitlements.mac.plist",
+      "entitlementsInherit": "desktop/entitlements.mac.inherit.plist",
       "extendInfo": {
         "NSCameraUsageDescription": "Band Office uses the camera only when a director chooses to scan an inventory barcode or QR code."
       },

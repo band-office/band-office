@@ -55,8 +55,8 @@
       "detail": "Current release, roadmap, and security documents contain no program-specific pilot gate"
     },
     {
-      "claim": "macOS entitlement scope is camera-only",
-      "detail": "com.apple.security.device.camera"
+      "claim": "macOS production entitlements are minimal and Electron-compatible",
+      "detail": "Camera access for director-initiated scanning plus hardened-runtime JIT for the app and helpers; unsigned executable memory remains prohibited"
     },
     {
       "claim": "macOS alpha bundles are integrity sealed",
