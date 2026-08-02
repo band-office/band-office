@@ -10,6 +10,7 @@
 
 <p align="center">
   <strong><a href="./docs/getting-started/DOWNLOAD.md">Download Desktop</a></strong> ·
+  <strong><a href="./docs/getting-started/FIRST_RUN.md">First-run guide</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
   <strong><a href="./docs/getting-started/DATA_FLOW.md">Where your data goes</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14">Desktop alpha</a></strong> ·
@@ -30,6 +31,16 @@ It is built for program ownership rather than platform lock-in. Records live in 
 > Band Office Server `v0.1.0-server-alpha.4` is a **public district-operated prerelease** for staff access, continuous scheduled email, and student and guardian portals. Band Office does not host it. A district must own the Linux server, DNS, HTTPS, SMTP, monitoring, backups, and restore process and complete the supplied acceptance record before activating real family accounts.
 
 Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party components retain their own terms as summarized in [NOTICE](./NOTICE).
+
+## Start here
+
+| Your computer | Download |
+| --- | --- |
+| Mac with an M-series chip | [Apple Silicon Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.14/Band-Office-0.1.0-mac-arm64.dmg) |
+| Mac with an Intel processor | [Intel Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.14/Band-Office-0.1.0-mac-x64.dmg) |
+| 64-bit Windows computer | [Windows installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.14/Band-Office-0.1.0-win-x64.exe) |
+
+The app does not require Terminal, Node.js, Docker, or a GitHub account. Follow the [five-minute first-run guide](./docs/getting-started/FIRST_RUN.md) before importing student information.
 
 ## Release channels
 

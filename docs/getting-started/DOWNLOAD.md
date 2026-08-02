@@ -5,6 +5,8 @@ Band Office Desktop is the local version for one director and one program. It st
 > [!IMPORTANT]
 > This is alpha software. The Mac installers are Developer ID-signed and Apple-notarized; Windows is unsigned. Start with the fictional demo. Before loading student information, obtain school approval, use a district-managed encrypted computer, and complete an encrypted backup and verified restore.
 
+New to Band Office? Follow the [five-minute first-run guide](./FIRST_RUN.md) after installation.
+
 ## Choose your computer
 
 - **[Apple Silicon Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.14/Band-Office-0.1.0-mac-arm64.dmg)** for Macs with an M-series chip.

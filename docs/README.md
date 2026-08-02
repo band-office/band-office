@@ -5,6 +5,7 @@ Start with the [main README](../README.md) for the product overview and the curr
 ## Start here
 
 - [Download Band Office Desktop](./getting-started/DOWNLOAD.md)
+- [Five-minute first-run guide](./getting-started/FIRST_RUN.md)
 - [Understand where data goes](./getting-started/DATA_FLOW.md)
 - [Compatibility and migration notes](./getting-started/COMPATIBILITY.md)
 
