@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="./LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563EB.svg"></a>
-  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.13"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
+  <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14"><img alt="Desktop alpha" src="https://img.shields.io/badge/status-desktop%20alpha-08172B.svg"></a>
   <a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4"><img alt="Server alpha" src="https://img.shields.io/badge/status-server%20alpha-2563EB.svg"></a>
   <a href="./package.json"><img alt="Node 20.9 or newer" src="https://img.shields.io/badge/node-%3E%3D20.9-334155.svg"></a>
   <a href="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml"><img alt="Band Office release candidate workflow" src="https://github.com/band-office/band-office/actions/workflows/release-candidate.yml/badge.svg"></a>
@@ -12,7 +12,7 @@
   <strong><a href="./docs/getting-started/DOWNLOAD.md">Download Desktop</a></strong> ·
   <strong><a href="#built-around-real-program-work">See what works</a></strong> ·
   <strong><a href="./docs/getting-started/DATA_FLOW.md">Where your data goes</a></strong> ·
-  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.13">Desktop alpha</a></strong> ·
+  <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14">Desktop alpha</a></strong> ·
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4">Server alpha</a></strong> ·
   <strong><a href="./docs/deployment/SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./docs/">Documentation</a></strong> ·
@@ -25,7 +25,7 @@ Band Office keeps the operational work of a school music program in one local-fi
 It is built for program ownership rather than platform lock-in. Records live in SQLite, complete backups are exportable, permissions are explicit, and the documented server path keeps district-approved infrastructure in control.
 
 > [!IMPORTANT]
-> Band Office Desktop `v0.1.0-alpha.13` is a **public prerelease** for directors running one local program. Start with the fictional Ridgeline demo, then use **Start my program** in the demo banner when you are ready to return to first-run setup. Before loading student information, a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore. Separate Apple Silicon and Intel Mac downloads are Developer ID-signed, Apple-notarized, and Gatekeeper-validated. Windows is unsigned and may show a Microsoft Defender SmartScreen warning. Read the [download instructions](./docs/getting-started/DOWNLOAD.md), [data-flow explanation](./docs/getting-started/DATA_FLOW.md), and [CURRENT_STATUS.md](./docs/release/CURRENT_STATUS.md) before adoption.
+> Band Office Desktop `v0.1.0-alpha.14` is a **public prerelease** for directors running one local program. Start with the fictional Ridgeline demo, then use **Start my program** in the demo banner when you are ready to return to first-run setup. Before loading student information, a school should approve the deployment, provide an encrypted managed computer, and verify an encrypted backup and restore. Separate Apple Silicon and Intel Mac downloads are Developer ID-signed, Apple-notarized, and Gatekeeper-validated. Windows is unsigned and may show a Microsoft Defender SmartScreen warning. Read the [download instructions](./docs/getting-started/DOWNLOAD.md), [data-flow explanation](./docs/getting-started/DATA_FLOW.md), and [CURRENT_STATUS.md](./docs/release/CURRENT_STATUS.md) before adoption.
 >
 > Band Office Server `v0.1.0-server-alpha.4` is a **public district-operated prerelease** for staff access, continuous scheduled email, and student and guardian portals. Band Office does not host it. A district must own the Linux server, DNS, HTTPS, SMTP, monitoring, backups, and restore process and complete the supplied acceptance record before activating real family accounts.
 
@@ -36,7 +36,7 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 | Channel | Current state | Intended user |
 | --- | --- | --- |
 | Source | Available on `main` | Contributors and technical reviewers |
-| Band Office Desktop alpha | [`v0.1.0-alpha.13`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.13), public prerelease | Directors running one local program without public family access |
+| Band Office Desktop alpha | [`v0.1.0-alpha.14`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14), public prerelease | Directors running one local program without public family access |
 | Band Office Server alpha | [`v0.1.0-server-alpha.4`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4), public district-operated prerelease | District IT operating one approved program |
 
 These channels are intentionally separate. Desktop does not expose student or guardian portals to the internet. Server includes those portals, but every installation remains district-operated and must pass its own external acceptance gates. See [RELEASE_CHANNELS.md](./docs/release/RELEASE_CHANNELS.md).
@@ -111,7 +111,7 @@ The repository screenshots use deterministic fictional data. More views are avai
 
 ## Desktop alpha
 
-[`v0.1.0-alpha.13`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.13) provides Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs, an unsigned Windows x64 package, architecture-specific SHA-256 checksums, and a release manifest. The Mac DMG retains the normal drag-to-Applications installation layout. The exact accepted Mac applications were stapled and passed Gatekeeper validation before publication. Windows signing remains deferred. First-run setup offers an empty program or the deterministic fictional Ridgeline demo. The permanent demo banner can preserve that demo in recovery snapshots and return the Desktop app to first-run setup. This is functional alpha software, although clean-machine lifecycle acceptance remains open.
+[`v0.1.0-alpha.14`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14) provides Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs, an unsigned Windows x64 package, architecture-specific SHA-256 checksums, and a release manifest. The Mac DMG retains the normal drag-to-Applications installation layout. The exact accepted Mac applications were stapled and passed Gatekeeper validation before publication. Windows signing remains deferred. First-run setup offers an empty program or the deterministic fictional Ridgeline demo. The permanent demo banner can preserve that demo in recovery snapshots and return the Desktop app to first-run setup. This is functional alpha software, although clean-machine lifecycle acceptance remains open.
 
 The desktop app requires no terminal, Node.js, or Docker. A first-run choice creates an empty program or loads the deterministic fictional Ridgeline demo. In the demo, choose **Start my program** to preserve a recovery copy, clear the active demo, restart, and create an empty program. The app creates and migrates its private SQLite database under `~/Library/Application Support/BandOS/data/bandos.db`; logs and pre-migration, pre-restore, or pre-demo-reset recovery snapshots stay in that application-data directory. The legacy directory name is intentionally retained so the Band Office rename cannot strand an existing installation. Other compatibility-sensitive identifiers are documented in [COMPATIBILITY.md](./docs/getting-started/COMPATIBILITY.md). SMTP credentials use operating-system encrypted storage under the same application-data root and never enter the database. Encrypted backup and verified restore remain available in Settings. Camera access is requested only when the director starts barcode or QR scanning; connected USB and Bluetooth scanners work through the same asset-tag field without camera permission.
 
@@ -165,7 +165,7 @@ Fresh Server installations start empty and contain no demo records. A district m
 
 ## Backups
 
-Current source and Desktop `v0.1.0-alpha.13` create encrypted `.bandoffice` archives by default and offer an explicitly marked readable ZIP export for district-approved encrypted storage. The published Server `v0.1.0-server-alpha.4` still creates the legacy `.bandos` filename. Both extensions remain supported for restore and verification. The passphrase is never stored and cannot be recovered.
+Current source and Desktop `v0.1.0-alpha.14` create encrypted `.bandoffice` archives by default and offer an explicitly marked readable ZIP export for district-approved encrypted storage. The published Server `v0.1.0-server-alpha.4` still creates the legacy `.bandos` filename. Both extensions remain supported for restore and verification. The passphrase is never stored and cannot be recovered.
 
 Verify that an archive decrypts, contains every required file, passes SQLite integrity checking, and matches CSV row counts:
 
@@ -218,7 +218,7 @@ Run Band Office on a district-managed, disk-encrypted machine. Store backups and
 
 ## Release status
 
-The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.13` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.13) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Mac packages are Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated; Windows is unsigned and may show a Microsoft Defender SmartScreen warning. Remaining release work is clean-machine Desktop lifecycle acceptance and district-hosted public-server acceptance. Each real deployment still requires its own school or district approval, encrypted storage, named backup ownership, and verified restoration.
+The source is publicly available at [band-office/band-office](https://github.com/band-office/band-office) under Apache-2.0. Protected workflows published the reviewed [`v0.1.0-alpha.14` Desktop prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.14) and [`v0.1.0-server-alpha.4` Server prerelease](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4). Mac packages are Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated; Windows is unsigned and may show a Microsoft Defender SmartScreen warning. Remaining release work is clean-machine Desktop lifecycle acceptance and district-hosted public-server acceptance. Each real deployment still requires its own school or district approval, encrypted storage, named backup ownership, and verified restoration.
 
 ## Project and community
 

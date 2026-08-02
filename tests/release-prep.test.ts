@@ -13,6 +13,16 @@ afterEach(async () => {
   await Promise.all(temporaryDirectories.splice(0).map((directory) => rm(directory, { recursive: true, force: true })));
 });
 describe("public release preparation", () => {
+  test("keeps the desktop server in an Electron utility process and avoids Keychain access without a stored credential", async () => {
+    const source = await readFile(path.resolve("desktop/main.mjs"), "utf8");
+    const credentialReader = source.slice(source.indexOf("async function readStoredSmtpPassword"), source.indexOf("async function startApplicationServer"));
+
+    expect(source).toContain("utilityProcess.fork(serverEntry");
+    expect(source).not.toContain("ELECTRON_RUN_AS_NODE");
+    expect(credentialReader.indexOf("readFile(smtpCredentialPath()"))
+      .toBeLessThan(credentialReader.indexOf("safeStorage.isEncryptionAvailable()"));
+  });
+
   test("accepts only alpha tags matching the package version", async () => {
     await expect(execFileAsync(process.execPath, ["scripts/verify-desktop-alpha-tag.mjs", "v0.1.0-alpha.1"])).resolves.toMatchObject({
       stdout: expect.stringContaining("Desktop alpha tag verified"),
@@ -159,7 +169,7 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.13");
+    expect(readme).toContain("v0.1.0-alpha.14");
     expect(readme).toContain("public prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
@@ -172,7 +182,7 @@ describe("public release preparation", () => {
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(download).toContain("v0.1.0-alpha.13");
+    expect(download).toContain("v0.1.0-alpha.14");
     expect(download).toContain("Start my program");
     expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
     expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");

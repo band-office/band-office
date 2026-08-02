@@ -1,5 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, safeStorage, session } from "electron";
-import { spawn } from "node:child_process";
+import { app, BrowserWindow, dialog, ipcMain, safeStorage, session, utilityProcess } from "electron";
 import { randomBytes } from "node:crypto";
 import { appendFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import net from "node:net";
@@ -12,6 +11,8 @@ import { runDesktopMigrations } from "./migrations.mjs";
 const desktopDirectory = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow = null;
 let localServerProcess = null;
+let localServerExited = false;
+let localServerExitCode = null;
 let applicationOrigin = null;
 let isQuitting = false;
 let communicationWorkerTimer = null;
@@ -50,11 +51,17 @@ function smtpCredentialPath() {
 }
 
 async function readStoredSmtpPassword() {
-  if (!safeStorage.isEncryptionAvailable()) return null;
+  let encrypted;
   try {
     const payload = JSON.parse(await readFile(smtpCredentialPath(), "utf8"));
     if (typeof payload.encrypted !== "string") return null;
-    return safeStorage.decryptString(Buffer.from(payload.encrypted, "base64"));
+    encrypted = payload.encrypted;
+  } catch {
+    return null;
+  }
+  if (!safeStorage.isEncryptionAvailable()) return null;
+  try {
+    return safeStorage.decryptString(Buffer.from(encrypted, "base64"));
   } catch {
     return null;
   }
@@ -65,28 +72,34 @@ async function startApplicationServer(databasePath, smtpPassword) {
   const runtimeDirectory = resourcePath("app-runtime", "server");
   const serverEntry = path.join(runtimeDirectory, "server.js");
   const origin = `http://127.0.0.1:${port}`;
-  localServerProcess = spawn(process.execPath, [serverEntry], {
+  localServerExited = false;
+  localServerExitCode = null;
+  localServerProcess = utilityProcess.fork(serverEntry, [], {
     cwd: runtimeDirectory,
     env: {
       ...process.env,
       DATABASE_URL: `file:${databasePath}`,
-      ELECTRON_RUN_AS_NODE: "1",
       HOSTNAME: "127.0.0.1",
       NEXT_TELEMETRY_DISABLED: "1",
-      NODE_PATH: path.join(runtimeDirectory, "runtime-modules"),
       NODE_ENV: "production",
       PORT: String(port),
       BANDOS_WORKER_TOKEN: communicationWorkerToken,
       BANDOS_STARTED_AT: applicationStartedAt,
       ...(smtpPassword && !process.env.BANDOS_SMTP_PASSWORD ? { BANDOS_SMTP_PASSWORD: smtpPassword } : {}),
     },
+    serviceName: "Band Office Local Server",
     stdio: ["ignore", "pipe", "pipe"],
+  });
+  localServerProcess.on("exit", (code) => {
+    localServerExited = true;
+    localServerExitCode = code;
+    void writeLog(`[server] exited with code ${code}`);
   });
   localServerProcess.stdout?.on("data", (chunk) => void writeLog(`[server] ${String(chunk).trimEnd()}`));
   localServerProcess.stderr?.on("data", (chunk) => void writeLog(`[server:error] ${String(chunk).trimEnd()}`));
 
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    if (localServerProcess.exitCode !== null) throw new Error(`The application server exited with code ${localServerProcess.exitCode}.`);
+    if (localServerExited) throw new Error(`The application server exited with code ${localServerExitCode}.`);
     try {
       const response = await fetch(`${origin}/login`, { redirect: "manual" });
       if (response.status >= 200 && response.status < 500) return origin;
@@ -312,7 +325,7 @@ app.on("second-instance", () => {
 app.on("before-quit", () => {
   isQuitting = true;
   if (communicationWorkerTimer) clearInterval(communicationWorkerTimer);
-  if (localServerProcess && localServerProcess.exitCode === null) localServerProcess.kill();
+  if (localServerProcess && !localServerExited) localServerProcess.kill();
 });
 app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
 app.on("activate", () => {
