@@ -41,5 +41,6 @@ export async function commitCutTimeMigrationAction(formData: FormData) {
   revalidatePath("/groups");
   revalidatePath("/assets");
   revalidatePath("/financials");
-  redirect(withMessage("/today", "success", `CutTime migration complete: ${result.preview.counts.students} students, ${result.preview.counts.assets} assets, and ${result.preview.counts.openingBalances} opening balances.`));
+  revalidatePath("/library");
+  redirect(withMessage("/today", "success", `CutTime migration complete: ${result.preview.counts.students} students, ${result.preview.counts.assets} assets, ${result.preview.counts.libraryItems} library sets, and ${result.preview.counts.openingBalances} opening balances.`));
 }

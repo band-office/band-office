@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { LibraryComponentStatus, LibraryLoanStatus, LibraryResourceKind } from "@/generated/prisma/client";
 import { requirePermission } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import { commitCutTimeLibraryImport, previewCutTimeLibraryImport } from "@/lib/cuttime-library-import";
+import type { CutTimeLibraryImportInput } from "@/lib/cuttime-migration-types";
 import {
   addLibraryComponentNote,
   addLibraryResource,
@@ -73,6 +75,28 @@ export async function createLibraryItemAction(formData: FormData) {
   }
   revalidatePath("/library");
   redirect(withMessage(`/library/${itemId}`, "success", "Music set added to the library."));
+}
+
+export async function previewCutTimeLibraryImportAction(input: CutTimeLibraryImportInput) {
+  await requirePermission("MANAGE_LIBRARY");
+  const { program } = await getProgramContext(getDb());
+  return previewCutTimeLibraryImport(getDb(), program.id, input);
+}
+
+export async function commitCutTimeLibraryImportAction(formData: FormData) {
+  let result: Awaited<ReturnType<typeof commitCutTimeLibraryImport>>;
+  try {
+    const raw = formData.get("libraryImportJson");
+    if (typeof raw !== "string" || !raw) throw new Error("Preview the CutTime library import before committing it.");
+    const library = JSON.parse(raw) as CutTimeLibraryImportInput;
+    const user = await requirePermission("MANAGE_LIBRARY");
+    const { program } = await getProgramContext(getDb());
+    result = await commitCutTimeLibraryImport(getDb(), { programId: program.id, actor: user.username, library });
+  } catch (error) {
+    redirect(withMessage("/library/import", "error", message(error)));
+  }
+  revalidatePath("/library");
+  redirect(withMessage("/library", "success", `CutTime library import complete: ${result.preview.count} whole score-and-parts sets added.`));
 }
 
 export async function updateLibraryItemAction(formData: FormData) {

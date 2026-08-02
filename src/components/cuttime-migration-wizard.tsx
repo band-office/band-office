@@ -1,11 +1,10 @@
 "use client";
 
-import JSZip from "jszip";
-import Papa from "papaparse";
 import { AlertTriangle, ArrowRight, CheckCircle2, FileSpreadsheet, LoaderCircle, ShieldCheck, Upload } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { commitCutTimeMigrationAction, previewCutTimeMigrationAction } from "@/app/migration-actions";
 import { SubmitButton } from "@/components/submit-button";
+import { parseCutTimeExportFile } from "@/lib/cuttime-export-file";
 import {
   CUTTIME_SOURCE_KINDS,
   type CutTimeMigrationInput,
@@ -16,64 +15,14 @@ import {
 
 const SOURCE_DETAILS: Record<CutTimeSourceKind, { label: string; help: string; required?: boolean }> = {
   students: { label: "Members", help: "Required. Export the member directory with student ID, name, grade, position, and groups.", required: true },
-  guardians: { label: "Guardians", help: "Optional. Export guardian contacts with the linked student ID." },
+  guardians: { label: "Guardians", help: "Optional. Standard CutTime member exports already include Guardian 1 and Guardian 2 details, which Band Office imports automatically." },
   groups: { label: "Groups", help: "Optional. Use when group membership is exported separately from members." },
   instruments: { label: "Instruments", help: "Optional. Include CutTime ID, asset tag, condition, and assigned student ID when available." },
   attire: { label: "Attire", help: "Optional. Include CutTime ID, asset tag, size, condition, and assigned student ID when available." },
   equipment: { label: "Equipment", help: "Optional. Include CutTime ID, asset tag, condition, and assigned student ID when available." },
   balances: { label: "Student balances", help: "Optional. Imports one opening balance per student, not payment history." },
+  library: { label: "Library", help: "Optional. Imports whole-set catalog details. Loans, files, and performance history stay outside this migration." },
 };
-
-function cellColumn(reference: string) {
-  const letters = reference.replace(/\d/g, "");
-  return [...letters].reduce((total, letter) => total * 26 + letter.charCodeAt(0) - 64, 0) - 1;
-}
-
-async function parseXlsx(file: File) {
-  const zip = await JSZip.loadAsync(await file.arrayBuffer());
-  const sharedStringsXml = zip.file("xl/sharedStrings.xml") ? await zip.file("xl/sharedStrings.xml")!.async("string") : "";
-  const sharedStrings = sharedStringsXml ? Array.from(new DOMParser().parseFromString(sharedStringsXml, "application/xml").getElementsByTagName("si")).map((item) => Array.from(item.getElementsByTagName("t")).map((node) => node.textContent ?? "").join("")) : [];
-  const worksheetName = Object.keys(zip.files).filter((name) => /^xl\/worksheets\/sheet\d+\.xml$/.test(name)).sort()[0];
-  if (!worksheetName) throw new Error("The spreadsheet does not contain a readable worksheet.");
-  const document = new DOMParser().parseFromString(await zip.file(worksheetName)!.async("string"), "application/xml");
-  const rows = Array.from(document.getElementsByTagName("row")).map((row) => {
-    const values: string[] = [];
-    for (const cell of Array.from(row.getElementsByTagName("c"))) {
-      const index = cellColumn(cell.getAttribute("r") ?? "A1");
-      const type = cell.getAttribute("t");
-      const value = cell.getElementsByTagName("v")[0]?.textContent ?? "";
-      values[index] = type === "s" ? sharedStrings[Number(value)] ?? "" : type === "inlineStr" ? Array.from(cell.getElementsByTagName("t")).map((node) => node.textContent ?? "").join("") : value;
-    }
-    return values;
-  });
-  return rows;
-}
-
-async function parseFile(file: File) {
-  if (file.size > 12 * 1024 * 1024) throw new Error("Files larger than 12 MB are not accepted by the CutTime migration preview.");
-  const rows = file.name.toLowerCase().endsWith(".xlsx")
-    ? await parseXlsx(file)
-    : await parseCsv(await file.text());
-  if (rows.length < 2) throw new Error("The export needs a header row and at least one data row.");
-  const headers = rows[0].map((header) => header.trim());
-  if (!headers.some(Boolean)) throw new Error("The export header row is empty.");
-  return { headers, rows: rows.slice(1).map((row) => Object.fromEntries(headers.map((header, index) => [header, String(row[index] ?? "").trim()]))) };
-}
-
-async function parseCsv(csvText: string) {
-  return new Promise<string[][]>((resolve, reject) => {
-    Papa.parse<string[]>(csvText, {
-      skipEmptyLines: true,
-      complete: (result) => result.errors.length ? reject(new Error(result.errors[0].message)) : resolve(result.data),
-      error: reject,
-    });
-  });
-}
-
-async function sha256(file: File) {
-  const digest = await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
-  return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
 
 export function CutTimeMigrationWizard() {
   const [cutoverDate, setCutoverDate] = useState("");
@@ -91,8 +40,8 @@ export function CutTimeMigrationWizard() {
     setFileErrors((current) => ({ ...current, [kind]: "" }));
     setPreview(null);
     try {
-      const [parsed, contentHash] = await Promise.all([parseFile(file), sha256(file)]);
-      setSources((current) => ({ ...current, [kind]: { kind, filename: file.name, contentHash, headers: parsed.headers, rows: parsed.rows } }));
+      const source = await parseCutTimeExportFile(kind, file);
+      setSources((current) => ({ ...current, [kind]: source }));
     } catch (error) {
       setSources((current) => ({ ...current, [kind]: undefined }));
       setFileErrors((current) => ({ ...current, [kind]: error instanceof Error ? error.message : "The export could not be read." }));
@@ -135,7 +84,7 @@ export function CutTimeMigrationWizard() {
       <button className="button secondary" type="button" disabled={!sources.students || previewing || !cutoverDate} onClick={requestPreview}>{previewing ? <LoaderCircle className="spin" size={16} /> : <FileSpreadsheet size={16} />}{previewing ? "Reviewing exports" : "Preview migration"}</button>
       {preview ? <div className="migration-preview">
         <div className={`migration-ready ${preview.ready ? "success" : "error"}`}>{preview.ready ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}<strong>{preview.ready ? "Ready to import" : "Resolve the blocking items"}</strong><span>{preview.ready ? "Review the counts and warnings, then commit one recorded cutover." : `${preview.errors.length} blocking item${preview.errors.length === 1 ? "" : "s"} must be resolved.`}</span></div>
-        <div className="migration-counts"><span><strong>{preview.counts.students}</strong>students</span><span><strong>{preview.counts.guardians}</strong>guardians</span><span><strong>{preview.counts.groups}</strong>groups</span><span><strong>{preview.counts.assets}</strong>assets</span><span><strong>{preview.counts.assignments}</strong>assignments</span><span><strong>{preview.counts.openingBalances}</strong>balances</span></div>
+        <div className="migration-counts"><span><strong>{preview.counts.students}</strong>students</span><span><strong>{preview.counts.guardians}</strong>guardians</span><span><strong>{preview.counts.groups}</strong>groups</span><span><strong>{preview.counts.assets}</strong>assets</span><span><strong>{preview.counts.assignments}</strong>assignments</span><span><strong>{preview.counts.openingBalances}</strong>balances</span><span><strong>{preview.counts.libraryItems}</strong>library sets</span></div>
         {preview.errors.length ? <div className="migration-messages error"><strong>Blocking items</strong>{preview.errors.map((item, index) => <p key={`${item.code}-${index}`}>{item.message}{item.rowNumber ? ` Row ${item.rowNumber}.` : ""}</p>)}</div> : null}
         {preview.warnings.length ? <div className="migration-messages warning"><strong>Review after import</strong>{preview.warnings.map((item, index) => <p key={`${item.code}-${index}`}>{item.message}</p>)}</div> : null}
         <div className="migration-source-list">{preview.sources.map((source) => <div key={source.kind}><strong>{SOURCE_DETAILS[source.kind].label}</strong><span>{source.filename} · {source.rowCount} rows</span><small>{source.mappedFields.length ? `Detected: ${source.mappedFields.join(", ")}` : "No supported fields detected"}</small></div>)}</div>

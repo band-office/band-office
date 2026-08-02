@@ -594,7 +594,7 @@ textarea { resize: vertical; }
 .migration-ready.error { color: #b45309; background: #fffbeb; border-color: #fde68a; }
 .migration-ready strong { font-size: 12px; }
 .migration-ready > span { grid-column: 2; color: var(--muted); font-size: 10px; }
-.migration-counts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; }
+.migration-counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); border: 1px solid var(--line); border-radius: 6px; }
 .migration-counts span { display: grid; gap: 2px; padding: 10px; color: var(--muted); border-right: 1px solid var(--line); font-size: 9px; text-transform: uppercase; }
 .migration-counts span:last-child { border-right: 0; }
 .migration-counts strong { color: var(--ink); font-size: 17px; }
@@ -608,6 +608,8 @@ textarea { resize: vertical; }
 .migration-source-list strong { font-size: 10px; }
 .migration-source-list span, .migration-source-list small { overflow: hidden; color: var(--muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .migration-commit form { margin-top: 14px; }
+.single-source { max-width: 570px; }
+.import-back-link { display: inline-flex; align-items: center; gap: 5px; margin: 15px 20px; font-size: 11px; }
 
 .label-workspace { display: grid; grid-template-columns: 318px minmax(0, 1fr); gap: 20px; align-items: start; }
 .label-controls { position: sticky; top: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
