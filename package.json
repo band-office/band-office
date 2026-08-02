@@ -29,6 +29,7 @@
     "release:server:artifact:verify": "node scripts/verify-server-alpha-artifact.mjs",
     "release:server:manifest": "node scripts/write-server-release-manifest.mjs",
     "brand:github": "node scripts/generate-github-brand-assets.mjs && cross-env BANDOS_BRAND_DATABASE_PATH=data/brand.db DATABASE_URL=file:./data/brand.db node --import tsx scripts/prepare-brand-db.ts && node scripts/capture-github-screenshots.mjs",
+    "docs:onboarding-gif": "node scripts/capture-onboarding-gif.mjs",
     "release:verify": "node scripts/verify-release.mjs",
     "desktop:prepare": "node scripts/prepare-desktop-runtime.mjs",
     "desktop:dev": "node scripts/run-desktop-dev.mjs",
