@@ -16,7 +16,7 @@
   <strong><a href="https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.4">Server alpha</a></strong> ·
   <strong><a href="./docs/deployment/SERVER_DEPLOYMENT.md">Deployment guide</a></strong> ·
   <strong><a href="./docs/">Documentation</a></strong> ·
-  <strong><a href="./CONTRIBUTING.md">Contribute</a></strong> ·
+  <strong><a href="./.github/CONTRIBUTING.md">Contribute</a></strong> ·
   <strong><a href="./docs/product/ROADMAP.md">Roadmap</a></strong>
 </p>
 
@@ -222,12 +222,12 @@ The source is publicly available at [band-office/band-office](https://github.com
 
 ## Project and community
 
-- [Contributing](./CONTRIBUTING.md)
+- [Contributing](./.github/CONTRIBUTING.md)
 - [Roadmap](./docs/product/ROADMAP.md)
-- [Governance](./GOVERNANCE.md)
-- [Support](./SUPPORT.md)
-- [Security policy](./SECURITY.md)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Governance](./docs/governance/GOVERNANCE.md)
+- [Support](./.github/SUPPORT.md)
+- [Security policy](./.github/SECURITY.md)
+- [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
 - [Changelog](./CHANGELOG.md)
 - [Release channels](./docs/release/RELEASE_CHANNELS.md)
 - [Desktop alpha release process](./docs/release/DESKTOP_ALPHA_RELEASE.md)

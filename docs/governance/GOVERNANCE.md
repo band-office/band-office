@@ -34,7 +34,7 @@ Small, reversible changes can be decided in an issue or pull request. Changes to
 - risks and non-goals;
 - migration, backup, permission, and testing effects.
 
-Durable product boundaries are recorded in [DECISIONS.md](./docs/product/DECISIONS.md). Final merge and release decisions remain with the maintainers.
+Durable product boundaries are recorded in [DECISIONS.md](../product/DECISIONS.md). Final merge and release decisions remain with the maintainers.
 
 ## Changes to governance
 
