@@ -159,7 +159,7 @@ describe("public release preparation", () => {
     const serverWorkflow = await readFile(".github/workflows/server-alpha-release.yml", "utf8");
 
     expect(readme).not.toContain("[dist-desktop](./dist-desktop)");
-    expect(readme).toContain("v0.1.0-alpha.10");
+    expect(readme).toContain("v0.1.0-alpha.13");
     expect(readme).toContain("public prerelease");
     expect(readme).toContain("Start with the fictional Ridgeline demo");
     expect(readme).toContain("verify an encrypted backup and restore");
@@ -172,7 +172,7 @@ describe("public release preparation", () => {
     expect(channels).toContain("Directors should begin with the demo");
     expect(channels).toContain("must not add real student information to that installation");
     expect(channels).not.toContain("**State:** not yet issued.");
-    expect(download).toContain("v0.1.0-alpha.10");
+    expect(download).toContain("v0.1.0-alpha.13");
     expect(download).toContain("Start my program");
     expect(download).toContain("Band-Office-0.1.0-mac-arm64.dmg");
     expect(download).toContain("Band-Office-0.1.0-mac-x64.dmg");
@@ -201,6 +201,7 @@ describe("public release preparation", () => {
     expect(preparationWorkflow).toContain("BANDOS_DESKTOP_SKIP_RUNTIME_LAUNCH");
     expect(preparationWorkflow).toContain("xcrun notarytool submit");
     expect(preparationWorkflow).toContain("scripts/write-notarization-submission.mjs");
+    expect(preparationWorkflow).toContain("installer-template.dmg");
     expect(preparationWorkflow).toContain("macos-15-intel");
     expect(preparationWorkflow).toContain('lipo -archs "$app/Contents/MacOS/Band Office"');
     expect(preparationWorkflow).toContain("Authority=Developer ID Application");
@@ -218,6 +219,8 @@ describe("public release preparation", () => {
     expect(finalizerWorkflow).not.toContain('node -p \\"');
     expect(finalizerWorkflow).toContain("xcrun stapler validate");
     expect(finalizerWorkflow).toContain("source=Notarized Developer ID");
+    expect(finalizerWorkflow).toContain("ln -s /Applications");
+    expect(finalizerWorkflow).toContain('test -L "$verification_mount/Applications"');
     expect(finalizerWorkflow).toContain("notarized-macos-${{ matrix.arch }}-alpha");
     expect(finalizerWorkflow).toContain("release-assets/*");
     expect(finalizerWorkflow).not.toContain("release-assets/notarized-macos-arm64-alpha/*");

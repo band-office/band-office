@@ -147,8 +147,30 @@ jobs:
           zip="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.zip"
           dmg="release-macos/Band-Office-${version}-mac-${{ matrix.arch }}.dmg"
           ditto -c -k --sequesterRsrc --keepParent "$FINALIZED_APP" "$zip"
-          hdiutil create -volname "Band Office" -srcfolder "$FINALIZED_APP" -ov -format UDZO "$dmg"
+          installer_template="$(find pending-notarization -type f -name "Band-Office-${version}-mac-${{ matrix.arch }}-installer-template.dmg" -print -quit)"
+          test -n "$installer_template"
+          template_mount="$RUNNER_TEMP/band-office-installer-template-${{ matrix.arch }}"
+          installer_root="$RUNNER_TEMP/band-office-installer-root-${{ matrix.arch }}"
+          hdiutil attach -nobrowse -readonly -mountpoint "$template_mount" "$installer_template"
+          mkdir "$installer_root"
+          for installer_item in .background.tiff .DS_Store .VolumeIcon.icns; do
+            if [ -e "$template_mount/$installer_item" ]; then
+              ditto "$template_mount/$installer_item" "$installer_root/$installer_item"
+            fi
+          done
+          ln -s /Applications "$installer_root/Applications"
+          ditto "$FINALIZED_APP" "$installer_root/Band Office.app"
+          hdiutil detach "$template_mount"
+          hdiutil create -volname "Band Office" -srcfolder "$installer_root" -ov -format UDZO "$dmg"
           hdiutil verify "$dmg"
+          verification_mount="$RUNNER_TEMP/band-office-installer-verification-${{ matrix.arch }}"
+          hdiutil attach -nobrowse -readonly -mountpoint "$verification_mount" "$dmg"
+          test -L "$verification_mount/Applications"
+          test "$(readlink "$verification_mount/Applications")" = "/Applications"
+          released_app="$verification_mount/Band Office.app"
+          codesign --verify --deep --strict --verbose=2 "$released_app"
+          spctl --assess --type execute --verbose=4 "$released_app" 2>&1 | grep -q 'source=Notarized Developer ID'
+          hdiutil detach "$verification_mount"
           (
             cd release-macos
             shasum -a 256 "$(basename "$dmg")" "$(basename "$zip")" > "SHA256SUMS-macos-${{ matrix.arch }}.txt"
