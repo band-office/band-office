@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   AssetCategory,
   AssetCondition,
+  AssetStatus,
   AssignmentResolution,
   ComponentStatus,
   FinancialEntryType,
@@ -23,6 +24,7 @@ import {
   checkinAssetWithOptionalRepair,
   checkoutAsset,
   createAsset,
+  deleteAsset,
   createGroup,
   createGuardianAndLinkStudent,
   createPerson,
@@ -591,6 +593,7 @@ export async function updateAssetAction(formData: FormData) {
   const id = textValue(formData, "id");
   try {
     const user = await requirePermission("MANAGE_INVENTORY");
+    const status = optionalText(formData, "status") as AssetStatus | null;
     await updateAsset(getDb(), id, {
       category: textValue(formData, "category") as AssetCategory,
       make: optionalText(formData, "make"),
@@ -602,6 +605,7 @@ export async function updateAssetAction(formData: FormData) {
       purchaseYear: textValue(formData, "purchaseYear") ? Number(textValue(formData, "purchaseYear")) : null,
       estimatedValue: textValue(formData, "estimatedValue") || null,
       location: optionalText(formData, "location"),
+      ...(status === AssetStatus.AVAILABLE || status === AssetStatus.RETIRED || status === AssetStatus.MISSING ? { status } : {}),
       ...(hasPermission(user, "VIEW_NOTES") ? { notes: optionalText(formData, "notes") } : {}),
     }, user.username);
   } catch (error) {
@@ -610,6 +614,17 @@ export async function updateAssetAction(formData: FormData) {
   revalidatePath(`/assets/${id}`);
   revalidatePath("/assets");
   redirect(withMessage(`/assets/${id}`, "success", "Asset record updated."));
+}
+
+export async function deleteAssetAction(formData: FormData) {
+  const id = textValue(formData, "id");
+  try {
+    await deleteAsset(getDb(), id, await currentActor("MANAGE_INVENTORY"));
+  } catch (error) {
+    redirect(withMessage(`/assets/${id}`, "error", errorMessage(error)));
+  }
+  revalidatePath("/assets");
+  redirect(withMessage("/assets", "success", "Unused asset deleted."));
 }
 
 export async function updateComponentAction(formData: FormData) {

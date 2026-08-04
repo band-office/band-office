@@ -1021,6 +1021,12 @@ describe.sequential("audited inventory data access", () => {
     expect(await db.asset.count({ where: { programId: RIDGELINE_PROGRAM_ID, schoolAssetTag: { in: ["TEST-DUPLICATE-IMPORT", "test-duplicate-import"] } } })).toBe(0);
   });
 
+  it("does not delete an asset with assignment history", async () => {
+    const asset = await db.asset.findFirstOrThrow({ where: { programId: RIDGELINE_PROGRAM_ID, assignments: { some: {} } } });
+    await expect(deleteAsset(db, asset.id, "test-director")).rejects.toThrow(/cannot be deleted/);
+    expect(await db.asset.findUnique({ where: { id: asset.id } })).not.toBeNull();
+  });
+
   it("keeps asset status synchronized through repair lifecycle", async () => {
     const asset = await createAsset(db, {
       id: "test-asset-repair",

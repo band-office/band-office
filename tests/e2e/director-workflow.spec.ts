@@ -505,6 +505,10 @@ test("director can set up, import, check out, return with damage, back up, and s
   await expect(page.getByText("Asset import complete: 1 created, 0 updated.")).toBeVisible();
 
   await page.goto("/assets");
+  await page.getByRole("link", { name: "RMS-EQP-010" }).click();
+  await page.locator("summary").filter({ hasText: "Delete asset" }).click();
+  await expect(page.getByRole("heading", { name: "Delete unused asset?" })).toBeVisible();
+  await page.goto("/assets");
   await page.getByRole("link", { name: "Print labels" }).click();
   await expect(page.getByRole("heading", { name: "Print asset labels" })).toBeVisible();
   await page.getByLabel("Select RMS-EQP-010").check();

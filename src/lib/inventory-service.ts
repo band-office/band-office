@@ -505,6 +505,15 @@ export async function deleteAsset(db: DatabaseClient, id: string, actor: string)
       include: { components: true },
     });
 
+    const [assignmentCount, repairCount, eventEquipmentCount] = await Promise.all([
+      tx.assignment.count({ where: { assetId: id } }),
+      tx.repair.count({ where: { assetId: id } }),
+      tx.eventEquipmentItem.count({ where: { assetId: id } }),
+    ]);
+    if (assignmentCount || repairCount || eventEquipmentCount) {
+      throw new InventoryInvariantError("Assets with assignment, repair, or event history cannot be deleted. Retire the asset instead.");
+    }
+
     for (const component of existing.components) {
       await tx.assetComponent.delete({ where: { id: component.id } });
       await appendAudit(tx, {
