@@ -40,7 +40,7 @@ Band Office source is licensed under [Apache-2.0](./LICENSE). Third-party compon
 | Mac with an Intel processor | [Intel Mac installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.16/Band-Office-0.1.0-mac-x64.dmg) |
 | 64-bit Windows computer | [Windows installer](https://github.com/band-office/band-office/releases/download/v0.1.0-alpha.16/Band-Office-0.1.0-win-x64.exe) |
 
-The app does not require Terminal, Node.js, Docker, or a GitHub account. Follow the [five-minute first-run guide](./docs/getting-started/FIRST_RUN.md) before importing student information.
+The app does not require Terminal, Node.js, Docker, or a GitHub account. Follow the [five-minute first-run guide](./docs/getting-started/FIRST_RUN.md) before importing student information. Updating an existing Desktop installation preserves the local program data; follow the [update instructions](./docs/getting-started/DOWNLOAD.md#update-an-existing-installation).
 
 ## Release channels
 
