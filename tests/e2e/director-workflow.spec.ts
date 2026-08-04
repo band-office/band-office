@@ -496,6 +496,9 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.goto("/import?kind=assets");
   const assetCsvInput = page.getByLabel("Select assets CSV");
   await expect(assetCsvInput).toBeEnabled();
+  await assetCsvInput.setInputFiles(path.resolve("tests/fixtures/import-assets-duplicate-tags.csv"));
+  await expect(page.getByText(/Asset tag must be unique/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import assets" })).toBeDisabled();
   await assetCsvInput.setInputFiles(path.resolve("tests/fixtures/import-assets.csv"));
   await expect(page.getByText("1 rows ready for reconciliation")).toBeVisible();
   await page.getByRole("button", { name: "Import assets" }).click();

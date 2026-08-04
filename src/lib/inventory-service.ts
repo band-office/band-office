@@ -1122,6 +1122,20 @@ export type AssetImportRow = {
 
 export async function importAssets(db: DatabaseClient, programId: string, rows: AssetImportRow[], actor: string) {
   return db.$transaction(async (tx) => {
+    const tagRows = new Map<string, { tag: string; rows: number[] }>();
+    rows.forEach((row, index) => {
+      const tag = row.schoolAssetTag?.trim();
+      if (!tag) return;
+      const key = tag.toLowerCase();
+      const entry = tagRows.get(key) ?? { tag, rows: [] };
+      entry.rows.push(index + 1);
+      tagRows.set(key, entry);
+    });
+    const duplicateTags = [...tagRows.values()].filter((entry) => entry.rows.length > 1);
+    if (duplicateTags.length) {
+      const summary = duplicateTags.slice(0, 5).map((entry) => `${entry.tag} (rows ${entry.rows.join(", ")})`).join("; ");
+      throw new InventoryInvariantError(`Asset tags must be unique within an import. Duplicate values: ${summary}${duplicateTags.length > 5 ? `; and ${duplicateTags.length - 5} more` : ""}.`);
+    }
     let created = 0;
     let updated = 0;
     for (const [index, row] of rows.entries()) {

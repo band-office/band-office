@@ -7,7 +7,9 @@ import { SubmitButton } from "@/components/submit-button";
 
 type ImportField = { key: string; label: string; required?: boolean; aliases?: string[] };
 
-export function ImportWizard({ kind, fields, action }: { kind: string; fields: ImportField[]; action: (formData: FormData) => void | Promise<void> }) {
+type UniqueField = { key: string; label: string };
+
+export function ImportWizard({ kind, fields, action, uniqueField }: { kind: string; fields: ImportField[]; action: (formData: FormData) => void | Promise<void>; uniqueField?: UniqueField }) {
   const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<string[][]>([]);
@@ -23,7 +25,20 @@ export function ImportWizard({ kind, fields, action }: { kind: string; fields: I
   const mappedRows = useMemo(() => rows.map((row) => Object.fromEntries(fields.map((field) => [field.key, mapping[field.key] === null || mapping[field.key] === undefined ? "" : row[mapping[field.key]!] ?? ""]))), [fields, mapping, rows]);
   const missingFields = fields.filter((field) => field.required && (mapping[field.key] === null || mapping[field.key] === undefined));
   const invalidRows = mappedRows.filter((row) => fields.some((field) => field.required && !row[field.key]?.trim())).length;
-  const ready = rows.length > 0 && missingFields.length === 0 && invalidRows === 0;
+  const duplicateValues = useMemo(() => {
+    if (!uniqueField) return [];
+    const occurrences = new Map<string, { value: string; rowNumbers: number[] }>();
+    mappedRows.forEach((row, index) => {
+      const value = row[uniqueField.key]?.trim();
+      if (!value) return;
+      const key = value.toLowerCase();
+      const occurrence = occurrences.get(key) ?? { value, rowNumbers: [] };
+      occurrence.rowNumbers.push(index + 2);
+      occurrences.set(key, occurrence);
+    });
+    return [...occurrences.values()].filter((occurrence) => occurrence.rowNumbers.length > 1);
+  }, [mappedRows, uniqueField]);
+  const ready = rows.length > 0 && missingFields.length === 0 && invalidRows === 0 && duplicateValues.length === 0;
 
   async function loadFile(file: File) {
     setParseError("");
@@ -57,7 +72,7 @@ export function ImportWizard({ kind, fields, action }: { kind: string; fields: I
     {headers.length ? <section className="import-step"><div className="import-step-title"><span>2</span><div><h2>Map columns</h2><p>Confirm which source column supplies each Band Office field.</p></div></div><div className="mapping-grid">{fields.map((field) => <label className="field" key={field.key}><span>{field.label}{field.required ? " *" : ""}</span><select value={mapping[field.key] ?? ""} onChange={(event) => setMapping((current) => ({ ...current, [field.key]: event.target.value === "" ? null : Number(event.target.value) }))}><option value="">Do not import</option>{headers.map((header, index) => <option key={`${header}-${index}`} value={index}>{header || `Column ${index + 1}`}</option>)}</select></label>)}</div>{missingFields.length ? <p className="inline-error">Map required fields: {missingFields.map((field) => field.label).join(", ")}.</p> : null}</section> : null}
     {headers.length ? <section className="import-step">
       <div className="import-step-title"><span>3</span><div><h2>Dry-run preview</h2><p>No records change until you commit the validated rows.</p></div></div>
-      {invalidRows ? <p className="inline-error">{invalidRows} rows are missing required mapped values. Correct the CSV before importing.</p> : <div className="import-ready"><FileCheck2 size={18} /><strong>{mappedRows.length} rows ready for reconciliation</strong></div>}
+      {invalidRows ? <p className="inline-error">{invalidRows} rows are missing required mapped values. Correct the CSV before importing.</p> : duplicateValues.length ? <p className="inline-error">{uniqueField!.label} must be unique. Duplicate values: {duplicateValues.slice(0, 5).map((occurrence) => `${occurrence.value} (rows ${occurrence.rowNumbers.join(", ")})`).join("; ")}{duplicateValues.length > 5 ? `; and ${duplicateValues.length - 5} more` : ""}. Map a unique identifier before importing.</p> : <div className="import-ready"><FileCheck2 size={18} /><strong>{mappedRows.length} rows ready for reconciliation</strong></div>}
       <div className="data-table-wrap import-preview"><table className="data-table"><thead><tr>{fields.filter((field) => mapping[field.key] !== null && mapping[field.key] !== undefined).map((field) => <th key={field.key}>{field.label}</th>)}</tr></thead><tbody>{mappedRows.slice(0, 5).map((row, index) => <tr key={index}>{fields.filter((field) => mapping[field.key] !== null && mapping[field.key] !== undefined).map((field) => <td key={field.key}>{row[field.key] || "—"}</td>)}</tr>)}</tbody></table></div>
       {mappedRows.length > 5 ? <p className="preview-note">Previewing 5 of {mappedRows.length} rows.</p> : null}
       <form action={action} className="import-commit"><input type="hidden" name="rowsJson" value={JSON.stringify(mappedRows)} /><div><FileSpreadsheet size={20} /><span><strong>Commit {mappedRows.length} rows</strong><small>Existing IDs or asset tags update; new records are created.</small></span></div><SubmitButton className="button primary" disabled={!ready}>Import {kind}</SubmitButton></form>
