@@ -96,6 +96,8 @@ h1, h2, h3 { letter-spacing: 0; }
 .button.primary:hover { background: var(--brand-dark); }
 .button.secondary { color: var(--ink); background: var(--surface); border-color: var(--line-strong); }
 .button.secondary:hover { border-color: #94a3b8; background: var(--surface-muted); }
+.button.danger { color: var(--red); background: var(--red-soft); border-color: #efcac7; }
+.button.danger:hover { background: #fee2e2; border-color: #e5a4a0; }
 .button.ghost { color: var(--brand); background: transparent; }
 .button.small { min-height: 31px; padding: 0 9px; font-size: 11px; }
 .button.full { width: 100%; }

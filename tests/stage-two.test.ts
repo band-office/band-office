@@ -54,6 +54,7 @@ import {
   updatePerson,
   updateRepair,
   rolloverOperatingPeriod,
+  importAssets,
 } from "@/lib/inventory-service";
 import {
   fleetValue,
@@ -1010,6 +1011,20 @@ describe.sequential("audited inventory data access", () => {
     expect(await db.assignment.count({ where: { assetId: asset.id } })).toBe(0);
     await deleteAsset(db, asset.id, "test-director");
     await deletePerson(db, person.id, "test-director");
+  });
+
+  it("rejects an asset import with duplicate asset tags before writing records", async () => {
+    await expect(importAssets(db, RIDGELINE_PROGRAM_ID, [
+      { category: AssetCategory.INSTRUMENT, schoolAssetTag: "TEST-DUPLICATE-IMPORT", condition: AssetCondition.GOOD },
+      { category: AssetCategory.INSTRUMENT, schoolAssetTag: "test-duplicate-import", condition: AssetCondition.FAIR },
+    ], "test-director")).rejects.toThrow(/Asset tags must be unique within an import/);
+    expect(await db.asset.count({ where: { programId: RIDGELINE_PROGRAM_ID, schoolAssetTag: { in: ["TEST-DUPLICATE-IMPORT", "test-duplicate-import"] } } })).toBe(0);
+  });
+
+  it("does not delete an asset with assignment history", async () => {
+    const asset = await db.asset.findFirstOrThrow({ where: { programId: RIDGELINE_PROGRAM_ID, assignments: { some: {} } } });
+    await expect(deleteAsset(db, asset.id, "test-director")).rejects.toThrow(/cannot be deleted/);
+    expect(await db.asset.findUnique({ where: { id: asset.id } })).not.toBeNull();
   });
 
   it("keeps asset status synchronized through repair lifecycle", async () => {

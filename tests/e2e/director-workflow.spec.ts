@@ -496,11 +496,18 @@ test("director can set up, import, check out, return with damage, back up, and s
   await page.goto("/import?kind=assets");
   const assetCsvInput = page.getByLabel("Select assets CSV");
   await expect(assetCsvInput).toBeEnabled();
+  await assetCsvInput.setInputFiles(path.resolve("tests/fixtures/import-assets-duplicate-tags.csv"));
+  await expect(page.getByText(/Asset tag must be unique/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Import assets" })).toBeDisabled();
   await assetCsvInput.setInputFiles(path.resolve("tests/fixtures/import-assets.csv"));
   await expect(page.getByText("1 rows ready for reconciliation")).toBeVisible();
   await page.getByRole("button", { name: "Import assets" }).click();
   await expect(page.getByText("Asset import complete: 1 created, 0 updated.")).toBeVisible();
 
+  await page.goto("/assets");
+  await page.getByRole("link", { name: "RMS-EQP-010" }).click();
+  await page.locator("summary").filter({ hasText: "Delete asset" }).click();
+  await expect(page.getByRole("heading", { name: "Delete unused asset?" })).toBeVisible();
   await page.goto("/assets");
   await page.getByRole("link", { name: "Print labels" }).click();
   await expect(page.getByRole("heading", { name: "Print asset labels" })).toBeVisible();

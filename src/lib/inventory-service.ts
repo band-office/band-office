@@ -505,6 +505,15 @@ export async function deleteAsset(db: DatabaseClient, id: string, actor: string)
       include: { components: true },
     });
 
+    const [assignmentCount, repairCount, eventEquipmentCount] = await Promise.all([
+      tx.assignment.count({ where: { assetId: id } }),
+      tx.repair.count({ where: { assetId: id } }),
+      tx.eventEquipmentItem.count({ where: { assetId: id } }),
+    ]);
+    if (assignmentCount || repairCount || eventEquipmentCount) {
+      throw new InventoryInvariantError("Assets with assignment, repair, or event history cannot be deleted. Retire the asset instead.");
+    }
+
     for (const component of existing.components) {
       await tx.assetComponent.delete({ where: { id: component.id } });
       await appendAudit(tx, {
@@ -1122,6 +1131,20 @@ export type AssetImportRow = {
 
 export async function importAssets(db: DatabaseClient, programId: string, rows: AssetImportRow[], actor: string) {
   return db.$transaction(async (tx) => {
+    const tagRows = new Map<string, { tag: string; rows: number[] }>();
+    rows.forEach((row, index) => {
+      const tag = row.schoolAssetTag?.trim();
+      if (!tag) return;
+      const key = tag.toLowerCase();
+      const entry = tagRows.get(key) ?? { tag, rows: [] };
+      entry.rows.push(index + 1);
+      tagRows.set(key, entry);
+    });
+    const duplicateTags = [...tagRows.values()].filter((entry) => entry.rows.length > 1);
+    if (duplicateTags.length) {
+      const summary = duplicateTags.slice(0, 5).map((entry) => `${entry.tag} (rows ${entry.rows.join(", ")})`).join("; ");
+      throw new InventoryInvariantError(`Asset tags must be unique within an import. Duplicate values: ${summary}${duplicateTags.length > 5 ? `; and ${duplicateTags.length - 5} more` : ""}.`);
+    }
     let created = 0;
     let updated = 0;
     for (const [index, row] of rows.entries()) {

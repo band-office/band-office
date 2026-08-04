@@ -96,8 +96,10 @@
   },
   "overrides": {
     "@hono/node-server": "2.0.10",
+    "fast-uri": "3.1.5",
+    "hono": "4.12.34",
     "sharp": "0.35.3",
-    "postcss": "8.5.20",
+    "postcss": "8.5.25",
     "valibot": "1.4.2"
   },
   "build": {

@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, ClipboardPlus, Pencil, Tags, Wrench } from "lucide-react";
+import { ArrowLeft, ClipboardPlus, Pencil, Tags, Trash2, Wrench } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
-import { updateAssetAction, updateComponentAction } from "@/app/actions";
+import { deleteAssetAction, updateAssetAction, updateComponentAction } from "@/app/actions";
 import { Field } from "@/components/field";
 import { FlashMessage } from "@/components/flash-message";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { SubmitButton } from "@/components/submit-button";
-import { AssetCategory, AssetCondition, ComponentStatus } from "@/generated/prisma/client";
+import { AssetCategory, AssetCondition, AssetStatus, ComponentStatus } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
 import { assetName, formatDate, formatMoney, titleCase } from "@/lib/format";
 import { hasPermission, requireUser } from "@/lib/auth";
@@ -21,6 +21,7 @@ export default async function AssetDetailPage({ params, searchParams }: { params
       components: { orderBy: { name: "asc" } },
       assignments: { include: { person: { include: { studentProfile: true } }, group: true, operatingPeriod: true }, orderBy: { checkedOutAt: "desc" } },
       repairs: { include: { operatingPeriod: true }, orderBy: { openedAt: "desc" } },
+      eventEquipment: { select: { id: true } },
     },
   });
   if (!asset) notFound();
@@ -30,10 +31,13 @@ export default async function AssetDetailPage({ params, searchParams }: { params
   const canAssign = hasPermission(user, "MANAGE_ASSIGNMENTS");
   const canManageRepairs = hasPermission(user, "MANAGE_REPAIRS");
   const canViewNotes = hasPermission(user, "VIEW_NOTES");
+  const editableAssetStatuses: AssetStatus[] = [AssetStatus.AVAILABLE, AssetStatus.RETIRED, AssetStatus.MISSING];
+  const canSetAssetStatus = !activeAssignment && editableAssetStatuses.includes(asset.status);
+  const canDelete = canManageInventory && asset.assignments.length === 0 && asset.repairs.length === 0 && asset.eventEquipment.length === 0;
 
   return <main className="content">
     <Link className="back-link" href="/assets"><ArrowLeft size={16} />Assets</Link>
-    <PageHeader eyebrow={titleCase(asset.category)} title={asset.schoolAssetTag ?? assetName(asset)} description={assetName(asset)} actions={<>{asset.schoolAssetTag ? <Link className="button secondary" href={`/assets/labels?asset=${asset.id}`}><Tags size={16} />Print label</Link> : null}{canManageInventory ? <details className="popover wide"><summary className="button secondary"><Pencil size={16} />Edit asset</summary><form action={updateAssetAction} className="popover-panel form-grid"><input type="hidden" name="id" value={asset.id} /><h3>Edit asset</h3><Field label="Category"><select name="category" defaultValue={asset.category}>{Object.values(AssetCategory).map((value) => <option key={value} value={value}>{titleCase(value)}</option>)}</select></Field><Field label="Asset tag"><input name="schoolAssetTag" defaultValue={asset.schoolAssetTag ?? ""} required /></Field><Field label="Make"><input name="make" defaultValue={asset.make ?? ""} /></Field><Field label="Model"><input name="model" defaultValue={asset.model ?? ""} /></Field><Field label="Serial number"><input name="serialNumber" defaultValue={asset.serialNumber ?? ""} /></Field><Field label="Size"><input name="size" defaultValue={asset.size ?? ""} /></Field><Field label="Condition"><select name="condition" defaultValue={asset.condition}>{Object.values(AssetCondition).map((value) => <option key={value} value={value}>{titleCase(value)}</option>)}</select></Field><Field label="Location"><input name="location" defaultValue={asset.location ?? ""} /></Field><Field label="Purchase year"><input name="purchaseYear" type="number" defaultValue={asset.purchaseYear ?? ""} /></Field><Field label="Estimated value"><input name="estimatedValue" type="number" step="0.01" defaultValue={asset.estimatedValue?.toString() ?? ""} /></Field>{canViewNotes ? <Field label="Notes" wide hint="No medical, disciplinary, or family information."><textarea name="notes" rows={3} defaultValue={asset.notes ?? ""} /></Field> : null}<div className="form-actions field-wide"><SubmitButton>Save changes</SubmitButton></div></form></details> : null}</>} />
+    <PageHeader eyebrow={titleCase(asset.category)} title={asset.schoolAssetTag ?? assetName(asset)} description={assetName(asset)} actions={<>{asset.schoolAssetTag ? <Link className="button secondary" href={`/assets/labels?asset=${asset.id}`}><Tags size={16} />Print label</Link> : null}{canManageInventory ? <details className="popover wide"><summary className="button secondary"><Pencil size={16} />Edit asset</summary><form action={updateAssetAction} className="popover-panel form-grid"><input type="hidden" name="id" value={asset.id} /><h3>Edit asset</h3><Field label="Category"><select name="category" defaultValue={asset.category}>{Object.values(AssetCategory).map((value) => <option key={value} value={value}>{titleCase(value)}</option>)}</select></Field><Field label="Asset tag"><input name="schoolAssetTag" defaultValue={asset.schoolAssetTag ?? ""} required /></Field><Field label="Make"><input name="make" defaultValue={asset.make ?? ""} /></Field><Field label="Model"><input name="model" defaultValue={asset.model ?? ""} /></Field><Field label="Serial number"><input name="serialNumber" defaultValue={asset.serialNumber ?? ""} /></Field><Field label="Size"><input name="size" defaultValue={asset.size ?? ""} /></Field><Field label="Condition"><select name="condition" defaultValue={asset.condition}>{Object.values(AssetCondition).map((value) => <option key={value} value={value}>{titleCase(value)}</option>)}</select></Field>{canSetAssetStatus ? <Field label="Status"><select name="status" defaultValue={asset.status}>{editableAssetStatuses.map((value) => <option key={value} value={value}>{titleCase(value)}</option>)}</select></Field> : null}<Field label="Location"><input name="location" defaultValue={asset.location ?? ""} /></Field><Field label="Purchase year"><input name="purchaseYear" type="number" defaultValue={asset.purchaseYear ?? ""} /></Field><Field label="Estimated value"><input name="estimatedValue" type="number" step="0.01" defaultValue={asset.estimatedValue?.toString() ?? ""} /></Field>{canViewNotes ? <Field label="Notes" wide hint="No medical, disciplinary, or family information."><textarea name="notes" rows={3} defaultValue={asset.notes ?? ""} /></Field> : null}<div className="form-actions field-wide"><SubmitButton>Save changes</SubmitButton></div></form></details> : null}{canDelete ? <details className="popover"><summary className="button danger"><Trash2 size={16} />Delete asset</summary><form action={deleteAssetAction} className="popover-panel"><input type="hidden" name="id" value={asset.id} /><h3>Delete unused asset?</h3><p>Deletion is permanent. Assets with assignment, repair, or event history must be retired instead.</p><SubmitButton className="button danger">Delete permanently</SubmitButton></form></details> : null}</>} />
     <FlashMessage {...query} />
     <section className="asset-summary-band"><div><span>Status</span><StatusPill value={asset.status} /></div><div><span>Condition</span><StatusPill value={asset.condition} /></div><div><span>Estimated value</span><strong>{formatMoney(asset.estimatedValue)}</strong></div><div><span>Lifetime repairs</span><strong>{formatMoney(lifetimeRepairCost)}</strong></div><div><span>Location</span><strong>{asset.location ?? "Not set"}</strong></div></section>
     <div className="detail-grid">

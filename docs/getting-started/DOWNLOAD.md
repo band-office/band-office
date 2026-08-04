@@ -36,6 +36,20 @@ Verify the download with [`SHA256SUMS-windows.txt`](https://github.com/band-offi
 
 School-managed computers may block unsigned applications. Do not bypass district controls. Ask district IT to review the [source](https://github.com/band-office/band-office), release checksums, and [current release status](../release/CURRENT_STATUS.md).
 
+## Update an existing installation
+
+Installing a newer Band Office Desktop release does **not** start a new program. The application and your live program data are stored separately, so replacing the application keeps your director account, records, files, and backups in place.
+
+1. Create an encrypted Band Office backup and verify that you can restore it.
+2. Quit Band Office completely.
+3. Download the newer installer for the same computer type from the official GitHub release.
+4. On a Mac, move the newer Band Office app into Applications and choose **Replace**. On Windows, run the newer installer and keep the existing installation location unless your school IT staff directs otherwise.
+5. Open Band Office and confirm your program name, roster or inventory counts, and a recent audit entry before deleting the previous installer.
+
+When a release includes a database change, Band Office creates a recovery snapshot before applying it. Do not choose **Start my program** unless you intentionally want to clear the fictional demo and return to first-run setup. Do not reopen a migrated program with an older Band Office release.
+
+Updates are manual and director-initiated during v0.1. Band Office does not check for, download, or install updates automatically. Read the full [update policy](../deployment/UPDATE_POLICY.md) before updating a live program.
+
 ## What the fictional demo does
 
 The first-run **Fictional demo** option loads Ridgeline Middle School Band, a deterministic set of invented people, assets, assignments, financial records, library records, forms, and events. You choose the local director username and password.
