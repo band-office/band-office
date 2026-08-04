@@ -18,7 +18,7 @@ Do not describe this channel as generally available, production-ready, district-
 
 ## Band Office Desktop Alpha
 
-**State:** [`v0.1.0-alpha.16`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.16) issued as a public prerelease.
+**State:** [`v0.1.0-alpha.17`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.17) issued as a public prerelease.
 
 **Audience:** directors running one program on one district-managed computer without public student or guardian access.
 
@@ -53,4 +53,4 @@ Band Office does not host or operate this channel. Before activating real family
 
 ## Promotion Boundary
 
-LinkedIn, contributor-facing posts, and band-director communities may link to either alpha when they preserve its alpha status. Desktop posts may describe the alpha.16 Mac packages as Developer ID-signed and Apple-notarized, and must disclose that Windows packages are unsigned. Server posts must say that it is district-operated, requires Linux administration and district acceptance, and is not a hosted Band Office service. Do not describe either channel as stable, district-approved, turnkey, or a supported CutTime replacement.
+LinkedIn, contributor-facing posts, and band-director communities may link to either alpha when they preserve its alpha status. Desktop posts may describe the alpha.17 Mac packages as Developer ID-signed and Apple-notarized, and must disclose that Windows packages are unsigned. Server posts must say that it is district-operated, requires Linux administration and district acceptance, and is not a hosted Band Office service. Do not describe either channel as stable, district-approved, turnkey, or a supported CutTime replacement.

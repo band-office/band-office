@@ -1,10 +1,10 @@
 # Band Office Current Status
 
-**Status date:** August 2, 2026
+**Status date:** August 4, 2026
 
 **Source state:** public source with versioned Desktop and Server alphas
 
-**Desktop state:** [`v0.1.0-alpha.16`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.16) public prerelease issued; Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs plus unsigned Windows x64 packages
+**Desktop state:** [`v0.1.0-alpha.17`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.17) public prerelease issued; Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs plus unsigned Windows x64 packages
 
 **Server state:** [`v0.1.0-server-alpha.5`](https://github.com/band-office/band-office/releases/tag/v0.1.0-server-alpha.5) public district-operated prerelease issued
 
@@ -33,7 +33,7 @@ The tagged Desktop alpha.5 at commit `8524ee2bc8d277d042ca3230759501bbe95edf9c` 
 - architecture-specific SHA-256 checksum and release-manifest generation;
 - required-reviewer approval before prerelease publication.
 
-The quality job included all 51 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The native platform jobs then passed packaged-application acceptance, signature or unsigned-distribution checks as applicable, and checksum generation. The ten published release assets are three installers, three ZIP packages, three checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
+The quality job included all 64 unit tests, the production build, desktop lifecycle acceptance, the complete Playwright director workflow, release audits, and dependency checks. The production dependency advisory audit reported zero vulnerabilities. The native platform jobs then passed packaged-application acceptance, signature or unsigned-distribution checks as applicable, and checksum generation. The ten published release assets are three installers, three ZIP packages, three checksum files, and `Band-Office-RELEASE-MANIFEST.json`.
 
 Earlier Desktop alpha.1 through alpha.3 releases remain immutable. Alpha.4 is an immutable tag without a published release because its strengthened integrity gate failed closed.
 
@@ -53,7 +53,7 @@ Repository protection also runs pinned CodeQL `security-extended` analysis on pu
 
 ## Desktop Alpha
 
-The current Desktop alpha.16 is public as separate Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs and an unsigned Windows package, with SHA-256 checksums and platform-specific guidance. The Mac applications were stapled and Gatekeeper-validated before publication. Microsoft Artifact Signing remains deferred.
+The current Desktop alpha.17 is public as separate Developer ID-signed, Apple-notarized macOS packages for Apple Silicon and Intel Macs and an unsigned Windows package, with SHA-256 checksums and platform-specific guidance. The Mac applications were stapled and Gatekeeper-validated before publication. Microsoft Artifact Signing remains deferred.
 
 The Desktop alpha creates a private database during first-run setup and offers an empty program or the deterministic fictional Ridgeline demo. The demo remains visibly marked throughout the application and should never be mixed with real student information. Its permanent banner provides a Desktop-only **Start my program** action that preserves recovery snapshots and returns to first-run setup. A non-demo installation can be used for real local program operations within the documented Desktop boundary after the school-data safeguards are met. Remaining release-hardening work is:
 

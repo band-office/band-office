@@ -4,7 +4,7 @@ The current work is release engineering, not another feature module.
 
 ## Desktop Alpha
 
-The public-release cleanup, protected `desktop-alpha-release` environment, required reviewer, native package acceptance, and [`v0.1.0-alpha.16`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.16) publication are complete. Apple Silicon and Intel macOS packages are Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated. Windows x64 remains unsigned with checksums and SmartScreen guidance.
+The public-release cleanup, protected `desktop-alpha-release` environment, required reviewer, native package acceptance, and [`v0.1.0-alpha.17`](https://github.com/band-office/band-office/releases/tag/v0.1.0-alpha.17) publication are complete. Apple Silicon and Intel macOS packages are Developer ID-signed, Apple-notarized, stapled, and Gatekeeper-validated. Windows x64 remains unsigned with checksums and SmartScreen guidance.
 
 1. Run clean-machine installation, backup, restore, upgrade, and uninstall acceptance on macOS Apple Silicon, confirming the notarized app opens without a Gatekeeper override.
 2. Run the same clean-machine lifecycle acceptance on Intel macOS.

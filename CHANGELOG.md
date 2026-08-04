@@ -6,6 +6,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## Desktop 0.1.0-alpha.17 — 2026-08-04
+
+### Added
+
+- Added guarded deletion for unused assets from each asset record.
+- Added Retired and Missing status controls for eligible unassigned assets.
+
+### Changed
+
+- Preserved assets with assignment, repair, or event history by rejecting deletion and directing directors to retain the record through its status instead.
+- Updated pinned transitive dependencies to remove the production dependency-audit findings.
+
+### Verification
+
+- Passed the complete release gate, including 64 unit tests, the director browser workflow, desktop lifecycle acceptance, release audits, and a zero-finding production dependency audit.
+
 ## Desktop 0.1.0-alpha.10 — 2026-08-01
 
 ### Changed
