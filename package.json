@@ -90,7 +90,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
     "prisma": "7.8.0",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
   },
@@ -98,7 +98,7 @@
     "@hono/node-server": "2.0.10",
     "fast-uri": "3.1.5",
     "hono": "4.12.34",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "postcss": "8.5.25",
     "valibot": "1.4.2"
   },
