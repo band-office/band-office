@@ -92,7 +92,7 @@
     "prisma": "7.8.0",
     "sharp": "0.35.3",
     "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "vitest": "4.1.12"
   },
   "overrides": {
     "@hono/node-server": "2.0.10",
